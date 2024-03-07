@@ -15,10 +15,23 @@ struct LoginView: View {
     // This is to keep track of user status,,, either logged in or not
     @State private var status: Bool = false
     
+    func loginLogic(username: String, password: String) {
+        // correct case
+        if username.lowercased() == "123" && password == "123" {
+            self.status = true
+        }
+        
+        // failed case
+        else {
+            self.status = false
+        }
+    }
+    
     var body: some View {
         // Navigation Stack provides a storyline within our elements.. indicating that another screen will be loaded
         NavigationStack {
             VStack {
+                // $variable_name binds the view to the variable when a user interacts with it 
                 TextField("Username", text: $username)
                     // padding is to provide space around an UI element
                     .padding()
@@ -33,17 +46,9 @@ struct LoginView: View {
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
                 
-                // the action is the if statement checking
+                // Login logic here
                 Button(action: {
-                    // success login functionality
-                    if self.username == "123" && self.password == "123" {
-                        self.status = true
-                    }
-                    // failed login functionality
-                    else {
-        
-                        self.status = false
-                    }
+                    loginLogic(username: username, password: password)
                 }) {
                     Text("Login")
                         // text color
