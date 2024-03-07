@@ -80,6 +80,8 @@ struct LoginView: View {
                     }
                     .navigationDestination(isPresented: $status) {
                         ContentView()
+                            // This removes the back button from the screen when redirected from the login view
+                            .navigationBarBackButtonHidden(true)
                     }
                 }
             } // end of VStack here
