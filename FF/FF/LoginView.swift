@@ -14,6 +14,7 @@ struct LoginView: View {
     
     // This is to keep track of user status,,, either logged in or not
     @State private var status: Bool = false
+    @State private var register: Bool = false
     
     func loginLogic(username: String, password: String) {
         // correct case
@@ -31,7 +32,7 @@ struct LoginView: View {
         // Navigation Stack provides a storyline within our elements.. indicating that another screen will be loaded
         NavigationStack {
             VStack {
-                // $variable_name binds the view to the variable when a user interacts with it 
+                // $variable_name binds the view to the variable when a user interacts with it
                 TextField("Username", text: $username)
                     // padding is to provide space around an UI element
                     .padding()
@@ -46,21 +47,40 @@ struct LoginView: View {
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
                 
-                // Login logic here
-                Button(action: {
-                    loginLogic(username: username, password: password)
-                }) {
-                    Text("Login")
-                        // text color
-                        .foregroundStyle(.white)
-                        .padding()
-                        // size of the button customized
-                        .frame(width: 300, height: 50)
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                }
-                .navigationDestination(isPresented: $status) {
-                    ContentView()
+                HStack {
+                    Button(action: {
+                        // shift the value into 1 meaning that we have executed the button functionality
+                        self.register = true
+                    }) {
+                        Text("Register")
+                            .foregroundStyle(.white)
+                            .padding()
+                            .frame(width: 140, height: 50)
+                            .background(Color.gray)
+                            .cornerRadius(10)
+                       
+                    }
+                    .navigationDestination(isPresented: $register) {
+                        RegisterView()
+                    }
+                    
+                    // Login logic here
+                    Button(action: {
+                        loginLogic(username: username, password: password)
+                    }) {
+                        Text("Login")
+                            // text color
+                            .foregroundStyle(.white)
+                            .padding()
+                            // size of the button customized
+                            .frame(width: 145, height: 50)
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                            
+                    }
+                    .navigationDestination(isPresented: $status) {
+                        ContentView()
+                    }
                 }
             } // end of VStack here
             

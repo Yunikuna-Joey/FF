@@ -12,6 +12,7 @@
 		D4E4FAC02B99C19800F5C202 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E4FABF2B99C19800F5C202 /* Assets.xcassets */; };
 		D4E4FAC32B99C19800F5C202 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E4FAC22B99C19800F5C202 /* Preview Assets.xcassets */; };
 		D4E4FACA2B99C1AD00F5C202 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAC92B99C1AD00F5C202 /* LoginView.swift */; };
+		D4E4FACC2B9A7BF700F5C202 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FACB2B9A7BF700F5C202 /* RegisterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		D4E4FABF2B99C19800F5C202 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D4E4FAC22B99C19800F5C202 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D4E4FAC92B99C1AD00F5C202 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		D4E4FACB2B9A7BF700F5C202 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 				D4E4FABB2B99C19600F5C202 /* FFApp.swift */,
 				D4E4FAC92B99C1AD00F5C202 /* LoginView.swift */,
 				D4E4FABD2B99C19600F5C202 /* ContentView.swift */,
+				D4E4FACB2B9A7BF700F5C202 /* RegisterView.swift */,
 				D4E4FABF2B99C19800F5C202 /* Assets.xcassets */,
 				D4E4FAC12B99C19800F5C202 /* Preview Content */,
 			);
@@ -141,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4E4FACA2B99C1AD00F5C202 /* LoginView.swift in Sources */,
+				D4E4FACC2B9A7BF700F5C202 /* RegisterView.swift in Sources */,
 				D4E4FABE2B99C19600F5C202 /* ContentView.swift in Sources */,
 				D4E4FABC2B99C19600F5C202 /* FFApp.swift in Sources */,
 			);
