@@ -15,6 +15,7 @@ struct RegisterView2: View {
     @State private var status: Bool = false
     @State private var error: Bool = false
     @State private var error2: Bool = false
+    @State private var error3: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -47,8 +48,15 @@ struct RegisterView2: View {
                 }
                 
                 // password length checker
-                if error2 {
+                else if error2 {
                     Text("Error: Password does not meet the minimum length requirements")
+                        .foregroundColor(.red)
+                        .padding(.top, 10)
+                }
+                
+                // username checker [not case-sensitive] so Nani == nani [the name itself can no longer be used]
+                else if error3 {
+                    Text("Error: That username has already been taken!")
                         .foregroundColor(.red)
                         .padding(.top, 10)
                 }
@@ -62,6 +70,12 @@ struct RegisterView2: View {
                     else if confirmation.count < 8 || password.count < 8 {
                         self.error = false
                         self.error2 = true
+                    }
+                    
+                    else if username.lowercased() == "nani" {
+                        self.error = false
+                        self.error2 = false
+                        self.error3 = true
                     }
                     
                     else {

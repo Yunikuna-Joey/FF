@@ -16,6 +16,9 @@ struct LoginView: View {
     @State private var status: Bool = false
     @State private var register: Bool = false
     
+    @State private var redirect: Bool = false
+    @State private var message: Bool = false
+    
     func loginLogic(username: String, password: String) {
         // correct case
         if username.lowercased() == "123" && password == "123" {
@@ -85,7 +88,6 @@ struct LoginView: View {
                     }
                 }
             } // end of VStack here
-            
             
             .navigationTitle("Welcome to FF")
             
