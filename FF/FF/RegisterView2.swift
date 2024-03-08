@@ -17,6 +17,8 @@ struct RegisterView2: View {
     @State private var error2: Bool = false
     @State private var error3: Bool = false
     
+    @State private var message: String = ""
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -82,6 +84,8 @@ struct RegisterView2: View {
                         self.error = false
                         self.error2 = false
                         self.status = true
+                        
+                        self.message = "Sign in to get started!"
                     }
                     
                 }) {
@@ -94,7 +98,7 @@ struct RegisterView2: View {
                         .padding(.top, 25)
                 }
                 .navigationDestination(isPresented: $status) {
-                    LoginView()
+                    LoginView(message: message)
                         .navigationBarBackButtonHidden(true)
                 }
             }
