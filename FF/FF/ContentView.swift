@@ -8,15 +8,36 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
+        // This layer will hold our nav menu
         ZStack {
-            Color(.gray)
-                .ignoresSafeArea(.all)
-            
-            VStack {
-                Text("Hello World!")
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Image(systemName: "house.fill")
+                        Text("Home")
+                    }
+                SearchView()
+                    .tabItem {
+                        Image(systemName: "magnifyingglass")
+                        Text("Explore")
+                    }
+                CheckinView()
+                    .tabItem {
+                        Image(systemName: "checkmark.gobackward")
+                        Text("Check In")
+                    }
+                MessageView()
+                    .tabItem {
+                        Image(systemName: "message.fill")
+                        Text("Chats")
+                    }
+                ProfileView()
+                    .tabItem {
+                        Image(systemName: "person.crop.circle")
+                        Text("Profile")
+                    }
             }
         }
-        
     }
 }
 
