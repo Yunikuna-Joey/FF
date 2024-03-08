@@ -18,6 +18,7 @@
 		D4E4FAD22B9A8E7A00F5C202 /* CheckinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD12B9A8E7A00F5C202 /* CheckinView.swift */; };
 		D4E4FAD42B9A8E8B00F5C202 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD32B9A8E8B00F5C202 /* MessageView.swift */; };
 		D4E4FAD62B9A8ECB00F5C202 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */; };
+		D4E4FAD82B9A9FC200F5C202 /* RegisterView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD72B9A9FC200F5C202 /* RegisterView2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		D4E4FAD12B9A8E7A00F5C202 /* CheckinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckinView.swift; sourceTree = "<group>"; };
 		D4E4FAD32B9A8E8B00F5C202 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		D4E4FAD72B9A9FC200F5C202 /* RegisterView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 			children = (
 				D4E4FABB2B99C19600F5C202 /* FFApp.swift */,
 				D4E4FACB2B9A7BF700F5C202 /* RegisterView.swift */,
+				D4E4FAD72B9A9FC200F5C202 /* RegisterView2.swift */,
 				D4E4FAC92B99C1AD00F5C202 /* LoginView.swift */,
 				D4E4FABD2B99C19600F5C202 /* ContentView.swift */,
 				D4E4FACD2B9A8A3F00F5C202 /* HomeView.swift */,
@@ -158,6 +161,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4E4FAD82B9A9FC200F5C202 /* RegisterView2.swift in Sources */,
 				D4E4FACA2B99C1AD00F5C202 /* LoginView.swift in Sources */,
 				D4E4FAD62B9A8ECB00F5C202 /* ProfileView.swift in Sources */,
 				D4E4FACC2B9A7BF700F5C202 /* RegisterView.swift in Sources */,
