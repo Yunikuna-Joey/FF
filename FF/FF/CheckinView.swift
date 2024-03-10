@@ -78,14 +78,21 @@ struct CheckinView: View {
 
         // bubbles at the bottom row
         HStack {
-            ForEach(bubbles, id: \.self) { bubble in
+            ForEach(bubbles.indices, id: \.self) { i in
+                let bubble = bubbles[i]
                 let color = colors[bubble] ?? .black
                 Button(action: {
+                    // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
                     if bubbleChoice.contains(where: { $0.0 == bubble }) {
                         bubbleChoice.removeAll(where: { $0.0 == bubble })
-                    } else {
+                    } 
+                    else {
                         bubbleChoice.append((bubble, color))
                         if let indexToRemove = bubbles.firstIndex(of: bubble) {
+//                            // create a delay before removing
+//                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+//                                bubbles.remove(at: indexToRemove)
+//                            }
                             bubbles.remove(at: indexToRemove)
                         }
                     }
@@ -102,6 +109,7 @@ struct CheckinView: View {
                 }
             }
         }
+
         
         Spacer()
     }
