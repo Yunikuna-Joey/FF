@@ -10,12 +10,20 @@ struct CheckinView: View {
     // this is going to hold status Content
     @State private var statusField: String = ""
     // no duplicates within a set
-    @State private var bubbleChoice: Set<String> = []
+    @State private var bubbleChoice: [(String, Color)] = []
     // Available options to choose from [needed state to bind objects to view... to mutate them from off the bottom => top and <=>]
     @State private var bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower"]
+    // Hashmap to map the caption to its color
+    @State private var colors: [String: Color] = [
+        "🦵Legs": .red,
+        "🫸Push": .orange,
+        "Pull": .yellow,
+        "Upper": .green,
+        "Lower": .blue
+    ]
     
     let username = "Testing User"
-    let timestamp = "5m ago"
+//    let timestamp = "5m ago"
     
     
     var body: some View {
@@ -34,23 +42,24 @@ struct CheckinView: View {
                 Spacer()
                 
             }
-            
+            // bubbles for the status
             HStack {
-                // Bubbles selected for status
-                ForEach(bubbleChoice.sorted(), id: \.self) { bubble in
+                ForEach(bubbleChoice.indices, id: \.self) { i in
+                    let (bubble, _) = bubbleChoice[i]
+                    let color = colors[bubble] ?? .black
                     Button(action: {
-                        // Remove bubble from status
-                        bubbleChoice.remove(bubble)
-                        // place it back into the original array
+                        // Remove from status
+                        bubbleChoice.remove(at: i)
+                        // Add back to bottom row
                         bubbles.append(bubble)
                     }) {
-                        Text("\(bubble)")
-                            .foregroundStyle(Color.white)
+                        Text(bubble)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 5)
                             .background(
                                 RoundedRectangle(cornerRadius: 20)
-                                    .foregroundStyle(Color.orange)
+                                    .foregroundColor(color)
                             )
                             .font(.callout)
                     }
@@ -67,37 +76,33 @@ struct CheckinView: View {
         .cornerRadius(10)
         .shadow(radius: 2)
 
-        // different colors for the different workouts
-       HStack {
-           ForEach(bubbles, id: \.self) { bubble in
-               Button(action: {
-                   // Conditional statement that will handle adding / removing from view
-                   if bubbleChoice.contains(bubble) {
-                       // Remove bubble from status
-                       bubbleChoice.remove(bubble)
-                       bubbles.append(bubble)
-                   } else {
-                       // Add bubble to status
-                       bubbleChoice.insert(bubble)
-                       
-                       // 'selects' the bubble choice from the bottom
-                       if let index = bubbles.firstIndex(of: bubble) {
-                           bubbles.remove(at: index)
-                       }
-                   }
-               }) {
-                   Text(bubble)
-                       .foregroundStyle(Color.white)
-                       .padding(.horizontal, 8)
-                       .padding(.vertical, 5)
-                       .background(
-                           RoundedRectangle(cornerRadius: 20)
-                               .foregroundStyle(Color.orange)
-                       )
-                       .font(.callout)
-               }
-           }
-       }
+        // bubbles at the bottom row
+        HStack {
+            ForEach(bubbles, id: \.self) { bubble in
+                let color = colors[bubble] ?? .black
+                Button(action: {
+                    if bubbleChoice.contains(where: { $0.0 == bubble }) {
+                        bubbleChoice.removeAll(where: { $0.0 == bubble })
+                    } else {
+                        bubbleChoice.append((bubble, color))
+                        if let indexToRemove = bubbles.firstIndex(of: bubble) {
+                            bubbles.remove(at: indexToRemove)
+                        }
+                    }
+                }) {
+                    Text(bubble)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundColor(color)
+                        )
+                        .font(.callout)
+                }
+            }
+        }
+        
         Spacer()
     }
     
