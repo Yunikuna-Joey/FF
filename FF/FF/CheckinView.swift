@@ -23,101 +23,124 @@ struct CheckinView: View {
     ]
     
     let username = "Testing User"
-//    let timestamp = "5m ago"
     
     
     var body: some View {
-        VStack {
-            HStack(spacing: 10) {
-                // profile image on the left
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(.blue)
+        ZStack {
+            VStack {
+                HStack(spacing: 10) {
+                    // profile image on the left
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.blue)
+                    
+                    // Username
+                    Text(username)
+                        .font(.headline)
+                    
+                    Spacer()
+                    
+                } // end of HStack
                 
-                // Username
-                Text(username)
-                    .font(.headline)
-                
-                Spacer()
-                
-            }
-            // bubbles for the status
-            HStack {
-                ForEach(bubbleChoice.indices, id: \.self) { i in
-                    let (bubble, _) = bubbleChoice[i]
-                    let color = colors[bubble] ?? .black
-                    Button(action: {
-                        // Remove from status
-                        bubbleChoice.remove(at: i)
-                        // Add back to bottom row
-                        bubbles.append(bubble)
-                    }) {
-                        Text(bubble)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 5)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .foregroundColor(color)
-                            )
-                            .font(.callout)
-                    }
-                }
-            }
-                        
-            TextField("What are you up to today?", text: $statusField)
-                .padding(.top)
-                .padding(.bottom, 25)
-            
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 2)
-
-        // bubbles at the bottom row
-        HStack {
-            ForEach(bubbles.indices, id: \.self) { i in
-                let bubble = bubbles[i]
-                let color = colors[bubble] ?? .black
-                Button(action: {
-                    // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
-                    if bubbleChoice.contains(where: { $0.0 == bubble }) {
-                        bubbleChoice.removeAll(where: { $0.0 == bubble })
-                    } 
-                    else {
-                        bubbleChoice.append((bubble, color))
-                        if let indexToRemove = bubbles.firstIndex(of: bubble) {
-//                            // create a delay before removing
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-//                                bubbles.remove(at: indexToRemove)
-//                            }
-                            bubbles.remove(at: indexToRemove)
+                // bubbles for the status
+                HStack {
+                    ForEach(bubbleChoice.indices, id: \.self) { i in
+                        let (bubble, _) = bubbleChoice[i]
+                        let color = colors[bubble] ?? .black
+                        Button(action: {
+                            // Remove from status
+                            bubbleChoice.remove(at: i)
+                            // Add back to bottom row
+                            bubbles.append(bubble)
+                        }) {
+                            Text(bubble)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 5)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .foregroundColor(color)
+                                )
+                                .font(.callout)
                         }
                     }
+                } // end of HStack
+                            
+                TextField("What are you up to today?", text: $statusField)
+                    .padding(.top)
+                    .padding(.bottom, 25)
+                
+                
+                // bubbles at the bottom row
+                HStack {
+                    ForEach(bubbles.indices, id: \.self) { i in
+                        let bubble = bubbles[i]
+                        let color = colors[bubble] ?? .black
+                        Button(action: {
+                            // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
+                            if bubbleChoice.contains(where: { $0.0 == bubble }) {
+                                bubbleChoice.removeAll(where: { $0.0 == bubble })
+                            }
+                            else {
+                                bubbleChoice.append((bubble, color))
+                                if let indexToRemove = bubbles.firstIndex(of: bubble) {
+        //                            // create a delay before removing
+        //                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+        //                                bubbles.remove(at: indexToRemove)
+        //                            }
+                                    bubbles.remove(at: indexToRemove)
+                                }
+                            }
+                        }) {
+                            Text(bubble)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 5)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .foregroundColor(color)
+                                )
+                                .font(.callout)
+                        }
+                    }
+                } // end of HStack
+                
+                
+            } // end of vstack
+            .padding()
+            .background(Color.white)
+            .cornerRadius(10)
+            .shadow(radius: 2)
+            // adjust this for pushing up or down the status box
+            .padding(.bottom, 350)
+            
+            
+            
+            
+            VStack {
+                // need to implement post button somewhere in this area
+                // [maybe big for easy, towards bottom half of screen]
+                Button(action: {
+                    print("Circle button")
                 }) {
-                    Text(bubble)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 5)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .foregroundColor(color)
+                    Circle()
+                        .foregroundStyle(Color.blue)
+                        .frame(width: 100, height: 100)
+                        .overlay(
+                            Text("Check-In")
+                                .foregroundStyle(Color.white)
                         )
-                        .font(.callout)
                 }
             }
-        }
-
+            // adjust this for the button position
+            .padding(.top, 450)
+            
+        } // end of zstack
         
-        Spacer()
-        
-        // need to implement post button somewhere in this area
-        // [maybe big for easy, towards bottom half of screen]
-    }
+    } // end of var body
     
-}
+} // end of structure declaration
 
 #Preview {
     CheckinView()
