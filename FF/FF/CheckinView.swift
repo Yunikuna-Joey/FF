@@ -21,6 +21,14 @@ struct CheckinView: View {
         "Upper": .green,
         "Lower": .blue
     ]
+    // Checkin menu option here [recent]
+    @State private var selectedOption: String = "Select an option here"
+    // This will dynamically hold the locations based on user location
+    let options = [
+        "Option 1",
+        "Option 2",
+        "Option 3"
+    ]
     
     let username = "Testing User"
     
@@ -66,46 +74,25 @@ struct CheckinView: View {
                         }
                     }
                 } // end of HStack
-                            
+                
+                // User enters their status
                 TextField("What are you up to today?", text: $statusField)
                     .padding(.top)
                     .padding(.bottom, 25)
+                    
                 
-                
-                // bubbles at the bottom row
+                // Checkin Field option.... need to determine what UI element to use [recent]
                 HStack {
-                    ForEach(bubbles.indices, id: \.self) { i in
-                        let bubble = bubbles[i]
-                        let color = colors[bubble] ?? .black
-                        Button(action: {
-                            // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
-                            if bubbleChoice.contains(where: { $0.0 == bubble }) {
-                                bubbleChoice.removeAll(where: { $0.0 == bubble })
-                            }
-                            else {
-                                bubbleChoice.append((bubble, color))
-                                if let indexToRemove = bubbles.firstIndex(of: bubble) {
-        //                            // create a delay before removing
-        //                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-        //                                bubbles.remove(at: indexToRemove)
-        //                            }
-                                    bubbles.remove(at: indexToRemove)
-                                }
-                            }
-                        }) {
-                            Text(bubble)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 5)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .foregroundColor(color)
-                                )
-                                .font(.callout)
+                    Text("Select your option")
+                    Spacer()
+                    Picker(selection: $selectedOption, label: Text("Choose your option")) {
+                        ForEach(options, id: \.self) { option in
+                            Text(option)
                         }
                     }
-                } // end of HStack
-                
+                    .pickerStyle(MenuPickerStyle())
+                    
+                } // end of hstack
                 
             } // end of vstack
             .padding()
@@ -114,6 +101,41 @@ struct CheckinView: View {
             .shadow(radius: 2)
             // adjust this for pushing up or down the status box
             .padding(.bottom, 350)
+            
+            // bubbles at the bottom row
+            HStack {
+                ForEach(bubbles.indices, id: \.self) { i in
+                    let bubble = bubbles[i]
+                    let color = colors[bubble] ?? .black
+                    Button(action: {
+                        // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
+                        if bubbleChoice.contains(where: { $0.0 == bubble }) {
+                            bubbleChoice.removeAll(where: { $0.0 == bubble })
+                        }
+                        else {
+                            bubbleChoice.append((bubble, color))
+                            if let indexToRemove = bubbles.firstIndex(of: bubble) {
+    //                            // create a delay before removing
+    //                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+    //                                bubbles.remove(at: indexToRemove)
+    //                            }
+                                bubbles.remove(at: indexToRemove)
+                            }
+                        }
+                    }) {
+                        Text(bubble)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .foregroundColor(color)
+                            )
+                            .font(.callout)
+                    }
+                }
+            } // end of HStack
+            .padding(.bottom, 100)
             
             
             
