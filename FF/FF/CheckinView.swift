@@ -112,6 +112,9 @@ struct CheckinView: View {
 
         
         Spacer()
+        
+        // need to implement post button somewhere in this area
+        // [maybe big for easy, towards bottom half of screen]
     }
     
 }
