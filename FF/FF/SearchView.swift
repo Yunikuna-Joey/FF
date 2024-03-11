@@ -9,7 +9,7 @@ import SwiftUI
 struct SearchView: View {
     // hold some image arary... likely just some random users
     let imageArray = ["Car", "car2", "terrifiednootnoot"]
-    let itemSize: CGFloat = 100
+    let itemSize: CGFloat = (UIScreen.main.bounds.width - 40 - 20) / 3 - 10
     
     @State private var searchText: String = ""
     
@@ -39,7 +39,7 @@ struct SearchView: View {
                 .padding(.horizontal)
                 .padding(.bottom)
                 .frame(maxWidth: 500 ) // Set maximum width
-        }
+        } // end of ZStack
     }
 }
 
