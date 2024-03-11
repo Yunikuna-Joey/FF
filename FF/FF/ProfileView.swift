@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ProfileView: View {
     // need to implement scroll view
-    
+    let username = "abcdefghi"
     var body: some View {
         ZStack {
             // Cover photo background
@@ -19,8 +19,9 @@ struct ProfileView: View {
                 .frame(height: 200)
                 .clipped()
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .center) {
                 Spacer()
+                
                 // Profile image overlaid on the bottom half of the cover photo
                 Image("car2")
                     .resizable()
@@ -28,6 +29,10 @@ struct ProfileView: View {
                     .foregroundColor(.blue)
                     .clipShape(Circle())
                     .offset(y: 75) // Offset the profile image downwards
+                
+                Text("@\(username)")
+                    .offset(y: 95)
+                    .font(.headline)
                 
             }
             .frame(maxWidth: .infinity)
