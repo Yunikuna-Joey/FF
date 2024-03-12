@@ -19,6 +19,9 @@
 		D4E4FAD42B9A8E8B00F5C202 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD32B9A8E8B00F5C202 /* MessageView.swift */; };
 		D4E4FAD62B9A8ECB00F5C202 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */; };
 		D4E4FAD82B9A9FC200F5C202 /* RegisterView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD72B9A9FC200F5C202 /* RegisterView2.swift */; };
+		D4E4FADA2B9FD47800F5C202 /* ProfileView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */; };
+		D4E4FADC2B9FD8DE00F5C202 /* ProfileView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */; };
+		D4E4FADE2B9FD8E900F5C202 /* ProfileView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +38,9 @@
 		D4E4FAD32B9A8E8B00F5C202 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		D4E4FAD72B9A9FC200F5C202 /* RegisterView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView2.swift; sourceTree = "<group>"; };
+		D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView1.swift; sourceTree = "<group>"; };
+		D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView2.swift; sourceTree = "<group>"; };
+		D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView3.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +83,9 @@
 				D4E4FAD12B9A8E7A00F5C202 /* CheckinView.swift */,
 				D4E4FAD32B9A8E8B00F5C202 /* MessageView.swift */,
 				D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */,
+				D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */,
+				D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */,
+				D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */,
 				D4E4FABF2B99C19800F5C202 /* Assets.xcassets */,
 				D4E4FAC12B99C19800F5C202 /* Preview Content */,
 			);
@@ -165,9 +174,12 @@
 				D4E4FACA2B99C1AD00F5C202 /* LoginView.swift in Sources */,
 				D4E4FAD62B9A8ECB00F5C202 /* ProfileView.swift in Sources */,
 				D4E4FACC2B9A7BF700F5C202 /* RegisterView.swift in Sources */,
+				D4E4FADA2B9FD47800F5C202 /* ProfileView1.swift in Sources */,
 				D4E4FABE2B99C19600F5C202 /* ContentView.swift in Sources */,
 				D4E4FACE2B9A8A3F00F5C202 /* HomeView.swift in Sources */,
+				D4E4FADC2B9FD8DE00F5C202 /* ProfileView2.swift in Sources */,
 				D4E4FAD42B9A8E8B00F5C202 /* MessageView.swift in Sources */,
+				D4E4FADE2B9FD8E900F5C202 /* ProfileView3.swift in Sources */,
 				D4E4FAD02B9A8E6E00F5C202 /* SearchView.swift in Sources */,
 				D4E4FABC2B99C19600F5C202 /* FFApp.swift in Sources */,
 				D4E4FAD22B9A8E7A00F5C202 /* CheckinView.swift in Sources */,

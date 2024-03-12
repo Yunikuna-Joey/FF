@@ -7,9 +7,18 @@
 import SwiftUI
 
 struct ProfileView: View {
-    // need to implement scroll view
+    @State private var currentTab: Tab = .status
+    
+    enum Tab {
+        case status
+        case images
+        case other
+    }
+    
     let username = "abcdefghi"
     let value1 = 15
+    
+    
     
     var body: some View {
         ZStack {
@@ -38,11 +47,13 @@ struct ProfileView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 200)
             
+            Spacer()
+            
             
             VStack {
                 Spacer().frame(height: 40)
                 Text("@\(username)")
-                    .offset(y: 200)
+                
                     .font(.headline)
                     .padding()
                 
@@ -51,11 +62,11 @@ struct ProfileView: View {
                 HStack {
                     VStack {
                         Text("Check-ins")
-                            .offset(y: 200)
+                            
                             .font(.headline)
                         
                         Text("\(value1)")
-                            .offset(y: 200)
+                            
                             .font(.headline)
                     }
                     
@@ -63,11 +74,11 @@ struct ProfileView: View {
                     
                     VStack {
                         Text("Follower")
-                            .offset(y: 200)
+                            
                             .font(.headline)
                         
                         Text("\(value1)")
-                            .offset(y: 200)
+                            
                             .font(.headline)
                     }
                     
@@ -75,20 +86,59 @@ struct ProfileView: View {
                     
                     VStack {
                         Text("Following")
-                            .offset(y: 200)
+                            
                             .font(.headline)
                         
                         Text("\(value1)")
-                            .offset(y: 200)
+                            
                             .font(.headline)
                     }
                     
-                } // end of hstack
-            } // end of vstack
+                } // end of hstack for statistics
+                
+            } // end of vstack for username and statistics
+            .offset(y: 200)
+            
+            
+            
+            HStack {
+                Button(action: {
+                    currentTab = .status
+                }) {
+                    Image(systemName: "person.fill")
+                        .padding()
+                }
+                
+                Button(action: {
+                    currentTab = .images
+                }) {
+                    Image(systemName: "chart.bar.fill")
+                        .padding()
+                }
+                
+                Button(action: {
+                    currentTab = .other
+                }) {
+                    Image(systemName: "photo.fill")
+                        .padding()
+                }
+                
+                
+            } // end of hstack for the icons
+            .foregroundColor(.blue)
+            .padding(.bottom, 20)
+
+            switch currentTab  {
+            case .status:
+                ProfileView1()
+            case .images:
+                ProfileView2()
+            case .other:
+                ProfileView3()
+            }
             
             
         } // end of ZStack
-        Spacer()
     }
 }
 
