@@ -10,6 +10,10 @@ struct ProfileView: View {
     // Constants
     @State private var current: Tab = .status
     
+    func currSelection(_ tab:Tab) -> Bool {
+        return current == tab
+    }
+    
     enum Tab {
         case status
         case images
@@ -73,13 +77,21 @@ struct ProfileView: View {
                 }
                 .offset(y: -screenHeight * 0.1)
                 
+                
                 // icons for different views
-                HStack {
+                HStack(spacing: screenWidth * 0.25) {
                     Button(action: {
                         current = .status
                     }) {
                         Image(systemName: "person.fill")
                             .padding()
+                            .foregroundStyle(Color.blue)
+                            .overlay(
+                                Rectangle()
+                                    .frame(height: 2)
+                                    .offset(y: 20)
+                                    .foregroundStyle(currSelection(.status) ? .blue : .clear)
+                            )
                     }
                     
                     Button(action: {
@@ -87,6 +99,13 @@ struct ProfileView: View {
                     }) {
                         Image(systemName: "chart.bar.fill")
                             .padding()
+                            .foregroundStyle(Color.blue)
+                            .overlay(
+                                Rectangle()
+                                    .frame(height: 2)
+                                    .offset(y: 20)
+                                    .foregroundStyle(currSelection(.images) ? .blue : .clear)
+                            )
                     }
                     
                     Button(action: {
@@ -94,12 +113,19 @@ struct ProfileView: View {
                     }) {
                         Image(systemName: "photo.fill")
                             .padding()
+                            .foregroundStyle(Color.blue)
+                            .overlay(
+                                Rectangle()
+                                    .frame(height: 2)
+                                    .offset(y: 20)
+                                    .foregroundStyle(currSelection(.others) ? .blue : .clear)
+                            )
                     }
                     
                     
                 } // end of hstack for the icons
                 .foregroundColor(.blue)
-                .padding(.bottom, 20)
+                .offset(y: -screenHeight * 0.1)
                 
                 // logic for switching different views
                 switch current {

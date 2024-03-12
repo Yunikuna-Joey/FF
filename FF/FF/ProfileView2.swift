@@ -2,7 +2,6 @@
 //  ProfileView2.swift
 //  FF
 //
-//  Created by Joey Truong on 3/11/24.
 //
 
 import SwiftUI
