@@ -97,7 +97,7 @@ struct ProfileView: View {
                     Button(action: {
                         current = .images
                     }) {
-                        Image(systemName: "chart.bar.fill")
+                        Image(systemName: "photo.fill")
                             .padding()
                             .foregroundStyle(Color.blue)
                             .overlay(
@@ -111,7 +111,7 @@ struct ProfileView: View {
                     Button(action: {
                         current = .others
                     }) {
-                        Image(systemName: "photo.fill")
+                        Image(systemName: "calendar")
                             .padding()
                             .foregroundStyle(Color.blue)
                             .overlay(
@@ -140,7 +140,7 @@ struct ProfileView: View {
                 }
                 .offset(y: -screenHeight * 0.1)
                 .padding(.horizontal, 5)
-                .frame(minHeight: screenHeight * 0.45)
+                .frame(minHeight: screenHeight * 0.45) // ensure that all content will be shown and not stuck under the safe area
                     
                 
             } // end of VStack
