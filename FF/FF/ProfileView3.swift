@@ -11,14 +11,20 @@ struct CalendarDayView: View {
     let selection: Bool
     let isToday: Bool
     
+    // void == indication of no action
+    let action: () -> Void
+    
     var body: some View {
         if day > 0 {
-            Text("\(day)")
-                .frame(width: 30, height: 30)
-                .background(selection ? Color.blue : (isToday ? Color.yellow : Color.clear))
-                .clipShape(Circle())
-                .foregroundColor(selection ? .white : (isToday ? .black : .primary))
+            Button(action: action) {
+                Text("\(day)")
+                    .frame(width: 30, height: 30)
+                    .background(selection ? Color.blue : (isToday ? Color.yellow : Color.clear))
+                    .clipShape(Circle())
+                    .foregroundColor(selection ? .white : (isToday ? .black : .primary))
+            }
         }
+        // empty days
         else {
             Text("")
                 .frame(width: 30, height: 30)
@@ -29,8 +35,11 @@ struct CalendarDayView: View {
 }
 
 struct ProfileView3: View {
-    let total = 31
+    // keep track of which day is currently selected
+    @State private var currSelect: Int?
+    
     // [hardcoded for March,,, revise]
+    let total = 31
     let start = 5
     let today = Calendar.current.component(.day, from: Date())
     
@@ -53,16 +62,23 @@ struct ProfileView3: View {
             LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
                 // gets us the empty days of the month
                 ForEach(empty, id: \.self) { _ in
-                   CalendarDayView(day: 0, selection: false, isToday: false)
+                    CalendarDayView(day: 0, selection: false, isToday: false, action: {
+                        print("Tapped on empty day")
+                    })
                 }
                 // gets all of the days and marks which one is 'today'
                 ForEach(monthDays, id: \.self) { day in
                     let isToday = day == today
-                    CalendarDayView(day: day, selection: false, isToday: isToday)
+                    CalendarDayView(day: day, selection: currSelect == day, isToday: isToday, action: {
+                        // when the day is pressed, it should display the workouts that were done that day
+                        print("Tapped on this day \(day)")
+                        currSelect = day
+                    })
                 }
            }
         }
-        
+        .padding()
+        Spacer()
     }
 }
 
