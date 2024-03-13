@@ -10,11 +10,18 @@ struct CalendarDayView: View {
     let day: Int
     
     var body: some View {
-        Text("\(day)")
-            .frame(width: 30, height: 30)
-            .background(Color.clear)
-            .clipShape(Circle())
-            .foregroundStyle(.primary)
+        if day > 0 {
+            Text("\(day)")
+                .frame(width: 30, height: 30)
+                .background(Color.clear)
+                .clipShape(Circle())
+                .foregroundStyle(.primary)
+        }
+        else {
+            Text("")
+                .frame(width: 30, height: 30)
+                .background(Color.clear)
+        }
     }
 
 }
