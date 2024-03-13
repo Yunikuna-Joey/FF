@@ -20,7 +20,7 @@ struct ProfileView: View {
         case others
     }
     
-    let username = "name here"
+    let username = "Womp Womp"
     let value1 = 25
     
     var body: some View {
@@ -127,15 +127,21 @@ struct ProfileView: View {
                 .foregroundColor(.blue)
                 .offset(y: -screenHeight * 0.1)
                 
-                // logic for switching different views
-                switch current {
-                case .status:
-                    ProfileView1()
-                case .images:
-                    ProfileView2()
-                case .others:
-                    ProfileView3()
+                VStack {
+                    // logic for switching different views
+                    switch current {
+                    case .status:
+                        ProfileView1()
+                    case .images:
+                        ProfileView2()
+                    case .others:
+                        ProfileView3()
+                    }
                 }
+                .offset(y: -screenHeight * 0.1)
+                .padding(.horizontal, 5)
+                .frame(minHeight: screenHeight * 0.45)
+                    
                 
             } // end of VStack
             .offset(y: -screenHeight * 0.1)
