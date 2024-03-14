@@ -139,57 +139,57 @@ struct ProfileView3: View {
         let empty = Array(1..<startDay)
         let monthDays = Array(1...daysInMonth)
         
-        VStack {
-            // Add in the dynamic month
-            Text(currMonthName)
-                .font(.title)
-                .padding(.top, 100)
-            
-            // Mon - Sun
-            LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
-                // gets the days of the week
-                ForEach(1...7, id: \.self) { day in
-                    Text(DateFormatter().veryShortWeekdaySymbols[day % 7])
-                        .frame(width: 30, height: 30)
-                        .background(Color.clear)
-                        .foregroundColor(.primary)
-                }
-            }
-            // Builds the empty days and the actual days of the month
-            LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
-                // gets us the empty days of the month
-                ForEach(empty, id: \.self) { _ in
-                    CalendarDayView(day: 0, selection: false, isToday: false, action: {
-                        print("Tapped on empty day")
-                        currStatus = nil
-                    })
-                }
-                // gets all of the days and marks which one is 'today'
-                ForEach(monthDays, id: \.self) { day in
-                    let isToday = day == today
-                    CalendarDayView(day: day, selection: currSelect == day, isToday: isToday, action: {
-                        // when the day is pressed, it should display the workouts that were done that day
-                        print("Tapped on this day \(day)")
-                        currSelect = day
-                        currStatus = StatusView(username: "User", timeAgo: "Now", status: "Status for day \(day)")
-                    })
-                }
-                
-            }
-        }
-        .padding()
-        Spacer()
-        
-        // display status here
         ScrollView {
+            VStack {
+                // Add in the dynamic month
+                Text(currMonthName)
+                    .font(.title)
+                
+                // Mon - Sun
+                LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
+                    // gets the days of the week
+                    ForEach(1...7, id: \.self) { day in
+                        Text(DateFormatter().veryShortWeekdaySymbols[day % 7])
+                            .frame(width: 30, height: 30)
+                            .background(Color.clear)
+                            .foregroundColor(.primary)
+                    }
+                }
+                // Builds the empty days and the actual days of the month
+                LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
+                    // gets us the empty days of the month
+                    ForEach(empty, id: \.self) { _ in
+                        CalendarDayView(day: 0, selection: false, isToday: false, action: {
+                            print("Tapped on empty day")
+                            currStatus = nil
+                        })
+                    }
+                    // gets all of the days and marks which one is 'today'
+                    ForEach(monthDays, id: \.self) { day in
+                        let isToday = day == today
+                        CalendarDayView(day: day, selection: currSelect == day, isToday: isToday, action: {
+                            // when the day is pressed, it should display the workouts that were done that day
+                            print("Tapped on this day \(day)")
+                            currSelect = day
+                            currStatus = StatusView(username: "User", timeAgo: "Now", status: "Status for day \(day)")
+                        })
+                    }
+                    
+                }
+            }
+            .padding()
+            Spacer()
+            
+            // display status here
             if let status = currStatus {
                 status
             }
-        }
-        .frame(height: 150)
-        .padding(.horizontal, 5)
-        .padding(.vertical, 5)
-        
+            else {
+                Color.clear.frame(height: 150)
+            }
+            
+        } // scrollview
+       
         
         
     } // end of body
