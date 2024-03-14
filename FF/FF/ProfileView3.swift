@@ -149,7 +149,7 @@ struct ProfileView3: View {
             LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
                 // gets the days of the week
                 ForEach(1...7, id: \.self) { day in
-                    Text(DateFormatter().shortWeekdaySymbols[day % 7])
+                    Text(DateFormatter().veryShortWeekdaySymbols[day % 7])
                         .frame(width: 30, height: 30)
                         .background(Color.clear)
                         .foregroundColor(.primary)
@@ -189,10 +189,11 @@ struct ProfileView3: View {
         .frame(height: 150)
         .padding(.horizontal, 5)
         .padding(.vertical, 5)
-    
         
-    }
-}
+        
+        
+    } // end of body
+} // end of struct
 
 #Preview {
     ProfileView3()
