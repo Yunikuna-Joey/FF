@@ -31,12 +31,88 @@ struct CalendarDayView: View {
                 .background(Color.clear)
         }
     }
+}
 
+struct StatusView: View {
+    // immutatable for each specific user
+    let username: String
+    let timeAgo: String
+    let status: String
+    
+    
+    var body: some View {
+        // what each individual update is going to follow [stacked bottom to top]
+        VStack(alignment: .leading, spacing: 10) {
+            // stacked left to right
+            HStack(spacing: 10) {
+                // profile image on the left
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.blue)
+                
+                // username text next to image
+                Text(username)
+                    .font(.headline)
+                
+                // space between
+                Spacer()
+                
+                // time that message was 'created'
+                Text(timeAgo)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            HStack {
+                Text("Bubble 1")
+                    .foregroundStyle(Color.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                    )
+                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
+                    .font(.callout)
+                
+                Text("Bubble 2")
+                    .foregroundStyle(Color.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                    )
+                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
+                    .font(.callout)
+                
+                Text("Bubble 3")
+                    .foregroundStyle(Color.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                    )
+                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
+                    .font(.callout)
+            }
+            
+
+            // below the left => right will be the actual status
+            Text(status)
+                .font(.body)
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 2)
+    }
 }
 
 struct ProfileView3: View {
     // keep track of which day is currently selected
     @State private var currSelect: Int?
+    // keep track of which status will be displayed
+    @State private var currStatus: StatusView?
+
     
     // [hardcoded for March,,, revise]
     let total = 31
@@ -64,6 +140,7 @@ struct ProfileView3: View {
                 ForEach(empty, id: \.self) { _ in
                     CalendarDayView(day: 0, selection: false, isToday: false, action: {
                         print("Tapped on empty day")
+                        currStatus = nil
                     })
                 }
                 // gets all of the days and marks which one is 'today'
@@ -73,12 +150,31 @@ struct ProfileView3: View {
                         // when the day is pressed, it should display the workouts that were done that day
                         print("Tapped on this day \(day)")
                         currSelect = day
+                        currStatus = StatusView(username: "User", timeAgo: "Now", status: "Status for day \(day)")
                     })
                 }
-           }
+                
+            }
         }
         .padding()
         Spacer()
+        
+        // display status here
+        ScrollView {
+            if let status = currStatus {
+                status
+            }
+        }
+        .frame(height: 150)
+        .padding(.horizontal, 5)
+        .padding(.vertical, 5)
+        
+
+        
+//        if let status = currStatus {
+//            status
+//        }
+        
     }
 }
 
