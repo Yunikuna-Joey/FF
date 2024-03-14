@@ -183,7 +183,8 @@ struct ProfileView3: View {
             // display status here
             if let status = currStatus {
                 status
-                    .offset(y: -15)
+                    .padding()
+                
             }
             else {
                 Color.clear.frame(height: 150)
