@@ -115,6 +115,21 @@ struct ProfileView3: View {
 
     
     // [hardcoded for March,,, revise]
+    let monthData: [String: [Int]] =  [                     // Month Name: # of days in month
+        "January": Array(1...31),
+        "February": Array(1...28),                           // modify for leap years, every 4 == 29 days else 28
+        "March": Array(1...31),
+        "April": Array(1...30),
+        "May": Array(1...31),
+        "June": Array(1...30),
+        "July": Array(1...31),
+        "August": Array(1...31),
+        "September": Array(1...30),
+        "October": Array(1...31),
+        "November": Array(1...30),
+        "December": Array(1...31)
+    ]
+    
     let total = 31
     let start = 5
     let today = Calendar.current.component(.day, from: Date())
@@ -168,12 +183,7 @@ struct ProfileView3: View {
         .frame(height: 150)
         .padding(.horizontal, 5)
         .padding(.vertical, 5)
-        
-
-        
-//        if let status = currStatus {
-//            status
-//        }
+    
         
     }
 }
