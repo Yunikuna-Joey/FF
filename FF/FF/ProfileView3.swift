@@ -114,7 +114,7 @@ struct ProfileView3: View {
     @State private var currStatus: StatusView?
 
     
-    // [hardcoded for March,,, revise]
+    // Hashmap for months and days
     let monthData: [String: [Int]] =  [                     // Month Name: # of days in month
         "January": Array(1...31),
         "February": Array(1...28),                           // modify for leap years, every 4 == 29 days else 28
@@ -130,16 +130,22 @@ struct ProfileView3: View {
         "December": Array(1...31)
     ]
     
-    let total = 31
-    let start = 5
+    let currMonthName = DateFormatter().monthSymbols[Calendar.current.component(.month, from: Date()) - 1]
     let today = Calendar.current.component(.day, from: Date())
+    let daysInMonth = Calendar.current.range(of: .day, in: .month, for: Date())!.count
+    let startDay = Calendar.current.component(.weekday, from: Date())
     
     var body: some View {
-        // [entire portion hardcoded,,, revise]
-        let empty = Array(1..<start)
-        let monthDays = Array(1...total)
+        let empty = Array(1..<startDay)
+        let monthDays = Array(1...daysInMonth)
         
         VStack {
+            // Add in the dynamic month
+            Text(currMonthName)
+                .font(.title)
+                .padding(.top, 100)
+            
+            // Mon - Sun
             LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
                 // gets the days of the week
                 ForEach(1...7, id: \.self) { day in
@@ -149,7 +155,7 @@ struct ProfileView3: View {
                         .foregroundColor(.primary)
                 }
             }
-
+            // Builds the empty days and the actual days of the month
             LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
                 // gets us the empty days of the month
                 ForEach(empty, id: \.self) { _ in
