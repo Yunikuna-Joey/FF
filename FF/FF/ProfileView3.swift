@@ -112,7 +112,8 @@ struct ProfileView3: View {
     @State private var currSelect: Int?
     // keep track of which status will be displayed
     @State private var currStatus: StatusView?
-
+    // toggle the month
+    @State private var selectedMonth: String = DateFormatter().monthSymbols[Calendar.current.component(.month, from: Date()) - 1]
     
     // Hashmap for months and days
     let monthData: [String: [Int]] =  [                     // Month Name: # of days in month
@@ -142,8 +143,19 @@ struct ProfileView3: View {
         ScrollView {
             VStack {
                 // Add in the dynamic month
-                Text(currMonthName)
-                    .font(.title)
+                HStack {
+                    Text(currMonthName)
+                        .font(.title)
+                    Menu {
+                        Picker(selection: $selectedMonth, label: Text("Choose your option")) {
+                            ForEach(Array(monthData.keys), id: \.self) { month in
+                                Text(month)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                    }
+                }
                 
                 // Mon - Sun
                 LazyVGrid(columns: Array(repeating: GridItem(), count: 7)) {
