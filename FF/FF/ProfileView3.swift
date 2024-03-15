@@ -131,6 +131,21 @@ struct ProfileView3: View {
         "December": Array(1...31)
     ]
     
+    let monthNum: [Int: String] = [
+        1: "January",
+        2: "February",
+        3: "March",
+        4: "April",
+        5: "May",
+        6: "June",
+        7: "July",
+        8: "August",
+        9: "September",
+        10: "October",
+        11: "November",
+        12: "December"
+    ]
+    
     let currMonthName = DateFormatter().monthSymbols[Calendar.current.component(.month, from: Date()) - 1]
     let today = Calendar.current.component(.day, from: Date())
     let daysInMonth = Calendar.current.range(of: .day, in: .month, for: Date())!.count
@@ -148,8 +163,10 @@ struct ProfileView3: View {
                         .font(.title)
                     Menu {
                         Picker(selection: $selectedMonth, label: Text("Choose your option")) {
-                            ForEach(Array(monthData.keys), id: \.self) { month in
-                                Text(month)
+                            ForEach(Array(monthNum.keys.sorted()), id: \.self) { monthKey in
+                                if let month = monthNum[monthKey] {
+                                    Text(month)
+                                }
                             }
                         }
                     } label: {
