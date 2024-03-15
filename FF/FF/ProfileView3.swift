@@ -146,10 +146,12 @@ struct ProfileView3: View {
         "December"
     ]
     
-    let currMonthName = DateFormatter().monthSymbols[Calendar.current.component(.month, from: Date()) - 1]
-    let today = Calendar.current.component(.day, from: Date())
-    let daysInMonth = Calendar.current.range(of: .day, in: .month, for: Date())!.count
-    let startDay = Calendar.current.component(.weekday, from: Date())
+    @State private var currMonthName = DateFormatter().monthSymbols[Calendar.current.component(.month, from: Date()) - 1]
+    @State private var today = Calendar.current.component(.day, from: Date())
+    @State private var daysInMonth = Calendar.current.range(of: .day, in: .month, for: Date())!.count
+    @State private var startDay = Calendar.current.component(.weekday, from: Date())
+    @State private var empty: [Int] = []
+    @State private var monthDays: [Int] = []
     
     var body: some View {
         let empty = Array(1..<startDay)
@@ -165,10 +167,14 @@ struct ProfileView3: View {
                         Picker(selection: $selectedMonth, label: Text("Choose your option")) {
                             ForEach(monthOrder, id: \.self) { month in
                                 Text(month)
+                                    .tag(month)
                             }
                         }
                     } label: {
                         Image(systemName: "chevron.down")
+                    }
+                    .onChange(of: selectedMonth) { _, newValue in
+                        updateCalendar(newValue)
                     }
                 }
                 
@@ -220,8 +226,18 @@ struct ProfileView3: View {
         } // scrollview
        
         
-        
     } // end of body
+    private func updateCalendar(_ month: String) {
+        if let days = monthData[month],
+           let date = Calendar.current.date(from: DateComponents(year: Calendar.current.component(.year, from: Date()), month: monthOrder.firstIndex(of: month)! + 1, day: 1)) {
+            
+            startDay = Calendar.current.component(.weekday, from: date)
+            currMonthName = month
+            daysInMonth = days.count
+            empty = Array(1..<startDay)
+            monthDays = Array(1...days.count)
+        }
+    }
 } // end of struct
 
 #Preview {
