@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+import Firebase
 
 @main
 struct FFApp: App {
     @StateObject var viewModel = AuthView()
+    
+    // configure firebase within our app
+    init() {
+        FirebaseApp.configure()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
