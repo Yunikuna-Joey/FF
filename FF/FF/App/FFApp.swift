@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct FFApp: App {
+    @StateObject var viewModel = AuthView()
     var body: some Scene {
         WindowGroup {
             ContentView()
+                // create an environment object for the 
+                .environmentObject(viewModel)
         }
     }
 }

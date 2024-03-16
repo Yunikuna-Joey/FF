@@ -9,9 +9,10 @@ import SwiftUI
 
 struct LoginView: View {
     var message: String
+    @EnvironmentObject var viewModel: AuthView
     
     // @state is for variables within one specfic view
-    @State private var username: String = ""
+    @State private var email: String = ""
     @State private var password: String = ""
     
     // This is to keep track of user status,,, either logged in or not
@@ -23,7 +24,7 @@ struct LoginView: View {
     
     func loginLogic(username: String, password: String) {
         // correct case
-        if username.lowercased() == "123" && password == "123" {
+        if email.lowercased() == "123" && password == "123" {
             self.status = true
         }
         
@@ -38,7 +39,7 @@ struct LoginView: View {
         NavigationStack {
             VStack {
                 // $variable_name binds the view to the variable when a user interacts with it
-                TextField("Username", text: $username)
+                TextField("Username", text: $email)
                     // padding is to provide space around an UI element
                     .padding()
                     .background(Color.gray.opacity(0.33))
@@ -77,7 +78,13 @@ struct LoginView: View {
                     
                     // Login logic here
                     Button(action: {
-                        loginLogic(username: username, password: password)
+                        // old logic here
+//                        loginLogic(username: email, password: password)
+                        
+                        // new logic here
+                        Task {
+                            try await viewModel.signIn(withEmail: email, password: password)
+                        }
                     }) {
                         Text("Login")
                             // text color

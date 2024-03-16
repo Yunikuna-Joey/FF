@@ -94,3 +94,5 @@ iOSInjectionProject/
 *.jpg
 *.png
 FF/FF/TestView.swift
+FF/GoogleService-Info.plist
+FF/FF.xcodeproj/project.pbxproj

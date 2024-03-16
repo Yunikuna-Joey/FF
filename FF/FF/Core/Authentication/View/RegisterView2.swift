@@ -18,6 +18,7 @@ struct RegisterView2: View {
     @State private var error3: Bool = false
     
     @State private var message: String = ""
+    @EnvironmentObject var viewModel: AuthView
     
     var body: some View {
         NavigationStack {
@@ -86,6 +87,10 @@ struct RegisterView2: View {
                         self.status = true
                         
                         self.message = "Sign in to get started!"
+                        Task {
+                            // edit here
+                            try await viewModel.createUser(withEmail: email, password: password, fullname: )
+                        }
                     }
                     
                 }) {

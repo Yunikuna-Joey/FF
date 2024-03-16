@@ -13,6 +13,7 @@ struct RegisterView: View {
     @State private var email: String = ""
     @State private var error: Bool = false
     @State private var cont: Bool = false
+    @EnvironmentObject var viewModel: AuthView
     
     var body: some View {
         NavigationStack {
