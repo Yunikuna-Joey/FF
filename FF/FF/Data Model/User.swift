@@ -7,7 +7,7 @@
 import Foundation
 
 // User Data Model
-struct User: Identifiable, Codable {
+struct User: Identifiable, Codable {            // codable turns JSON => data model object
     let id: String
     let username: String
     let firstName: String

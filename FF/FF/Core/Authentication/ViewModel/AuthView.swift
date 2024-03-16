@@ -16,7 +16,13 @@ class AuthView: ObservableObject {
     
     // check for a current user [behavior: keeps user signed in when exiting the app]
     init() {
+        // Attempting to maintain current user from previous session
         self.userSession = Auth.auth().currentUser
+        
+        // attempt to grab user data when the app is open
+        Task {
+            await fetchUser()
+        }
     }
     
     func signIn(withEmail email: String, password: String) async throws {
@@ -37,6 +43,8 @@ class AuthView: ObservableObject {
             
             // upload data to firestore on this line
             try await Firestore.firestore().collection("users").document(user.id).setData(encodedUser)
+            
+            await fetchUser()
         }
         catch {
             print("[DEBUG]: Failed to create user with error \(error.localizedDescription)")
@@ -44,6 +52,18 @@ class AuthView: ObservableObject {
     }
     
     func signOut() {
+        do {
+            // sign out user on the backend
+            try Auth.auth().signOut()
+            // clears user session in presentation view
+            self.userSession = nil
+            // clears current user in presentation view [removes old data / previous data from previous current user]
+            self.currentSession = nil
+        }
+        catch {
+            print("[DEBUG]: Failed to sign out with error \(error.localizedDescription)")
+        }
+        
         print("sign-out function")
     }
     
@@ -54,6 +74,12 @@ class AuthView: ObservableObject {
     func fetchUser() async  {
         print("Fetch-user function")
         guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        guard let snapshot = try? await Firestore.firestore().collection("users").document(uid).getDocument() else { return }
+        self.currentSession = try? snapshot.data(as: User.self)
+        
+        print("[DEBUG]: User session is \(self.userSession)")
+        print("[DEBUG]: Current User is \(self.currentSession)")
     }
 }
 

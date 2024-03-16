@@ -110,8 +110,11 @@ struct RegisterView: View {
                     Task {
                         // edit here
                         do {
-                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
-                            success = true
+                            if !firstName.isEmpty && !lastName.isEmpty && !email.isEmpty && !username.isEmpty && !password.isEmpty && !confirmation.isEmpty {
+                                
+                                try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
+                                success = true
+                            }
                         }
                         catch {
                             registrationError = "Registration Failed: \(error.localizedDescription)"
