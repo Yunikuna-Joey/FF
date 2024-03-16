@@ -38,7 +38,7 @@ struct LoginView: View {
         NavigationStack {
             VStack {
                 // $variable_name binds the view to the variable when a user interacts with it
-                TextField("Username", text: $email)
+                TextField("Email", text: $email)
                     // padding is to provide space around an UI element
                     .padding()
                     .background(Color.gray.opacity(0.33))

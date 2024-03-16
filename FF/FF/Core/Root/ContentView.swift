@@ -6,6 +6,7 @@
 
 import SwiftUI
 
+// Live Preview is not working on this ContentView [need to run simulator for testing]
 struct ContentView: View {
     @EnvironmentObject var viewModel: AuthView
     

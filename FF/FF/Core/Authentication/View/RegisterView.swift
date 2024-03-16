@@ -21,6 +21,10 @@ struct RegisterView: View {
     @State private var emailError: String?
     @State private var passwordError: String?
     @State private var confirmationError: String?
+    
+    // Redirection variable
+    @State private var success = false
+    @State private var registrationError: String?
 
     var body: some View {
         NavigationStack {
@@ -97,7 +101,14 @@ struct RegisterView: View {
                     
                     Task {
                         // edit here
-                        try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName)
+                        do {
+                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName)
+                            success = true
+                        }
+                        catch {
+                            registrationError = "Registration Failed: \(error.localizedDescription)"
+                            print("This is the registrationError \(error)")
+                        }
                     }
                     
                 }) {
@@ -109,6 +120,18 @@ struct RegisterView: View {
                         .cornerRadius(10)
                         .padding(.top, 25)
                 }
+                .navigationDestination(isPresented: $success) {
+                    LoginView()
+                        .navigationBarBackButtonHidden(true)
+                }
+                
+                // registration error if any
+                if let error = registrationError {
+                    Text(error)
+                        .foregroundStyle(Color.red)
+                        .padding()
+                }
+
             }
         }
     }
