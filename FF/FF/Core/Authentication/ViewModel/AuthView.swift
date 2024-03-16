@@ -24,7 +24,7 @@ class AuthView: ObservableObject {
     }
     
     // the user is being created.. [test with firebase and check usermodel]
-    func createUser(withEmail email: String, password: String, firstName: String, lastName: String) async throws {
+    func createUser(withEmail email: String, password: String, firstName: String, lastName: String, username: String) async throws {
         print("Create-user function")
         do {
             // Firebase registration
@@ -32,7 +32,7 @@ class AuthView: ObservableObject {
             self.userSession = result.user
             
             // Data Model registration
-            let user = User(id: result.user.uid, firstName: firstName, lastName: lastName, email: email)
+            let user = User(id: result.user.uid, username: username, firstName: firstName, lastName: lastName, email: email)
             let encodedUser = try Firestore.Encoder().encode(user)
             
             // upload data to firestore on this line
@@ -53,6 +53,7 @@ class AuthView: ObservableObject {
     
     func fetchUser() async  {
         print("Fetch-user function")
+        guard let uid = Auth.auth().currentUser?.uid else { return }
     }
 }
 

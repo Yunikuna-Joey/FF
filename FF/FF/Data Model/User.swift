@@ -9,6 +9,7 @@ import Foundation
 // User Data Model
 struct User: Identifiable, Codable {
     let id: String
+    let username: String
     let firstName: String
     let lastName: String
     let email: String
@@ -16,5 +17,5 @@ struct User: Identifiable, Codable {
 
 // test | admin account
 extension User {
-    static var ADMIN = User(id: NSUUID().uuidString, firstName: "Admin", lastName: "Admin", email: "admin@ff.com")
+    static var ADMIN = User(id: NSUUID().uuidString, username: "admin", firstName: "Admin", lastName: "Admin", email: "admin@ff.com")
 }

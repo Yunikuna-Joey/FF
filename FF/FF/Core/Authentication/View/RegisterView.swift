@@ -13,6 +13,7 @@ struct RegisterView: View {
     // [Text Fields]
     @State private var firstName: String = ""
     @State private var lastName: String = ""
+    @State private var username: String = "" 
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmation: String = ""
@@ -36,6 +37,13 @@ struct RegisterView: View {
                     .padding(.horizontal, 50)
                 
                 TextField("Last Name", text: $lastName)
+                    .padding()
+                    .background(Color.gray.opacity(0.33))
+                    .cornerRadius(10)
+                    .padding(.horizontal, 50)
+                    .padding(.top, 10)
+                
+                TextField("Username", text: $username)
                     .padding()
                     .background(Color.gray.opacity(0.33))
                     .cornerRadius(10)
@@ -102,7 +110,7 @@ struct RegisterView: View {
                     Task {
                         // edit here
                         do {
-                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName)
+                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
                             success = true
                         }
                         catch {
