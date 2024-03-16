@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    var message: String
+    // This will help maintain session [session handling]
     @EnvironmentObject var viewModel: AuthView
     
     // @state is for variables within one specfic view
@@ -20,7 +20,6 @@ struct LoginView: View {
     @State private var register: Bool = false
     
     @State private var redirect: Bool = false
-//    @State private var message: Bool = false
     
     func loginLogic(username: String, password: String) {
         // correct case
@@ -52,12 +51,6 @@ struct LoginView: View {
                     .background(Color.gray.opacity(0.33))
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
-                
-                if !message.isEmpty {
-                    Text(message)
-                        .foregroundStyle(Color.green)
-                        .padding(.top, 10)
-                }
                 
                 HStack {
                     Button(action: {
@@ -115,5 +108,5 @@ struct LoginView: View {
 } // end of structure here
 
 #Preview {
-    LoginView(message: "Sign up to get started!")
+    LoginView()
 }

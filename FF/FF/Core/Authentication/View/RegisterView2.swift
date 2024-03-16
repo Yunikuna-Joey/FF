@@ -11,13 +11,13 @@ struct RegisterView2: View {
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var confirmation: String = ""
+    @State private var email: String = ""
     
     @State private var status: Bool = false
     @State private var error: Bool = false
     @State private var error2: Bool = false
     @State private var error3: Bool = false
     
-    @State private var message: String = ""
     @EnvironmentObject var viewModel: AuthView
     
     var body: some View {
@@ -86,11 +86,10 @@ struct RegisterView2: View {
                         self.error2 = false
                         self.status = true
                         
-                        self.message = "Sign in to get started!"
-                        Task {
-                            // edit here
-                            try await viewModel.createUser(withEmail: email, password: password, fullname: )
-                        }
+//                        Task {
+//                            // edit here
+//                            try await viewModel.createUser(withEmail: email, password: password, fullname: username)
+//                        }
                     }
                     
                 }) {
@@ -103,7 +102,7 @@ struct RegisterView2: View {
                         .padding(.top, 25)
                 }
                 .navigationDestination(isPresented: $status) {
-                    LoginView(message: message)
+                    LoginView()
                         .navigationBarBackButtonHidden(true)
                 }
             }

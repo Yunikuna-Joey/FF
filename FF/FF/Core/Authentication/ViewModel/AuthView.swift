@@ -19,7 +19,7 @@ class AuthView: ObservableObject {
         print("sign-in function")
     }
     
-    func createUser(withEmail email: String, password: String, fullname: String) async throws {
+    func createUser(withEmail email: String, password: String, firstName: String, lastName: String) async throws {
         print("Create-user function")
     }
     
