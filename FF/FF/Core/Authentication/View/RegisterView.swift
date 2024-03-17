@@ -110,11 +110,8 @@ struct RegisterView: View {
                     Task {
                         // edit here
                         do {
-                            if !firstName.isEmpty && !lastName.isEmpty && !email.isEmpty && !username.isEmpty && !password.isEmpty && !confirmation.isEmpty {
-                                
-                                try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
-                                success = true
-                            }
+                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
+                            success = true
                         }
                         catch {
                             registrationError = "Registration Failed: \(error.localizedDescription)"
@@ -130,6 +127,8 @@ struct RegisterView: View {
                         .background(Color.blue)
                         .cornerRadius(10)
                         .padding(.top, 25)
+                        .disabled(validForm)
+                        .opacity(validForm ? 1.0 : 0.5)
                 }
                 .navigationDestination(isPresented: $success) {
                     LoginView()
@@ -199,6 +198,26 @@ extension String {
     var isValidEmail: Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: self)
+    }
+}
+
+extension RegisterView: AuthenticationFormProtocol {
+    // add in a username check here as well
+    var validForm: Bool {
+        let symbols = "!@#$%^&*()_+\\-=[]{};':\"|,.<>/?"
+        
+        
+        // these conditions must be true in order for the form to be valid
+        return !email.isEmpty &&
+            email.contains("@") &&
+            !password.isEmpty && 
+            password.count >= 8 &&
+            !firstName.isEmpty &&
+            !lastName.isEmpty &&
+            confirmation == password &&
+            password.contains(where: {$0.isNumber}) &&
+            password.contains(where: {$0.isUppercase}) &&
+            password.contains(where: {symbols.contains($0) })
     }
 }
 

@@ -71,9 +71,6 @@ struct LoginView: View {
                     
                     // Login logic here
                     Button(action: {
-                        // old logic here
-//                        loginLogic(username: email, password: password)
-                        
                         // new logic here
                         Task {
                             try await viewModel.signIn(withEmail: email, password: password)
@@ -87,6 +84,8 @@ struct LoginView: View {
                             .frame(width: 145, height: 50)
                             .background(Color.blue)
                             .cornerRadius(10)
+                            .disabled(!validForm)
+                            .opacity(validForm ? 1.0 : 0.5)
                             
                     }
                     .navigationDestination(isPresented: $status) {
@@ -106,6 +105,12 @@ struct LoginView: View {
     } // end of body here
     
 } // end of structure here
+
+extension LoginView: AuthenticationFormProtocol {
+    var validForm: Bool {
+        return !email.isEmpty && email.contains("@") && !password.isEmpty && password.count >= 8
+    }
+}
 
 #Preview {
     LoginView()

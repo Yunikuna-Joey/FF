@@ -8,6 +8,10 @@ import Foundation
 import Firebase
 import FirebaseFirestoreSwift
 
+protocol AuthenticationFormProtocol {
+    var validForm: Bool { get }
+}
+
 // decorator for the main 'pipeline'
 @MainActor
 class AuthView: ObservableObject {
@@ -26,6 +30,15 @@ class AuthView: ObservableObject {
     }
     
     func signIn(withEmail email: String, password: String) async throws {
+        do {
+            let result = try await Auth.auth().signIn(withEmail: email, password: password)
+            self.userSession = result.user
+            
+             await fetchUser()
+        }
+        catch {
+            print("[DEBUG]: Failed to log in with error \(error.localizedDescription)")
+        }
         print("sign-in function")
     }
     
