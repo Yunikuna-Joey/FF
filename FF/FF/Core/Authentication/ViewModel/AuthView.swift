@@ -103,6 +103,31 @@ class AuthView: ObservableObject {
         print("[DEBUG]: User session is \(self.userSession)")
         print("[DEBUG]: Current User is \(self.currentSession)")
     }
+    
+    // fetch ALL USER data [Data Visualization]
+    func fetchAllUsers() async {
+        Task {
+            do {
+                print("Fetching all users...")
+                let querySnapshot = try await Firestore.firestore().collection("users").getDocuments()
+                
+                // Print table header
+                print("| ID | Username | First Name | Last Name | Email |")
+                print("---------------------------------------------------")
+                
+                for document in querySnapshot.documents {
+                    if let userData = try? document.data(as: User.self) {
+                        // Format user data into a table row
+                        let tableRow = String(format: "| %@ | %@ | %@ | %@ | %@ |", userData.id, userData.username, userData.firstName, userData.lastName, userData.email)
+                        print(tableRow)
+                    }
+                }
+            }
+            catch {
+                print("Error fetching users: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
 //#Preview {

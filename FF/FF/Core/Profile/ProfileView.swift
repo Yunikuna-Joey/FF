@@ -61,6 +61,17 @@ struct ProfileView: View {
                                 .padding()
                                 .foregroundStyle(Color.blue)
                         }
+                        
+                        Button(action: {
+                            Task {
+                                await viewModel.fetchAllUsers()
+                                print("After the view model fetch button")
+                            }
+                        }) {
+                            Image(systemName: "list.bullet.clipboard")
+                                .padding()
+                                .foregroundStyle(Color.blue)
+                        }
                     }
     //                Text("@\(username)")
     //                    .font(.headline)
