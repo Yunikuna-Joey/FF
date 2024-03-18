@@ -8,6 +8,7 @@ import Foundation
 import Firebase
 import FirebaseFirestoreSwift
 
+// determine if the form is valid [universal]
 protocol AuthenticationFormProtocol {
     var validForm: Bool { get }
 }
@@ -29,12 +30,16 @@ class AuthView: ObservableObject {
         }
     }
     
+    // sign-in function
     func signIn(withEmail email: String, password: String) async throws {
         do {
+            // responds with a firebase user object
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
+            // set the app-user to be the firebase object
             self.userSession = result.user
             
-             await fetchUser()
+            // grab user information
+            await fetchUser()
         }
         catch {
             print("[DEBUG]: Failed to log in with error \(error.localizedDescription)")
@@ -64,6 +69,7 @@ class AuthView: ObservableObject {
         }
     }
     
+    // sign out function
     func signOut() {
         do {
             // sign out user on the backend
@@ -77,18 +83,21 @@ class AuthView: ObservableObject {
             print("[DEBUG]: Failed to sign out with error \(error.localizedDescription)")
         }
         
-        print("sign-out function")
     }
     
+    // fill in later.. [COME-BACK]
     func deleteAccount() {
         print("delete account")
     }
     
+    // grab user information
     func fetchUser() async  {
         print("Fetch-user function")
+        // unique id
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        
+        // instance of user object
         guard let snapshot = try? await Firestore.firestore().collection("users").document(uid).getDocument() else { return }
+        // set the current session to be the signed-in user
         self.currentSession = try? snapshot.data(as: User.self)
         
         print("[DEBUG]: User session is \(self.userSession)")

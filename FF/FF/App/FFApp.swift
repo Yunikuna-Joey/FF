@@ -10,6 +10,7 @@ import Firebase
 
 @main
 struct FFApp: App {
+    // Determines an authenticated view
     @StateObject var viewModel = AuthView()
     
     // configure firebase within our app

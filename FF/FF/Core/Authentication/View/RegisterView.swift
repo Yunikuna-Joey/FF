@@ -108,11 +108,12 @@ struct RegisterView: View {
                     print(password == confirmation)
                     
                     Task {
-                        // edit here
+                        // success of registration
                         do {
                             try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
                             success = true
                         }
+                        // catch error
                         catch {
                             registrationError = "Registration Failed: \(error.localizedDescription)"
                             print("This is the registrationError \(error)")
@@ -183,6 +184,7 @@ struct RegisterView: View {
         return nil
     }
     
+    // validate confirmation password
     private func validateConfirmation(_ confirmation: String) -> String? {
         if confirmation != password && !confirmation.isEmpty {
             return "Passwords do not match"
@@ -195,6 +197,7 @@ struct RegisterView: View {
 }
 
 extension String {
+    // validate email 
     var isValidEmail: Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: self)
