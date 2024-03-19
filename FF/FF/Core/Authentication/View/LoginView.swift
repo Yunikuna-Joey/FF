@@ -21,18 +21,6 @@ struct LoginView: View {
     
     @State private var redirect: Bool = false
     
-    func loginLogic(username: String, password: String) {
-        // correct case
-        if email.lowercased() == "123" && password == "123" {
-            self.status = true
-        }
-        
-        // failed case
-        else {
-            self.status = false
-        }
-    }
-    
     var body: some View {
         // Navigation Stack provides a storyline within our elements.. indicating that another screen will be loaded
         NavigationStack {
