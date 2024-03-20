@@ -26,4 +26,14 @@ class StatusProcessView: ObservableObject {
             print("[DEBUG]: Error posting status: \(error.localizedDescription)")
         }	
     }
+    
+    // delete status from firebase || [work on data-type from postId]
+    func deleteStatus(postId: String) async throws {
+        do {
+            try await Firestore.firestore().collection("statuses").document(postId).delete()
+        }
+        catch {
+            print("[DEBUG]: Error deleting status: \(error.localizedDescription)")
+        }
+    }
 }
