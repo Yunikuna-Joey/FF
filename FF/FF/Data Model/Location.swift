@@ -11,4 +11,5 @@ struct Location: Identifiable, Codable {
     let id: String
     let name: String
     let address: String
+    let placeId: String
 }
