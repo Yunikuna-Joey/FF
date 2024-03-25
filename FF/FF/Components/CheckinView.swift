@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct CheckinView: View {
     // this is going to hold status Content
@@ -23,6 +24,10 @@ struct CheckinView: View {
     ]
     // Checkin menu option here [recent]
     @State private var selectedOption: String = "Select an option here"
+    
+    @State private var location: String = ""
+    @State private var locationManager = CLLocation()
+    
     // This will dynamically hold the locations based on user location
     let options = [
         "Option 1",
@@ -115,10 +120,6 @@ struct CheckinView: View {
                         else {
                             bubbleChoice.append((bubble, color))
                             if let indexToRemove = bubbles.firstIndex(of: bubble) {
-    //                            // create a delay before removing
-    //                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-    //                                bubbles.remove(at: indexToRemove)
-    //                            }
                                 bubbles.remove(at: indexToRemove)
                             }
                         }
