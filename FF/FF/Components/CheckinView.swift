@@ -6,6 +6,7 @@
 
 import SwiftUI
 import CoreLocation
+import MapKit
 
 struct CheckinView: View {
     // this is going to hold status Content
@@ -30,15 +31,17 @@ struct CheckinView: View {
     @State private var selectedOption: String = "Select an option here"
     
     // Location options here
-    @ObservedObject var locationManager = LocationManager.shared
-    @State private var location: String = "Location placeholder"
+    @ObservedObject var locationManager = LocationManager.shared    // locationManager is shared instance
+    
+    // Dynamic list of nearby POI
+    @State private var nearby: [String] = []
     
     // This will dynamically hold the locations based on user location
-//    let options = [
-//        "Option 1",
-//        "Option 2",
-//        "Option 3"
-//    ]
+    let options = [
+        "Option 1",
+        "Option 2",
+        "Option 3"
+    ]
     
     let username = "Testing User"
     
@@ -95,24 +98,18 @@ struct CheckinView: View {
                 HStack {
                     Text("Select your location")
                     Spacer()
-                    // new picker [here]
-                    Picker(selection: $location, label: Text("Select your location")) {
-                        Text("Option 1").tag("Option 1")
-                        Text("Option 2").tag("Option 2")
-                        Text("Option 3").tag("Option 3")
+                    Picker(selection: $selectedOption, label: Text("Choose your option")) {
+                        ForEach(nearby, id: \.self) { option in
+                            Text(option)
+                        }
                     }
                     .pickerStyle(MenuPickerStyle())
-//                    Picker(selection: $selectedOption, label: Text("Choose your option")) {
-//                        ForEach(options, id: \.self) { option in
-//                            Text(option)
-//                        }
-//                    }
-//                    .pickerStyle(MenuPickerStyle())
                     
                 } // end of hstack
                 .onTapGesture {
                     // this should prompt the user location when this portion is gestured
                     LocationManager.shared.requestLocation()
+                    searchNearby()
                 }
                 
             } // end of vstack
@@ -177,6 +174,30 @@ struct CheckinView: View {
         } // end of zstack
         
     } // end of var body
+    
+    private func searchNearby() {
+        guard let currLocation = locationManager.userLocation else {
+            print("Current location not available")
+            return
+        }
+        
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = "Gym"
+        // unit of measurements is in meters... [1 mile = ~1609meters]
+        request.region = MKCoordinateRegion(center: currLocation.coordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
+        
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            guard let response = response else {
+                print("Error searching for places: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            // Extract POI names from nearby places
+            let names = response.mapItems.map { $0.name ?? ""}  // map names from successful request otherwise blank
+            nearby = names
+        }
+    }
     
 } // end of structure declaration
 
