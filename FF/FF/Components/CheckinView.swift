@@ -10,10 +10,13 @@ import CoreLocation
 struct CheckinView: View {
     // this is going to hold status Content
     @State private var statusField: String = ""
+    
     // no duplicates within a set
     @State private var bubbleChoice: [(String, Color)] = []
+    
     // Available options to choose from [needed state to bind objects to view... to mutate them from off the bottom => top and <=>]
     @State private var bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower"]
+    
     // Hashmap to map the caption to its color
     @State private var colors: [String: Color] = [
         "🦵Legs": .red,
@@ -22,18 +25,20 @@ struct CheckinView: View {
         "Upper": .green,
         "Lower": .blue
     ]
+    
     // Checkin menu option here [recent]
     @State private var selectedOption: String = "Select an option here"
     
-    @State private var location: String = ""
-    @State private var locationManager = CLLocation()
+    // Location options here
+    @ObservedObject var locationManager = LocationManager.shared
+    @State private var location: String = "Location placeholder"
     
     // This will dynamically hold the locations based on user location
-    let options = [
-        "Option 1",
-        "Option 2",
-        "Option 3"
-    ]
+//    let options = [
+//        "Option 1",
+//        "Option 2",
+//        "Option 3"
+//    ]
     
     let username = "Testing User"
     
@@ -88,16 +93,27 @@ struct CheckinView: View {
                 
                 // Checkin Field option.... need to determine what UI element to use [recent]
                 HStack {
-                    Text("Select your option")
+                    Text("Select your location")
                     Spacer()
-                    Picker(selection: $selectedOption, label: Text("Choose your option")) {
-                        ForEach(options, id: \.self) { option in
-                            Text(option)
-                        }
+                    // new picker [here]
+                    Picker(selection: $location, label: Text("Select your location")) {
+                        Text("Option 1").tag("Option 1")
+                        Text("Option 2").tag("Option 2")
+                        Text("Option 3").tag("Option 3")
                     }
                     .pickerStyle(MenuPickerStyle())
+//                    Picker(selection: $selectedOption, label: Text("Choose your option")) {
+//                        ForEach(options, id: \.self) { option in
+//                            Text(option)
+//                        }
+//                    }
+//                    .pickerStyle(MenuPickerStyle())
                     
                 } // end of hstack
+                .onTapGesture {
+                    // this should prompt the user location when this portion is gestured
+                    LocationManager.shared.requestLocation()
+                }
                 
             } // end of vstack
             .padding()
@@ -142,9 +158,8 @@ struct CheckinView: View {
             
             
             VStack {
-                // need to implement post button somewhere in this area
-                // [maybe big for easy, towards bottom half of screen]
                 Button(action: {
+//                    postStatus()
                     print("Circle button")
                 }) {
                     Circle()
