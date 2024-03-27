@@ -34,7 +34,7 @@ struct CheckinView: View {
     @ObservedObject var locationManager = LocationManager.shared    // locationManager is shared instance
     
     // Dynamic list of nearby POI
-    @State private var nearby: [String] = []
+    @State private var nearby: [(name: String, distance: CLLocationDistance)] = [("Start here", 0)]
     
     // This will dynamically hold the locations based on user location
     let options = [
@@ -89,18 +89,21 @@ struct CheckinView: View {
                 } // end of HStack
                 
                 // User enters their status
-                TextField("What are you up to today?", text: $statusField)
+                TextField("What are you up to today", text: $statusField, axis: .vertical)
                     .padding(.top)
                     .padding(.bottom, 25)
-                    
+                    .lineLimit(1...3)
+                                        
                 
                 // Checkin Field option.... need to determine what UI element to use [recent]
                 HStack {
                     Text("Select your location")
                     Spacer()
                     Picker(selection: $selectedOption, label: Text("Choose your option")) {
-                        ForEach(nearby, id: \.self) { option in
-                            Text(option)
+                        ForEach(nearby.indices, id: \.self) { index in
+                            let option = nearby[index]
+                            Text("\(option.name) - \(String(format: "%.2f", option.distance)) miles away")
+                                .tag(index)
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
@@ -172,19 +175,27 @@ struct CheckinView: View {
             .padding(.top, 450)
             
         } // end of zstack
+        .padding()
         
     } // end of var body
     
     private func searchNearby() {
-        guard let currLocation = locationManager.userLocation else {
-            print("Current location not available")
-            return
-        }
+//        guard let currLocation = locationManager.userLocation else {
+//            print("Current location not available")
+//            return
+//        }
+        
+        // test coordinates
+        let lat = 33.783949360719454
+        let long = -117.89386927496363
+        
+        let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+        let currLocation = CLLocation(latitude: lat, longitude: long)
         
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = "Gym"
         // unit of measurements is in meters... [1 mile = ~1609meters]
-        request.region = MKCoordinateRegion(center: currLocation.coordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
+        request.region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
         
         let search = MKLocalSearch(request: request)
         search.start { response, error in
@@ -194,8 +205,13 @@ struct CheckinView: View {
             }
             
             // Extract POI names from nearby places
-            let names = response.mapItems.map { $0.name ?? ""}  // map names from successful request otherwise blank
-            nearby = names
+            nearby = response.mapItems.compactMap { mapItem in
+                if let name = mapItem.name, let location = mapItem.placemark.location {
+                    let distance = location.distance(from: currLocation) / 1609.34
+                    return (name, distance)
+                }
+                return nil
+            }.sorted { $0.distance < $1.distance }
         }
     }
     
