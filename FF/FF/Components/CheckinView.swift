@@ -49,31 +49,97 @@ struct CheckinView: View {
     var body: some View {
         ZStack {
             VStack {
-                HStack(spacing: 10) {
-                    // profile image on the left
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(.blue)
+                VStack {
+                    HStack(spacing: 10) {
+                        // profile image on the left
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundColor(.blue)
+                        
+                        // Username
+                        Text(username)
+                            .font(.headline)
+                        
+                        Spacer()
+                        
+                    } // end of HStack
                     
-                    // Username
-                    Text(username)
-                        .font(.headline)
+                    // bubbles for the status
+                    HStack {
+                        ForEach(bubbleChoice.indices, id: \.self) { i in
+                            let (bubble, _) = bubbleChoice[i]
+                            let color = colors[bubble] ?? .black
+                            Button(action: {
+                                // Remove from status
+                                bubbleChoice.remove(at: i)
+                                // Add back to bottom row
+                                bubbles.append(bubble)
+                            }) {
+                                Text(bubble)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 5)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .foregroundColor(color)
+                                    )
+                                    .font(.callout)
+                            }
+                        }
+                    } // end of HStack
                     
-                    Spacer()
+                    // User enters their status
+                    TextField("What are you up to today", text: $statusField, axis: .vertical)
+                        .padding(.top)
+                        .padding(.bottom, 25)
+                        .lineLimit(1...5)
                     
-                } // end of HStack
+                    
+                    // Checkin Field option.... need to determine what UI element to use [recent]
+                    HStack {
+                        Text("Select your location")
+                        Spacer()
+                        Picker(selection: $selectedOption, label: Text("Choose your option")) {
+                            ForEach(nearby.indices, id: \.self) { index in
+                                let option = nearby[index]
+                                Text("\(option.name) - \(String(format: "%.2f", option.distance)) miles away")
+                                    .tag(index)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        
+                    } // end of hstack
+                    .onTapGesture {
+                        // this should prompt the user location when this portion is gestured
+                        LocationManager.shared.requestLocation()
+                        searchNearby()
+                    }
+                    
+                } // end of vstack
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(radius: 2)
+                // adjust this for pushing up or down the status box
+//                .padding(.bottom, 350)
                 
-                // bubbles for the status
+                // bubbles at the bottom row
                 HStack {
-                    ForEach(bubbleChoice.indices, id: \.self) { i in
-                        let (bubble, _) = bubbleChoice[i]
+                    ForEach(bubbles.indices, id: \.self) { i in
+                        let bubble = bubbles[i]
                         let color = colors[bubble] ?? .black
                         Button(action: {
-                            // Remove from status
-                            bubbleChoice.remove(at: i)
-                            // Add back to bottom row
-                            bubbles.append(bubble)
+                            // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
+                            if bubbleChoice.contains(where: { $0.0 == bubble }) {
+                                bubbleChoice.removeAll(where: { $0.0 == bubble })
+                            }
+                            else {
+                                bubbleChoice.append((bubble, color))
+                                if let indexToRemove = bubbles.firstIndex(of: bubble) {
+                                    bubbles.remove(at: indexToRemove)
+                                }
+                            }
                         }) {
                             Text(bubble)
                                 .foregroundColor(.white)
@@ -87,72 +153,8 @@ struct CheckinView: View {
                         }
                     }
                 } // end of HStack
-                
-                // User enters their status
-                TextField("What are you up to today", text: $statusField, axis: .vertical)
-                    .padding(.top)
-                    .padding(.bottom, 25)
-                    .lineLimit(1...3)
-                                        
-                
-                // Checkin Field option.... need to determine what UI element to use [recent]
-                HStack {
-                    Text("Select your location")
-                    Spacer()
-                    Picker(selection: $selectedOption, label: Text("Choose your option")) {
-                        ForEach(nearby.indices, id: \.self) { index in
-                            let option = nearby[index]
-                            Text("\(option.name) - \(String(format: "%.2f", option.distance)) miles away")
-                                .tag(index)
-                        }
-                    }
-                    .pickerStyle(MenuPickerStyle())
-                    
-                } // end of hstack
-                .onTapGesture {
-                    // this should prompt the user location when this portion is gestured
-                    LocationManager.shared.requestLocation()
-                    searchNearby()
-                }
-                
-            } // end of vstack
-            .padding()
-            .background(Color.white)
-            .cornerRadius(10)
-            .shadow(radius: 2)
-            // adjust this for pushing up or down the status box
-            .padding(.bottom, 350)
-            
-            // bubbles at the bottom row
-            HStack {
-                ForEach(bubbles.indices, id: \.self) { i in
-                    let bubble = bubbles[i]
-                    let color = colors[bubble] ?? .black
-                    Button(action: {
-                        // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
-                        if bubbleChoice.contains(where: { $0.0 == bubble }) {
-                            bubbleChoice.removeAll(where: { $0.0 == bubble })
-                        }
-                        else {
-                            bubbleChoice.append((bubble, color))
-                            if let indexToRemove = bubbles.firstIndex(of: bubble) {
-                                bubbles.remove(at: indexToRemove)
-                            }
-                        }
-                    }) {
-                        Text(bubble)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 5)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .foregroundColor(color)
-                            )
-                            .font(.callout)
-                    }
-                }
-            } // end of HStack
-            .padding(.bottom, 100)
+                Spacer()
+            }
             
             
             
