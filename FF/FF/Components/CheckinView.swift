@@ -28,23 +28,15 @@ struct CheckinView: View {
     ]
     
     // Checkin menu option here [recent]
-    @State private var selectedOption: String = "Select an option here"
+    @State private var selectedOption: String = ""
     
     // Location options here
     @ObservedObject var locationManager = LocationManager.shared    // locationManager is shared instance
     
     // Dynamic list of nearby POI
-    @State private var nearby: [(name: String, distance: CLLocationDistance)] = [("Start here", 0)]
+    @State private var nearby: [String] = [""]
     
-    // This will dynamically hold the locations based on user location
-    let options = [
-        "Option 1",
-        "Option 2",
-        "Option 3"
-    ]
-    
-    let username = "Testing User"
-    
+    let username = "@Username"
     
     var body: some View {
         ZStack {
@@ -101,10 +93,9 @@ struct CheckinView: View {
                         Text("Select your location")
                         Spacer()
                         Picker(selection: $selectedOption, label: Text("Choose your option")) {
-                            ForEach(nearby.indices, id: \.self) { index in
-                                let option = nearby[index]
-                                Text("\(option.name) - \(String(format: "%.2f", option.distance)) miles away")
-                                    .tag(index)
+                            ForEach(nearby, id: \.self) { option in
+                                Text(option)
+                                    .tag(option) // Tag the Text view with the option
                             }
                         }
                         .pickerStyle(MenuPickerStyle())
@@ -121,8 +112,6 @@ struct CheckinView: View {
                 .background(Color.white)
                 .cornerRadius(10)
                 .shadow(radius: 2)
-                // adjust this for pushing up or down the status box
-//                .padding(.bottom, 350)
                 
                 // bubbles at the bottom row
                 HStack {
@@ -210,13 +199,12 @@ struct CheckinView: View {
             nearby = response.mapItems.compactMap { mapItem in
                 if let name = mapItem.name, let location = mapItem.placemark.location {
                     let distance = location.distance(from: currLocation) / 1609.34
-                    return (name, distance)
+                    return "\(name) - \(String(format: "%.2f", distance)) miles away"
                 }
                 return nil
-            }.sorted { $0.distance < $1.distance }
+            }
         }
     }
-    
 } // end of structure declaration
 
 #Preview {
