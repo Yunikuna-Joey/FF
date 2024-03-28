@@ -171,17 +171,19 @@ struct CheckinView: View {
     } // end of var body
     
     private func searchNearby() {
-//        guard let currLocation = locationManager.userLocation else {
-//            print("Current location not available")
-//            return
-//        }
+        guard let currLocation = locationManager.userLocation else {
+            print("Current location not available")
+            return
+        }
         
         // test coordinates
-        let lat = 33.783949360719454
-        let long = -117.89386927496363
+//        let lat = 33.783949360719454
+//        let long = -117.89386927496363
         
-        let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
-        let currLocation = CLLocation(latitude: lat, longitude: long)
+//        let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+//        let currLocation = CLLocation(latitude: lat, longitude: long)
+        
+        let coordinate = CLLocationCoordinate2D(latitude: currLocation.coordinate.latitude, longitude: currLocation.coordinate.longitude)
         
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = "Gym"
