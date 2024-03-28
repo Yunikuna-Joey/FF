@@ -9,6 +9,7 @@ import CoreLocation
 class LocationManager: NSObject, ObservableObject {
     // handle changes
     private let manager = CLLocationManager()
+    
     // Listens for changes in the user location
     @Published var userLocation: CLLocation?
     
@@ -32,7 +33,7 @@ class LocationManager: NSObject, ObservableObject {
 
 extension LocationManager: CLLocationManagerDelegate {
     // function that will trigger when the location services permission changes
-    func manageLocation(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
             // the different cases here
             case .notDetermined:
@@ -50,8 +51,8 @@ extension LocationManager: CLLocationManagerDelegate {
         }
     }
     // updates the location with last known 
-    func manageLocation(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else {return}
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
         self.userLocation = location
     }
 }
