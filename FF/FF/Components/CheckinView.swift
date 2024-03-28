@@ -203,6 +203,7 @@ struct CheckinView: View {
                 }
                 return nil
             }
+            .sorted() // alphabetically sort the list
         }
     }
 } // end of structure declaration
