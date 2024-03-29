@@ -9,11 +9,14 @@ import CoreLocation
 import MapKit
 
 struct CheckinView: View {
+    // env variable to access status functionality
+    @EnvironmentObject var statusModel: StatusProcessView
+    
     // this is going to hold status Content
     @State private var statusField: String = ""
     
     // no duplicates within a set
-    @State private var bubbleChoice: [(String, Color)] = []
+    @State private var bubbleChoice: [String] = []
     
     // Available options to choose from [needed state to bind objects to view... to mutate them from off the bottom => top and <=>]
     @State private var bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower"]
@@ -60,7 +63,7 @@ struct CheckinView: View {
                     // bubbles for the status
                     HStack {
                         ForEach(bubbleChoice.indices, id: \.self) { i in
-                            let (bubble, _) = bubbleChoice[i]
+                            let bubble = bubbleChoice[i]
                             let color = colors[bubble] ?? .black
                             Button(action: {
                                 // Remove from status
@@ -115,16 +118,18 @@ struct CheckinView: View {
                 
                 // bubbles at the bottom row
                 HStack {
-                    ForEach(bubbles.indices, id: \.self) { i in
-                        let bubble = bubbles[i]
-                        let color = colors[bubble] ?? .black
+                    ForEach(bubbles, id: \.self) { bubble in
                         Button(action: {
-                            // $0.0 is a method of referring to tupple (bubble, color) $0.0 == bubble $0.1 == color
-                            if bubbleChoice.contains(where: { $0.0 == bubble }) {
-                                bubbleChoice.removeAll(where: { $0.0 == bubble })
-                            }
+                            if bubbleChoice.contains(bubble) {
+                                // Remove the bubble from the bubbleChoice array
+                                if let indexToRemove = bubbleChoice.firstIndex(of: bubble) {
+                                    bubbleChoice.remove(at: indexToRemove)
+                                    bubbles.append(bubble)
+                                }
+                            } 
                             else {
-                                bubbleChoice.append((bubble, color))
+                                // Append the bubble to the bubbleChoice array
+                                bubbleChoice.append(bubble)
                                 if let indexToRemove = bubbles.firstIndex(of: bubble) {
                                     bubbles.remove(at: indexToRemove)
                                 }
@@ -136,7 +141,7 @@ struct CheckinView: View {
                                 .padding(.vertical, 5)
                                 .background(
                                     RoundedRectangle(cornerRadius: 20)
-                                        .foregroundColor(color)
+                                        .foregroundColor(colors[bubble] ?? .gray)
                                 )
                                 .font(.callout)
                         }
@@ -145,13 +150,15 @@ struct CheckinView: View {
                 Spacer()
             }
             
-            
-            
-            
+            // Check-in button
             VStack {
                 Button(action: {
-//                    postStatus()
-                    print("Circle button")
+                    let timestamp = Date()
+                    
+                    Task {
+                        try await statusModel.postStatus(content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
+                    }
+                    
                 }) {
                     Circle()
                         .foregroundStyle(Color.blue)

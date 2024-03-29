@@ -12,6 +12,7 @@ import Firebase
 struct FFApp: App {
     // Determines an authenticated view
     @StateObject var viewModel = AuthView()
+    @StateObject var statusProcess = StatusProcessView()
     
     // configure firebase within our app
     init() {
@@ -23,6 +24,7 @@ struct FFApp: App {
             ContentView()
                 // create an environment object for the 
                 .environmentObject(viewModel)
+                .environmentObject(statusProcess)
         }
     }
 }

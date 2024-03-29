@@ -11,14 +11,11 @@ struct Status: Identifiable, Codable {
     // POST ID
     let id: String
     
-    // User ID
-    let userId: String
-    
     // might want a post character limit
     let content: String
     
     // bubbles [various types of workouts associated with one status]
-    let bubbles: [String]
+    let bubbleChoice: [String]
     
     // [determine better data-type if possible]
     let timestamp: Date
