@@ -11,6 +11,9 @@ struct Status: Identifiable, Codable {
     // POST ID
     let id: String
     
+    // userId
+    let userId: String
+    
     // might want a post character limit
     let content: String
     

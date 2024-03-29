@@ -85,6 +85,12 @@ class AuthView: ObservableObject {
         
     }
     
+    func queryCurrentUserId() -> String? {
+        let currentUserId = Auth.auth().currentUser?.uid
+        print("This is the current user id \(currentUserId)")
+        return currentUserId
+    }
+    
     // fill in later.. [COME-BACK]
     func deleteAccount() {
         print("delete account")

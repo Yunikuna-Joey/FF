@@ -11,6 +11,7 @@ import MapKit
 struct CheckinView: View {
     // env variable to access status functionality
     @EnvironmentObject var statusModel: StatusProcessView
+    @EnvironmentObject var viewModel: AuthView
     
     // this is going to hold status Content
     @State private var statusField: String = ""
@@ -154,9 +155,10 @@ struct CheckinView: View {
             VStack {
                 Button(action: {
                     let timestamp = Date()
+                    let userId = viewModel.queryCurrentUserId()
                     
                     Task {
-                        try await statusModel.postStatus(content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
+                        try await statusModel.postStatus(userId: userId ?? " ", content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
                     }
                     
                 }) {

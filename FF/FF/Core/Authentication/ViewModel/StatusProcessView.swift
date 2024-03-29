@@ -17,10 +17,10 @@ class StatusProcessView: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
     
-    func postStatus(content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
+    func postStatus(userId: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
         do {
             // handle the new status object
-            let newStatus = Status(id: UUID().uuidString, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes)
+            let newStatus = Status(id: UUID().uuidString, userId: userId, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes)
             try await Firestore.firestore().collection("Statuses").document(newStatus.id).setData(from: newStatus)
         } 
         catch {
