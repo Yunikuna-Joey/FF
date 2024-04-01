@@ -40,7 +40,8 @@ struct CheckinView: View {
     // Dynamic list of nearby POI
     @State private var nearby: [String] = [""]
     
-    let username = "@Username"
+    // screen size
+    let screenSize = UIScreen.main.bounds.size
     
     var body: some View {
         ZStack {
@@ -53,8 +54,9 @@ struct CheckinView: View {
                             .frame(width: 30, height: 30)
                             .foregroundColor(.blue)
                         
-                        // Username
-                        Text(username)
+                        // Username [viewModel is the final adjustment, "username" is just for testing]
+//                        Text(viewModel.currentSession?.username ?? "")
+                        Text("username")
                             .font(.headline)
                         
                         Spacer()
@@ -150,6 +152,9 @@ struct CheckinView: View {
                 } // end of HStack
                 Spacer()
             }
+            .padding()
+            // [testing padding here for everything in the vstack except for the check-in button]
+//            .padding(.top, 40)
             
             // Check-in button
             VStack {
@@ -157,14 +162,15 @@ struct CheckinView: View {
                     let timestamp = Date()
                     let userId = viewModel.queryCurrentUserId()
                     
-                    Task {
-                        try await statusModel.postStatus(userId: userId ?? " ", content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
-                    }
-                    
+                    // attempt to post the status into the database [submission]
+//                    Task {
+//                        try await statusModel.postStatus(userId: userId ?? " ", content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
+//                    }
+                    printDimensions()
                 }) {
-                    Circle()
+                    Rectangle()
                         .foregroundStyle(Color.blue)
-                        .frame(width: 100, height: 100)
+                        .frame(width: screenSize.width, height: setButtonHeight())
                         .overlay(
                             Text("Check-In")
                                 .foregroundStyle(Color.white)
@@ -172,12 +178,27 @@ struct CheckinView: View {
                 }
             }
             // adjust this for the button position
-            .padding(.top, 450)
+            .padding(.top, screenSize.height / 2)
             
         } // end of zstack
         .padding()
         
     } // end of var body
+    
+    func printDimensions() {
+        let width = screenSize.width
+        let height = screenSize.height
+        
+        print("This is the current width \(width) and current height \(height)")
+    }
+    
+    // not exactly screen dimensions, but [viewport]
+    func setButtonHeight() -> CGFloat {
+        // calculate the button height
+        let screenHeight = screenSize.height
+        let isProMax = screenHeight >= 900
+        return isProMax ? screenHeight - 875 : screenHeight - 800   // ProMax height | Normal Height
+    }
     
     private func searchNearby() {
         guard let currLocation = locationManager.userLocation else {
