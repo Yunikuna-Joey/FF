@@ -16,6 +16,9 @@ class StatusProcessView: ObservableObject {
     // [Session handling here]
     @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
+    @Published var statusList: [Status] = []
+    
+    private let db = Firestore.firestore()
     
     func postStatus(userId: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
         do {
@@ -37,4 +40,34 @@ class StatusProcessView: ObservableObject {
             print("[DEBUG]: Error deleting status: \(error.localizedDescription)")
         }
     }
+    
+    func fetchStatus(userId: String) {
+        // query the database collections on userId value
+        db.collection("Statuses")
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments { querySnapshot, error in
+                if let error = error {
+                    print("[DEBUG]: Error fetching statuses: \(error.localizedDescription)")
+                    return
+                }
+                
+                // pack the document objects || status objects || one singular entry = document
+                guard let documents = querySnapshot?.documents else {
+                    print("[DEBUG]: No documents found")
+                    return
+                }
+                
+                self.statusList = documents.compactMap { document in
+                    do {
+                        let status = try document.data(as: Status.self)
+                        return status
+                    }
+                    catch {
+                        print("[DEBUG]: Error decoding statuses: \(error.localizedDescription)")
+                        return nil
+                    }
+                }
+            }
+    }
+    
 }

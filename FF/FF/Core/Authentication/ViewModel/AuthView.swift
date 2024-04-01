@@ -18,6 +18,10 @@ protocol AuthenticationFormProtocol {
 class AuthView: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
+    @Published var currentUsername: String?
+    
+    // database variable
+    private let db = Firestore.firestore()
     
     // check for a current user [behavior: keeps user signed in when exiting the app]
     init() {
@@ -90,6 +94,7 @@ class AuthView: ObservableObject {
         print("This is the current user id \(currentUserId)")
         return currentUserId
     }
+
     
     // fill in later.. [COME-BACK]
     func deleteAccount() {
@@ -98,7 +103,6 @@ class AuthView: ObservableObject {
     
     // grab user information
     func fetchUser() async  {
-        print("Fetch-user function")
         // unique id
         guard let uid = Auth.auth().currentUser?.uid else { return }
         // instance of user object

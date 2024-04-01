@@ -14,7 +14,7 @@ struct ProfileView1: View {
             VStack(spacing: 10) {
                 // for loop, to iterate through each status update element [dynamic way of creating dummy data]
                 ForEach(1..<10) { index in
-                    StatusUpdateView(
+                    ProfileStatusUpdateView(
                         username: "User \(index)",
                         timeAgo: "\(index)m ago",
                         status: "Checked in at this location (5 miles away)")

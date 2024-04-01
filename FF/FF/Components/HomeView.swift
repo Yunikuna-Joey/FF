@@ -5,34 +5,42 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
-// Status updates [will need to do some work to dynamically retrieve per user] 
+// Status updates [Dynamically retrieves self-user statuses... need more work for dynamic following]
 struct HomeView: View {
+    @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var statusProcess: StatusProcessView
+    
     var body: some View {
         // Scroll behavior for multiple statuses
         ScrollView {
             // vertical for ordering [spacing between each status update is controlled]
             VStack(spacing: 10) {
-                // for loop, to iterate through each status update element [dynamic way of creating dummy data]
-                ForEach(1..<10) { index in
-                    StatusUpdateView(
-                        username: "User \(index)",
-                        timeAgo: "\(index)m ago",
-                        status: "Checked in at this location (5 miles away)")
+                // for loop for processing a user's status's
+                ForEach(statusProcess.statusList) { status in
+                    if let currentUser = viewModel.currentSession {
+                        StatusUpdateView(status: status, username: currentUser.username, timeAgo: status.timestamp)
+                    }
                 }
             }
             // create some extra spacing
             .padding()
+        }
+        .onAppear {
+            // query the process to start fetching statuses based on current string user id else { blank }
+            statusProcess.fetchStatus(userId: viewModel.queryCurrentUserId() ?? "")
         }
     }
 }
 
 // status update structure,,, what each update will follow in terms of pieces
 struct StatusUpdateView: View {
+    let status: Status
+    
     // immutatable for each specific user
     let username: String
-    let timeAgo: String
-    let status: String
+    let timeAgo: Date
     
     
     var body: some View {
@@ -54,51 +62,47 @@ struct StatusUpdateView: View {
                 Spacer()
                 
                 // time that message was 'created'
-                Text(timeAgo)
+                Text(formatTimeAgo(from: timeAgo))
                     .font(.caption)
                     .foregroundColor(.gray)
             }
+            
             HStack {
-                Text("Bubble 1")
-                    .foregroundStyle(Color.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                    )
-                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
-                    .font(.callout)
-                
-                Text("Bubble 2")
-                    .foregroundStyle(Color.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                    )
-                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
-                    .font(.callout)
-                
-                Text("Bubble 3")
-                    .foregroundStyle(Color.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                    )
-                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
-                    .font(.callout)
+                ForEach(status.bubbleChoice, id: \.self) { bubble in
+                    Text(bubble)
+                        .foregroundStyle(Color.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                        )
+                        .font(.callout)
+                }
             }
             
 
             // below the left => right will be the actual status
-            Text(status)
+            Text(status.content)
                 .font(.body)
         }
         .padding()
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 2)
+    }
+    
+    // helper function to achieve time stamps associated with status's
+    func formatTimeAgo(from date: Date) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        
+        guard let formattedString = formatter.string(from: date, to: Date()) else {
+            return "Unknown"
+        }
+        
+        return formattedString + " ago"
     }
 }
 
