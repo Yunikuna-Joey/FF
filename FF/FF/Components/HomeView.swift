@@ -12,6 +12,15 @@ struct HomeView: View {
     @EnvironmentObject var viewModel: AuthView
     @EnvironmentObject var statusProcess: StatusProcessView
     
+    // dicionary for colors processed on client-side
+    @State private var colors: [String: Color] = [
+        "🦵Legs": .red,
+        "🫸Push": .orange,
+        "Pull": .yellow,
+        "Upper": .green,
+        "Lower": .blue
+    ]
+    
     var body: some View {
         // Scroll behavior for multiple statuses
         ScrollView {
@@ -20,7 +29,7 @@ struct HomeView: View {
                 // for loop for processing a user's status's
                 ForEach(statusProcess.statusList) { status in
                     if let currentUser = viewModel.currentSession {
-                        StatusUpdateView(status: status, username: currentUser.username, timeAgo: status.timestamp)
+                        StatusUpdateView(status: status, username: currentUser.username, timeAgo: status.timestamp, colors: colors)
                     }
                 }
             }
@@ -36,12 +45,15 @@ struct HomeView: View {
 
 // status update structure,,, what each update will follow in terms of pieces
 struct StatusUpdateView: View {
+    // status object
     let status: Status
     
     // immutatable for each specific user
     let username: String
     let timeAgo: Date
     
+    // Color Bubbles here
+    let colors: [String: Color]
     
     var body: some View {
         // what each individual update is going to follow [stacked bottom to top]
@@ -69,12 +81,14 @@ struct StatusUpdateView: View {
             
             HStack {
                 ForEach(status.bubbleChoice, id: \.self) { bubble in
+                    let color = colors[bubble] ?? .gray
                     Text(bubble)
                         .foregroundStyle(Color.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
                         .background(
                             RoundedRectangle(cornerRadius: 20)
+                                .fill(color)
                         )
                         .font(.callout)
                 }
