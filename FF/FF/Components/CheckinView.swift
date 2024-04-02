@@ -193,6 +193,7 @@ struct CheckinView: View {
                                 print("Error posting status: \(error)")
                             }
                         }
+                        // [revisit on prod]
                         printDimensions()
                     }) {
                         Rectangle()
@@ -206,6 +207,8 @@ struct CheckinView: View {
                 }
                 // adjust this for the button position
                 .padding(.top, screenSize.height / 2)
+                .disabled(!validForm)
+                .opacity(validForm ? 1.0 : 0.5)
                 
             } // end of zstack
             .padding()
@@ -276,6 +279,12 @@ struct CheckinView: View {
         }
     }
 } // end of structure declaration
+
+extension CheckinView: StatusFormProtocol {
+    var validForm: Bool {
+        return !statusField.isEmpty && !selectedOption.isEmpty
+    }
+}
 
 struct CheckinView_Preview: PreviewProvider {
     static var previews: some View {
