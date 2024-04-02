@@ -42,40 +42,106 @@ struct CheckinView: View {
     
     // handles navigation
     @State private var isStatusPosted = false
+    @Binding var currentTabIndex: Int
     
     // screen size
     let screenSize = UIScreen.main.bounds.size
     
     var body: some View {
-        ZStack {
-            VStack {
+        NavigationStack {
+            ZStack {
                 VStack {
-                    HStack(spacing: 10) {
-                        // profile image on the left
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.blue)
+                    VStack {
+                        HStack(spacing: 10) {
+                            // profile image on the left
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(.blue)
+                            
+                            // Username [viewModel is the final adjustment, "username" is just for testing]
+                            //                        Text(viewModel.currentSession?.username ?? "")
+                            Text("username")
+                                .font(.headline)
+                            
+                            Spacer()
+                            
+                        } // end of HStack
                         
-                        // Username [viewModel is the final adjustment, "username" is just for testing]
-//                        Text(viewModel.currentSession?.username ?? "")
-                        Text("username")
-                            .font(.headline)
+                        // bubbles for the status
+                        HStack {
+                            ForEach(bubbleChoice.indices, id: \.self) { i in
+                                let bubble = bubbleChoice[i]
+                                let color = colors[bubble] ?? .black
+                                Button(action: {
+                                    // Remove from status
+                                    bubbleChoice.remove(at: i)
+                                    // Add back to bottom row
+                                    bubbles.append(bubble)
+                                }) {
+                                    Text(bubble)
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 5)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .foregroundColor(color)
+                                        )
+                                        .font(.callout)
+                                }
+                            }
+                        } // end of HStack
                         
-                        Spacer()
+                        // User enters their status
+                        TextField("What are you up to today", text: $statusField, axis: .vertical)
+                            .padding(.top)
+                            .padding(.bottom, 25)
+                            .lineLimit(1...5)
                         
-                    } // end of HStack
+                        
+                        // Checkin Field option.... need to determine what UI element to use [recent]
+                        HStack {
+                            Text("Select your location")
+                            Spacer()
+                            Picker(selection: $selectedOption, label: Text("Choose your option")) {
+                                ForEach(nearby, id: \.self) { option in
+                                    Text(option)
+                                        .tag(option) // Tag the Text view with the option
+                                }
+                            }
+                            .pickerStyle(MenuPickerStyle())
+                            
+                        } // end of hstack
+                        .onTapGesture {
+                            // this should prompt the user location when this portion is gestured
+                            LocationManager.shared.requestLocation()
+                            searchNearby()
+                        }
+                        
+                    } // end of vstack
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 2)
                     
-                    // bubbles for the status
+                    // bubbles at the bottom row
                     HStack {
-                        ForEach(bubbleChoice.indices, id: \.self) { i in
-                            let bubble = bubbleChoice[i]
-                            let color = colors[bubble] ?? .black
+                        ForEach(bubbles, id: \.self) { bubble in
                             Button(action: {
-                                // Remove from status
-                                bubbleChoice.remove(at: i)
-                                // Add back to bottom row
-                                bubbles.append(bubble)
+                                if bubbleChoice.contains(bubble) {
+                                    // Remove the bubble from the bubbleChoice array
+                                    if let indexToRemove = bubbleChoice.firstIndex(of: bubble) {
+                                        bubbleChoice.remove(at: indexToRemove)
+                                        bubbles.append(bubble)
+                                    }
+                                }
+                                else {
+                                    // Append the bubble to the bubbleChoice array
+                                    bubbleChoice.append(bubble)
+                                    if let indexToRemove = bubbles.firstIndex(of: bubble) {
+                                        bubbles.remove(at: indexToRemove)
+                                    }
+                                }
                             }) {
                                 Text(bubble)
                                     .foregroundColor(.white)
@@ -83,128 +149,67 @@ struct CheckinView: View {
                                     .padding(.vertical, 5)
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .foregroundColor(color)
+                                            .foregroundColor(colors[bubble] ?? .gray)
                                     )
                                     .font(.callout)
                             }
                         }
                     } // end of HStack
-                    
-                    // User enters their status
-                    TextField("What are you up to today", text: $statusField, axis: .vertical)
-                        .padding(.top)
-                        .padding(.bottom, 25)
-                        .lineLimit(1...5)
-                    
-                    
-                    // Checkin Field option.... need to determine what UI element to use [recent]
-                    HStack {
-                        Text("Select your location")
-                        Spacer()
-                        Picker(selection: $selectedOption, label: Text("Choose your option")) {
-                            ForEach(nearby, id: \.self) { option in
-                                Text(option)
-                                    .tag(option) // Tag the Text view with the option
-                            }
-                        }
-                        .pickerStyle(MenuPickerStyle())
-                        
-                    } // end of hstack
-                    .onTapGesture {
-                        // this should prompt the user location when this portion is gestured
-                        LocationManager.shared.requestLocation()
-                        searchNearby()
-                    }
-                    
-                } // end of vstack
-                .padding()
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 2)
-                
-                // bubbles at the bottom row
-                HStack {
-                    ForEach(bubbles, id: \.self) { bubble in
-                        Button(action: {
-                            if bubbleChoice.contains(bubble) {
-                                // Remove the bubble from the bubbleChoice array
-                                if let indexToRemove = bubbleChoice.firstIndex(of: bubble) {
-                                    bubbleChoice.remove(at: indexToRemove)
-                                    bubbles.append(bubble)
-                                }
-                            } 
-                            else {
-                                // Append the bubble to the bubbleChoice array
-                                bubbleChoice.append(bubble)
-                                if let indexToRemove = bubbles.firstIndex(of: bubble) {
-                                    bubbles.remove(at: indexToRemove)
-                                }
-                            }
-                        }) {
-                            Text(bubble)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 5)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .foregroundColor(colors[bubble] ?? .gray)
-                                )
-                                .font(.callout)
-                        }
-                    }
-                } // end of HStack
-                Spacer()
-            }
-            .padding()
-            // [testing padding here for everything in the vstack except for the check-in button]
-//            .padding(.top, 40)
-            
-            // Check-in button
-            VStack {
-                Button(action: {
-                    let timestamp = Date()
-                    let userId = viewModel.queryCurrentUserId()
-                    
-                    // attempt to post the status into the database [submission]
-                    Task {
-                        do {
-                            // send into firebase
-                            try await statusModel.postStatus(
-                                userId: userId ?? " ",
-                                content: statusField,
-                                bubbleChoice: bubbleChoice,
-                                timestamp: timestamp,
-                                location: selectedOption,
-                                likes: 0
-                            )
-                            
-                            // boolean flag to track
-                            isStatusPosted = true
-                            
-                            // reset page values
-                            resetPageValues()
-                        }
-                        
-                        catch {
-                            print("Error posting status: \(error)")
-                        }
-                    }
-                    printDimensions()
-                }) {
-                    Rectangle()
-                        .foregroundStyle(Color.blue)
-                        .frame(width: screenSize.width, height: setButtonHeight())
-                        .overlay(
-                            Text("Check-In")
-                                .foregroundStyle(Color.white)
-                        )
+                    Spacer()
                 }
-            }
-            // adjust this for the button position
-            .padding(.top, screenSize.height / 2)
-            
-        } // end of zstack
-        .padding()
+                .padding()
+                // [testing padding here for everything in the vstack except for the check-in button]
+                //            .padding(.top, 40)
+                
+                // Check-in button
+                VStack {
+                    Button(action: {
+                        let timestamp = Date()
+                        let userId = viewModel.queryCurrentUserId()
+                        
+                        // attempt to post the status into the database [submission]
+                        Task {
+                            do {
+                                // send into firebase
+                                try await statusModel.postStatus(
+                                    userId: userId ?? " ",
+                                    content: statusField,
+                                    bubbleChoice: bubbleChoice,
+                                    timestamp: timestamp,
+                                    location: selectedOption,
+                                    likes: 0
+                                )
+                                
+                                // boolean flag to track
+//                                isStatusPosted = true
+                                
+                                currentTabIndex = 0
+                                
+                                // reset page values
+                                resetPageValues()
+                            }
+                            
+                            catch {
+                                print("Error posting status: \(error)")
+                            }
+                        }
+                        printDimensions()
+                    }) {
+                        Rectangle()
+                            .foregroundStyle(Color.blue)
+                            .frame(width: screenSize.width, height: setButtonHeight())
+                            .overlay(
+                                Text("Check-In")
+                                    .foregroundStyle(Color.white)
+                            )
+                    }
+                }
+                // adjust this for the button position
+                .padding(.top, screenSize.height / 2)
+                
+            } // end of zstack
+            .padding()
+        }
         
     } // end of var body
     
@@ -272,6 +277,8 @@ struct CheckinView: View {
     }
 } // end of structure declaration
 
-#Preview {
-    CheckinView()
+struct CheckinView_Preview: PreviewProvider {
+    static var previews: some View {
+        CheckinView(currentTabIndex: .constant(0))
+    }
 }

@@ -13,7 +13,7 @@ struct NavigatorView: View {
     
     var body: some View {
         // nav menu with all of the pages [start: home, end: profile]
-        TabView {
+        TabView (selection: $currentTabIndex) {
             HomeView()
                 .tabItem {
                     Image(systemName: "house.fill")
@@ -31,7 +31,7 @@ struct NavigatorView: View {
             // with this set-up, the CheckinView only returns 1 view at a time
             // previously, set up multiple vstack, hstacks sepearately,,,
             // now they are all within 1 cumulative vstack
-            CheckinView()
+            CheckinView(currentTabIndex: $currentTabIndex)
                 .tabItem {
                     Image(systemName: "checkmark.gobackward")
                     Text("Check In")
