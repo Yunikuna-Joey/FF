@@ -169,9 +169,19 @@ struct CheckinView: View {
                     Task {
                         do {
                             // send into firebase
-                            try await statusModel.postStatus(userId: userId ?? " ", content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
+                            try await statusModel.postStatus(
+                                userId: userId ?? " ",
+                                content: statusField,
+                                bubbleChoice: bubbleChoice,
+                                timestamp: timestamp,
+                                location: selectedOption,
+                                likes: 0
+                            )
                             
+                            // boolean flag to track
                             isStatusPosted = true
+                            
+                            // reset page values
                             resetPageValues()
                         }
                         
