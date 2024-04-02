@@ -40,6 +40,9 @@ struct CheckinView: View {
     // Dynamic list of nearby POI
     @State private var nearby: [String] = [""]
     
+    // handles navigation
+    @State private var isStatusPosted = false
+    
     // screen size
     let screenSize = UIScreen.main.bounds.size
     
@@ -163,9 +166,19 @@ struct CheckinView: View {
                     let userId = viewModel.queryCurrentUserId()
                     
                     // attempt to post the status into the database [submission]
-//                    Task {
-//                        try await statusModel.postStatus(userId: userId ?? " ", content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
-//                    }
+                    Task {
+                        do {
+                            // send into firebase
+                            try await statusModel.postStatus(userId: userId ?? " ", content: statusField, bubbleChoice: bubbleChoice, timestamp: timestamp, location: selectedOption, likes: 0)
+                            
+                            isStatusPosted = true
+                            resetPageValues()
+                        }
+                        
+                        catch {
+                            print("Error posting status: \(error)")
+                        }
+                    }
                     printDimensions()
                 }) {
                     Rectangle()
@@ -184,6 +197,15 @@ struct CheckinView: View {
         .padding()
         
     } // end of var body
+    
+    private func resetPageValues() {
+        // 'clears' the text input fields
+        statusField = ""
+        bubbleChoice = []
+        selectedOption = ""
+        isStatusPosted = false
+        bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower"]
+    }
     
     func printDimensions() {
         let width = screenSize.width
