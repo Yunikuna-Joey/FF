@@ -6,10 +6,13 @@
 
 import SwiftUI
 
+// all offset values are based on iPhone 15 Pro, need more functions to determine different sizes
+
 struct ProfileView: View {
     // CONSTANTS
     @EnvironmentObject var viewModel: AuthView
     @State private var current: Tab = .status
+    @State private var settingsFlag = false
     
     // iterate through the different tabs
     func currSelection(_ tab:Tab) -> Bool {
@@ -147,10 +150,14 @@ struct ProfileView: View {
                     .offset(y: -screenSize.height * 0.10)
                     .padding(.horizontal, 5)
                     .frame(minHeight: screenSize.height * 0.45)
+                    
                 } // end of VStack
                 
+                // Settings button
                 VStack {
                     Button(action: {
+                        // toggles converts the flag value to true [test]
+                        settingsFlag.toggle()
                         print("Settings here for sign out and such")
                     }) {
                         Image(systemName: "gearshape.fill")
@@ -160,6 +167,10 @@ struct ProfileView: View {
                 }
                 .padding(.top, screenSize.height * 0.30) // Adjust top padding as needed
                 .padding(.trailing, screenSize.width * 0.01) // Adjust trailing padding as needed
+                // play with sheet and how it feels
+                .sheet(isPresented: $settingsFlag) {
+                    SettingView()
+                }
             } // end of ZStack
         }
         
