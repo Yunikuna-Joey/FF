@@ -77,9 +77,63 @@ struct ImageFullScreenView: View {
     let imageName: String
     let dismiss: () -> Void
     
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
-
+    @State private var imageObject: UIImage?
+    @State private var offset = CGSizeZero
+    @State private var scale: CGFloat = 1
+    @State private var zoomFlag = false
+    
+    @GestureState private var scaleState: CGFloat = 1
+    @GestureState private var offsetState: CGSize = .zero
+    
+    // initialer for UIimage
+    init(imageName: String, dismiss: @escaping () -> Void) {
+        self.imageName = imageName
+        self.dismiss = dismiss
+        self._imageObject = State(initialValue: UIImage(named: imageName))
+    }
+    
+    // zooming in / out
+    var zoom: some Gesture {
+        MagnificationGesture()
+            .updating($scaleState) { currentState, gestureState, _ in
+                gestureState = currentState
+            }
+            .onEnded { value in
+                let newScale = scale * value
+                
+                // condition so that it cannot zoom out past the original image size
+                if newScale >= 1 {
+                    scale = newScale
+                }
+                else {
+                    scale = 1
+                }
+                
+                // determine whether or not the picture is zoomed
+                if value >= 1 {
+                    zoomFlag = true
+                }
+                else {
+                    zoomFlag = false
+                }
+            }
+    }
+    
+    // dragging around the image [window]
+    var drag: some Gesture {
+        DragGesture()
+            .updating($offsetState) { currentState, gestureState, _ in
+                gestureState = currentState.translation
+            }
+            .onEnded { value in
+                // check if dragging is allowed based on zoom flag
+                guard zoomFlag else { return }
+            
+                offset.height += value.translation.height
+                offset.width += value.translation.width
+                
+            }
+    }
     
     var body: some View {
         ZStack {
@@ -88,21 +142,12 @@ struct ImageFullScreenView: View {
                 .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
             
             // Display the image that was clicked
-            Image(imageName)
+            Image(uiImage: imageObject!)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
-                .scaleEffect(scale * lastScale)
-                .gesture(MagnificationGesture()
-                    .onChanged { value in
-                        scale = value.magnitude
-                    }
-                    .onEnded { _ in
-                        lastScale *= scale
-                        scale = 1.0
-                    }
-                )
-                .padding()
-            
+                .scaledToFit()
+                .scaleEffect(self.scale * scaleState)
+                .offset(x: offset.width + offsetState.width, y: offset.height + offsetState.height)
+                .gesture(SimultaneousGesture(zoom, drag))
             
             // close button to exit the full screen view
             VStack {
