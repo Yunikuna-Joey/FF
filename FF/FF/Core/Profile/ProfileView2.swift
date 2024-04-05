@@ -57,10 +57,8 @@ struct ProfileView2: View {
                 }
             }
             .fullScreenCover(item: $currentImage) { imageInfo in
-                if let index = imageArray.firstIndex(where: { $0.id == imageInfo.id }) {
-                    ImageFullScreenView(imageName: imageInfo.imageName, currentIndex: index, imageArray: imageArray.map { $0.imageName }) {
-                        currentImage = nil  // dismiss the full screen view
-                    }
+                ImageFullScreenView(imageName: imageInfo.imageName) {
+                    currentImage = nil  // dismiss the full screen view
                 }
             }
             
@@ -77,9 +75,11 @@ struct ProfileView2: View {
 
 struct ImageFullScreenView: View {
     let imageName: String
-    let currentIndex: Int
-    let imageArray: [String]
     let dismiss: () -> Void
+    
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+
     
     var body: some View {
         ZStack {
@@ -91,7 +91,18 @@ struct ImageFullScreenView: View {
             Image(imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
+                .scaleEffect(scale * lastScale)
+                .gesture(MagnificationGesture()
+                    .onChanged { value in
+                        scale = value.magnitude
+                    }
+                    .onEnded { _ in
+                        lastScale *= scale
+                        scale = 1.0
+                    }
+                )
                 .padding()
+            
             
             // close button to exit the full screen view
             VStack {
