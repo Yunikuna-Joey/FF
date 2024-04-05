@@ -115,6 +115,9 @@ struct ImageFullScreenView: View {
                 }
                 else {
                     zoomFlag = false
+                    // resets the image regardless of drag
+                    offset.width = 0
+                    offset.height = 0
                 }
             }
     }
@@ -128,9 +131,11 @@ struct ImageFullScreenView: View {
             .onEnded { value in
                 // check if dragging is allowed based on zoom flag
                 guard zoomFlag else { return }
-            
+
+                // revert all drag changes
                 offset.height += value.translation.height
                 offset.width += value.translation.width
+
                 
             }
     }
@@ -164,6 +169,26 @@ struct ImageFullScreenView: View {
                 } // end of Hstack
                 Spacer()
             } // end of Vstack
+            
+            Button(action: {
+                print("These are the current offset values")
+                print("Offset width: \(offset.width)")
+                print("OffsetState width: \(offsetState.width)")
+                print("Offset height: \(offset.height)")
+                print("OffsetState height: \(offsetState.height)")
+                if let image = imageObject {
+                    let width = image.size.width
+                    let height = image.size.height
+                    print("Image Width: \(width)")
+                    print("Image Height: \(height)")
+                }
+                
+            }) {
+                Image(systemName: "info.bubble")
+                    .foregroundStyle(Color.white)
+                    .font(.title)
+                    .padding()
+            }
         }
     }
 }
