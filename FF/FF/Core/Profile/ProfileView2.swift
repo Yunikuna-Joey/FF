@@ -148,8 +148,8 @@ struct ImageFullScreenView: View {
             // black background to set up the full screen image
             Color.black
                 .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-            
-            let maxWidth = ((imageObject?.size.width ?? 0) / 10) * scale
+            // determines the left and right bounds of a zoomed state,,, need a height at another time
+            let maxWidth = ((imageObject?.size.width ?? 0) / 10) * scale    // left and right bound calc,, could be refined
             
             // Display the image that was clicked
             Image(uiImage: imageObject!)

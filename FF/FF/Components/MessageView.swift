@@ -6,16 +6,21 @@
 
 import SwiftUI
 
+struct Chat {
+    let name: String
+    let timestamp: String
+    let messageContent: String 
+}
+
 struct MessageView: View {
     // who it is
     // when was it
     // what is the message content
     
-    struct Chat {
-        var name: String
-        var timestamp: String
-        var messageContent: String
-    }
+    // [PLAN]: Firebase for chat storage
+    // [PLAN]: APN for push notifications
+    // [PLAN]:
+    
     
     // Array of chat data
     let chats: [Chat] = [
@@ -27,34 +32,41 @@ struct MessageView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                ForEach(chats, id: \.name) { chat in
-                    HStack(spacing: 10) {
-                        // profile image on the left
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.blue)
+            let screenSize = UIScreen.main.bounds.size
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    ForEach(chats, id: \.name) { chat in
+                        HStack(spacing: 10) {
+                            // profile image on the left
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.blue)
+                            
+                            // Username and message content
+                            VStack(alignment: .leading) {
+                                Text(chat.name)
+                                    .font(.headline)
+                                Text(chat.messageContent)
+                            }
+                            
+                            Spacer()
+                            
+                            // Timestamp
+                            Text(chat.timestamp)
+                        } // end of HStack
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(1)
                         
-                        // Username and message content
-                        VStack(alignment: .leading) {
-                            Text(chat.name)
-                                .font(.headline)
-                            Text(chat.messageContent)
-                        }
+                        Divider()
+                            .frame(width: screenSize.width * 0.80)
+                            .padding(.leading, screenSize.width * 0.20)
                         
-                        Spacer()
-                        
-                        // Timestamp
-                        Text(chat.timestamp)
-                    } // end of HStack
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(1)
-                    .shadow(radius: 2)
-                }
-            Spacer()
-            } // end of VStack
+                    }
+                    Spacer()
+                } // end of VStack
+            }
             
         } // end of ZStack
     }

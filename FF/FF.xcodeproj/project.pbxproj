@@ -40,6 +40,9 @@
 		D4092E482BA5865800C42840 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4092E472BA5865800C42840 /* User.swift */; };
 		D4092E4F2BA9019500C42840 /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4092E4E2BA9019500C42840 /* Status.swift */; };
 		D4092E532BA90DB500C42840 /* StatusProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4092E522BA90DB500C42840 /* StatusProcessView.swift */; };
+		D418F75A2BC1DDD100ACDE99 /* IndividualChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F7592BC1DDD100ACDE99 /* IndividualChatView.swift */; };
+		D418F75C2BC1E19700ACDE99 /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F75B2BC1E19700ACDE99 /* Chat.swift */; };
+		D418F75F2BC1EAC000ACDE99 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F75E2BC1EAC000ACDE99 /* Messages.swift */; };
 		D494E4A22BBE91FA00283497 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D494E4A12BBE91FA00283497 /* SettingView.swift */; };
 		D4BB30EF2BB25C66009CE546 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BB30EE2BB25C66009CE546 /* LocationManager.swift */; };
 		D4C702442BABF38D0091F1B8 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C702432BABF38D0091F1B8 /* Location.swift */; };
@@ -67,6 +70,9 @@
 		D4092E472BA5865800C42840 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		D4092E4E2BA9019500C42840 /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
 		D4092E522BA90DB500C42840 /* StatusProcessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProcessView.swift; sourceTree = "<group>"; };
+		D418F7592BC1DDD100ACDE99 /* IndividualChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndividualChatView.swift; sourceTree = "<group>"; };
+		D418F75B2BC1E19700ACDE99 /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
+		D418F75E2BC1EAC000ACDE99 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		D494E4A12BBE91FA00283497 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		D4BB30EE2BB25C66009CE546 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		D4C702432BABF38D0091F1B8 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -211,8 +217,18 @@
 				D4092E472BA5865800C42840 /* User.swift */,
 				D4092E4E2BA9019500C42840 /* Status.swift */,
 				D4C702432BABF38D0091F1B8 /* Location.swift */,
+				D418F75B2BC1E19700ACDE99 /* Chat.swift */,
+				D418F75E2BC1EAC000ACDE99 /* Messages.swift */,
 			);
 			path = "Data Model";
+			sourceTree = "<group>";
+		};
+		D418F7582BC1DD4400ACDE99 /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				D418F7592BC1DDD100ACDE99 /* IndividualChatView.swift */,
+			);
+			path = Messages;
 			sourceTree = "<group>";
 		};
 		D4E4FAAF2B99C19600F5C202 = {
@@ -237,6 +253,7 @@
 				D4092E3A2BA510E600C42840 /* App */,
 				D4092E3B2BA5110500C42840 /* Components */,
 				D4092E3C2BA5111A00C42840 /* Core */,
+				D418F7582BC1DD4400ACDE99 /* Messages */,
 				D4092E422BA512A000C42840 /* Data Model */,
 				D4E4FABF2B99C19800F5C202 /* Assets.xcassets */,
 				D4092DFF2BA423FF00C42840 /* GoogleService-Info.plist */,
@@ -357,6 +374,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4092E392BA5039800C42840 /* AuthView.swift in Sources */,
+				D418F75F2BC1EAC000ACDE99 /* Messages.swift in Sources */,
 				D4E4FAD82B9A9FC200F5C202 /* RegisterView2.swift in Sources */,
 				D4E4FACA2B99C1AD00F5C202 /* LoginView.swift in Sources */,
 				D494E4A22BBE91FA00283497 /* SettingView.swift in Sources */,
@@ -369,12 +387,14 @@
 				D4E4FACE2B9A8A3F00F5C202 /* HomeView.swift in Sources */,
 				D4E4FADC2B9FD8DE00F5C202 /* ProfileView2.swift in Sources */,
 				D4E4FAD42B9A8E8B00F5C202 /* MessageView.swift in Sources */,
+				D418F75C2BC1E19700ACDE99 /* Chat.swift in Sources */,
 				D4BB30EF2BB25C66009CE546 /* LocationManager.swift in Sources */,
 				D4092E532BA90DB500C42840 /* StatusProcessView.swift in Sources */,
 				D4E4FADE2B9FD8E900F5C202 /* ProfileView3.swift in Sources */,
 				D4C702442BABF38D0091F1B8 /* Location.swift in Sources */,
 				D4092E462BA5378400C42840 /* NavigatorView.swift in Sources */,
 				D4E4FAD02B9A8E6E00F5C202 /* SearchView.swift in Sources */,
+				D418F75A2BC1DDD100ACDE99 /* IndividualChatView.swift in Sources */,
 				D4E4FABC2B99C19600F5C202 /* FFApp.swift in Sources */,
 				D4E4FAD22B9A8E7A00F5C202 /* CheckinView.swift in Sources */,
 			);

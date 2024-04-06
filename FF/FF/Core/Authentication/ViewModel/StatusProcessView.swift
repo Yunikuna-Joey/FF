@@ -14,7 +14,7 @@ protocol StatusFormProtocol {
 
 class StatusProcessView: ObservableObject {
     // [Session handling here]
-    @Published var userSession: FirebaseAuth.User?
+//    @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
     @Published var statusList: [Status] = []
     
