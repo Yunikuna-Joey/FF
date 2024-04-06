@@ -131,12 +131,15 @@ struct ImageFullScreenView: View {
             .onEnded { value in
                 // check if dragging is allowed based on zoom flag
                 guard zoomFlag else { return }
+                
 
-                // revert all drag changes
                 offset.height += value.translation.height
                 offset.width += value.translation.width
-
                 
+//                print("Max width value: \(maxWidth)")
+//                print("ScaledWidth value: \(scaledWidth)")
+                print("This is scale value \(scale)")
+                print("\n")
             }
     }
     
@@ -146,12 +149,17 @@ struct ImageFullScreenView: View {
             Color.black
                 .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
             
+            let maxWidth = ((imageObject?.size.width ?? 0) / 10) * scale
+            
             // Display the image that was clicked
             Image(uiImage: imageObject!)
                 .resizable()
                 .scaledToFit()
                 .scaleEffect(self.scale * scaleState)
-                .offset(x: offset.width + offsetState.width, y: offset.height + offsetState.height)
+//                .offset(x: offset.width + offsetState.width, y: offset.height + offsetState.height)
+                // this creates the clamp for the max and min
+                .offset(x: min(max(offset.width + offsetState.width, -maxWidth), maxWidth),
+                        y: offset.height + offsetState.height)
                 .gesture(SimultaneousGesture(zoom, drag))
             
             // close button to exit the full screen view
@@ -171,6 +179,7 @@ struct ImageFullScreenView: View {
             } // end of Vstack
             
             Button(action: {
+                print("\n")
                 print("These are the current offset values")
                 print("Offset width: \(offset.width)")
                 print("OffsetState width: \(offsetState.width)")
