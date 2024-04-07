@@ -63,6 +63,10 @@ struct IndividualChatView: View {
             }
             .padding(.vertical, 5)
             
+            // Text area for message content to be received
+            TextField("Enter your message here", text: $messageContent)
+                .padding()
+            
         }
         .navigationTitle("\(username)")
     }

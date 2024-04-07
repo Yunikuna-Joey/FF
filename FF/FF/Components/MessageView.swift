@@ -6,7 +6,8 @@
 
 import SwiftUI
 
-struct Chat {
+struct Chat: Identifiable {
+    let id = UUID()
     let name: String
     let timestamp: String
     let messageContent: String 
@@ -30,45 +31,54 @@ struct MessageView: View {
         // Add more chats as needed
     ]
     
+    @State private var chatFlag = false
+    
     var body: some View {
-        ZStack {
-            let screenSize = UIScreen.main.bounds.size
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    ForEach(chats, id: \.name) { chat in
-                        HStack(spacing: 10) {
-                            // profile image on the left
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.blue)
-                            
-                            // Username and message content
-                            VStack(alignment: .leading) {
-                                Text(chat.name)
-                                    .font(.headline)
-                                Text(chat.messageContent)
+        NavigationView {
+            ZStack {
+                let screenSize = UIScreen.main.bounds.size
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ForEach(chats) { chat in
+                            NavigationLink(destination: IndividualChatView()) {
+                                HStack(spacing: 10) {
+                                    // profile image on the left
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundStyle(Color.blue)
+                                    
+                                    // Username and message content
+                                    VStack(alignment: .leading) {
+                                        Text(chat.name)
+                                            .font(.headline)
+                                        Text(chat.messageContent)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    // Timestamp
+                                    Text(chat.timestamp)
+                                } // end of HStack
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(1)
                             }
+                            .foregroundStyle(Color.black)
                             
-                            Spacer()
+                            // Provides the visual separation between each unique chat
+                            Divider()
+                                .frame(width: screenSize.width * 0.80)
+                                .padding(.leading, screenSize.width * 0.20)
                             
-                            // Timestamp
-                            Text(chat.timestamp)
-                        } // end of HStack
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(1)
-                        
-                        Divider()
-                            .frame(width: screenSize.width * 0.80)
-                            .padding(.leading, screenSize.width * 0.20)
-                        
-                    }
-                    Spacer()
-                } // end of VStack
-            }
-            
-        } // end of ZStack
+                        }
+                        Spacer()
+                    } // end of VStack
+                }
+                .navigationBarTitle("Chats")
+                
+            } // end of ZStack
+        } // end of NavigationStack
     }
 }
 
