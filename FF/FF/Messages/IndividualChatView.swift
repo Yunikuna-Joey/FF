@@ -17,54 +17,70 @@ struct IndividualChatView: View {
     let shortText = "What are you hitting today?"
    
     var body: some View {
+        let screenSize = UIScreen.main.bounds.size
+        
         VStack {
-            // This is the case for current user
-            HStack {
-                // Push to the right
-                Spacer()
-                
-                // Message content held in its own Hstack
-                HStack {
-                    Text(shortText)
-                        .padding()
+            Spacer()
+            // Scroll View for message content `
+            ScrollView(showsIndicators: false) {
+                VStack {
+
+                    // This is the case for current user
+                    HStack {
+                        // Push to the right
+                        Spacer()
+                        
+                        // Message content held in its own Hstack
+                        HStack {
+                            Text(shortText)
+                                .padding()
+                        }
+                        .frame(maxWidth: 256)           // needs to be different for different screen sizes
+                        .background(Color.blue)
+                        .cornerRadius(25)
+                        
+                        // profile picture
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .foregroundStyle(Color.yellow)
+                            .frame(width: 40, height: 40)
+                            .padding(.horizontal, 5)
+                    }
+                    .padding(.vertical, 5)
+                    
+                    // This is the case for recipient user
+                    HStack {
+                        // recipient picture
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .foregroundStyle(Color.orange)
+                            .frame(width: 40, height: 40)       // needs to be different for different screen sizes
+                            .padding(.horizontal, 5)
+                        
+                        HStack{
+                            Text(shortText)
+                                .padding()
+                        }
+                        .frame(maxWidth: 256)
+                        .background(Color.gray)
+                        .cornerRadius(25)
+                        
+                        // push to the left
+                        Spacer()
+                    }
+                    .padding(.vertical, 5)
                 }
-                .frame(maxWidth: 256)           // needs to be different for different screen sizes
-                .background(Color.blue)
-                .cornerRadius(25)
-                
-                // profile picture
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .foregroundStyle(Color.yellow)
-                    .frame(width: 40, height: 40)
-                    .padding(.horizontal, 5)
             }
-            .padding(.vertical, 5)
-            
-            // This is the case for recipient user
-            HStack {
-                // recipient picture
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .foregroundStyle(Color.orange)
-                    .frame(width: 40, height: 40)       // needs to be different for different screen sizes
-                    .padding(.horizontal, 5)
-                
-                HStack{
-                    Text(shortText)
-                        .padding()
-                }
-                .frame(maxWidth: 256)
-                .background(Color.gray)
-                .cornerRadius(25)
-                
-                // push to the left
-                Spacer()
-            }
-            .padding(.vertical, 5)
             
             // Text area for message content to be received
             TextField("Enter your message here", text: $messageContent)
+                .padding(.vertical, 10)
+            // applies padding to the placeholder text
+                .padding(.leading, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .stroke(Color.black, lineWidth: 0.5)
+                )
                 .padding()
             
         }
