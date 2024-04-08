@@ -24,6 +24,8 @@ struct MessageView: View {
     
     
     // Array of chat data
+    // This should retrieve:
+    // [Recipient User, Last message in conversation with Recipient User, time stamp of last message]
     let chats: [Chat] = [
         Chat(name: "User 1", timestamp: "10:00 AM", messageContent: "Hello"),
         Chat(name: "User 2", timestamp: "10:05 AM", messageContent: "Hi there!"),
