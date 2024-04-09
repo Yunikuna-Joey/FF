@@ -26,6 +26,9 @@ struct RegisterView: View {
     // Redirection variable
     @State private var success = false
     @State private var registrationError: String?
+    
+    // blank value
+    @State private var imageArray = [""]
 
     var body: some View {
         NavigationStack {
@@ -110,7 +113,7 @@ struct RegisterView: View {
                     Task {
                         // success of registration
                         do {
-                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username)
+                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username, imageArray: imageArray)
                             success = true
                         }
                         // catch error

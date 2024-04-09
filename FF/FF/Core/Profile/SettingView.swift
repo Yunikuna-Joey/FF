@@ -2,14 +2,16 @@
 //  SettingView.swift
 //  FF
 //
-//  Created by Joey Truong on 4/4/24.
 //
 
 import SwiftUI
 
 struct SettingView: View {
+    @EnvironmentObject var viewModel: AuthView
+    
     var body: some View {
         Button(action: {
+            viewModel.signOut()
             print("Settings page sign out button")
         }) {
             HStack {

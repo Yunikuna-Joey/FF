@@ -55,7 +55,7 @@ struct SearchView: View {
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .padding(.bottom)
-                    .frame(maxWidth: 500 ) // Set maximum width
+                    .frame(maxWidth: 500) // Set maximum width
 //                    .onChange(of: searchText) {
 //                        searchUsers()
 //                    }
