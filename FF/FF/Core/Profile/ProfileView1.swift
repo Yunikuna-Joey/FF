@@ -101,34 +101,34 @@ struct ProfileStatusUpdateView: View {
 //                }
                 // keep this for loop for now, so that we can see the preview
                 Text("Bubble 1")
-                                    .foregroundStyle(Color.white)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 5)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                    )
-                                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
-                                    .font(.callout)
-                                
-                                Text("Bubble 2")
-                                    .foregroundStyle(Color.white)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 5)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                    )
-                                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
-                                    .font(.callout)
-                                
-                                Text("Bubble 3")
-                                    .foregroundStyle(Color.white)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 5)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                    )
-                                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
-                                    .font(.callout)
+                    .foregroundStyle(Color.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                    )
+                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
+                    .font(.callout)
+                
+                Text("Bubble 2")
+                    .foregroundStyle(Color.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                    )
+                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
+                    .font(.callout)
+                
+                Text("Bubble 3")
+                    .foregroundStyle(Color.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                    )
+                    // experiment with font, [caption, none or body, subheadline, footnote, callout]
+                    .font(.callout)
             }
             
 

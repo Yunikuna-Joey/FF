@@ -19,104 +19,109 @@ struct SearchView: View {
     
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // enable scrolling behavior
-            ScrollView(showsIndicators: false) {
-                // if the search bar is empty
-                if searchText.isEmpty {
-                    // grid to hold the pictures
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: itemSize))]) {
-                        // iterate through the image array
-                        ForEach(imageArray, id: \.self) {
-                            imageName in Image(imageName)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: itemSize + 32, height: itemSize)
-                                .cornerRadius(5)
-                        }
-                    }
-                }
-                
-                // if it is not empty
-                else {
-                    VStack {
-                        
-                        HStack {
-                            // image on top
-                            Image(systemName: "person.circle")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .padding(.leading, 20)
-                                .padding(.top, 10)
-                            
-                            // username || can add badges underneath to showcase
-                            Text(username)
-                                .font(.headline)
-                            
-                            // push to the left
-                            Spacer()
-                            
-                            // Follow and unfollow button || need logic to toggle between Follow and Unfollow
-                            Button(action: {
-                                print("Follow / unfollow button")
-                            }) {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .foregroundStyle(Color.green)
-                                    .overlay(
-                                        Text("Follow")
-                                            .foregroundStyle(Color.white)
-                                            .padding(4)
-                                    )
-                                    .frame(width: 100, height: 30)
-                                    .padding()
+        NavigationView {
+            ZStack(alignment: .bottom) {
+                // enable scrolling behavior
+                ScrollView(showsIndicators: false) {
+                    // if the search bar is empty
+                    if searchText.isEmpty {    // revert the condition change for production
+                        // grid to hold the pictures
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: itemSize))]) {
+                            // iterate through the image array
+                            ForEach(imageArray, id: \.self) {
+                                imageName in Image(imageName)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: itemSize + 32, height: itemSize)
+                                    .cornerRadius(5)
                             }
                         }
-                        
-                        // horizontal row of 3 most recent images
-                        HStack {
-                            Image("Car")
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 100, height: 100)
-                                .clipped()
-                                .cornerRadius(10)
+                    }
+                    
+                    // if it is not empty
+                    else {
+                        VStack {
+                            HStack {
+                                // image on top
+                                Image(systemName: "person.circle")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .padding(.leading, 20)
+                                    .padding(.top, 10)
+                                
+                                // username || can add badges underneath to showcase
+                                
+                                NavigationLink(destination: LoadProfileView()) {
+                                    Text(username)
+                                        .font(.headline)
+                                        .foregroundStyle(Color.orange)
+                                }
+                                
+                                // push to the left
+                                Spacer()
+                                
+                                // Follow and unfollow button || need logic to toggle between Follow and Unfollow
+                                Button(action: {
+                                    print("Follow / unfollow button")
+                                }) {
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .foregroundStyle(Color.green)
+                                        .overlay(
+                                            Text("Follow")
+                                                .foregroundStyle(Color.white)
+                                                .padding(4)
+                                        )
+                                        .frame(width: 100, height: 30)
+                                        .padding()
+                                }
+                            }
                             
-                            Image("car2")
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 100, height: 100)
-                                .clipped()
-                                .cornerRadius(10)
+                            // horizontal row of 3 most recent images
+                            HStack {
+                                Image("Car")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipped()
+                                    .cornerRadius(10)
+                                
+                                Image("car2")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipped()
+                                    .cornerRadius(10)
+                                
+                                Image("car3")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipped()
+                                    .cornerRadius(10)
+                            }
+                            .padding()
                             
-                            Image("car3")
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 100, height: 100)
-                                .clipped()
-                                .cornerRadius(10)
-                        }
+                        } // vstack for one card
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.gray.opacity(0.5))
+                        )
                         .padding()
-                        
-                    } // vstack for one card
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.gray.opacity(0.5))
-                    )
-                    .padding()
+                    }
+                    
                 }
-
-            }
-            
-            // search bar
-            TextField("Search", text: $searchText)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 20)
-                .background(Color.gray.opacity(0.33))
-                .cornerRadius(20)
-                .padding(.horizontal)
-                .padding(.bottom)
-                .frame(maxWidth: 500 ) // Set maximum width
-        } // end of ZStack
+                
+                // search bar
+                TextField("Search", text: $searchText)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 20)
+                    .background(Color.gray.opacity(0.33))
+                    .cornerRadius(20)
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                    .frame(maxWidth: 500 ) // Set maximum width
+            } // end of ZStack
+        }
     }
 }
 
