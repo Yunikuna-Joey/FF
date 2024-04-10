@@ -9,6 +9,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 struct SearchView: View {
+    @EnvironmentObject var viewModel: AuthView
     // hold some image arary... likely just some random users
     let imageArray = ["Car", "car2", "terrifiednootnoot"]
     let itemSize: CGFloat = (UIScreen.main.bounds.width - 40 - 20) / 3 - 10
@@ -61,14 +62,17 @@ struct SearchView: View {
                     .padding(.bottom)
                     .frame(maxWidth: 500) // Set maximum width
                     .onChange(of: searchText) {
-                        searchUsers(currSearchText: searchText)
+                        if let currentUser = viewModel.currentSession {
+                            searchUsers(currSearchText: searchText, currentUsername: currentUser.username)
+                        }
                     }
                 
             } // end of ZStack
         }
     }
     
-    func searchUsers(currSearchText: String) {
+    // function to search for other users
+    func searchUsers(currSearchText: String, currentUsername: String) {
         // should display: No results found
         if currSearchText.isEmpty {
             searchResults = []
@@ -77,8 +81,9 @@ struct SearchView: View {
         }
         
         db.collection("users")
-            .whereField("username", isGreaterThanOrEqualTo: searchText)
-            .whereField("username", isLessThan: searchText + "\u{f8ff}")
+            .whereField("username", isGreaterThanOrEqualTo: currSearchText)
+            .whereField("username", isLessThan: currSearchText + "\u{f8ff}")
+            .whereField("username", isNotEqualTo: currentUsername)
             .getDocuments { querySnapshot, error in
                 if let error = error {
                     print("Error searching users: \(error.localizedDescription)")
