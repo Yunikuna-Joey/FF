@@ -10,6 +10,7 @@ import FirebaseFirestoreSwift
 
 struct SearchView: View {
     @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var followingManager: FollowingManager
     // hold some image arary... likely just some random users
     let imageArray = ["Car", "car2", "terrifiednootnoot"]
     let itemSize: CGFloat = (UIScreen.main.bounds.width - 40 - 20) / 3 - 10
@@ -43,11 +44,13 @@ struct SearchView: View {
                     
                     // if it is not empty
                     else {
+                        // old forLoop
+                        let currentUser = viewModel.currentSession
                         ForEach(searchResults.indices, id: \.self) { index in
                             let user = searchResults[index] 
                             listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
                         }
-                        
+
                     }
                     
                 }
@@ -110,6 +113,7 @@ struct listUserProfiles: View {
     let profilePicture: Image
     let username: String
     let imageArray: [String]
+//    let isFollowing: Bool
     
     
     var body: some View {
@@ -134,12 +138,14 @@ struct listUserProfiles: View {
                 
                 // Follow and unfollow button || need logic to toggle between Follow and Unfollow
                 Button(action: {
+                    // will need to embed a Task for the actual follow and unfollow functionality
                     print("Follow / unfollow button")
                 }) {
                     RoundedRectangle(cornerRadius: 20)
                         .foregroundStyle(Color.green)
                         .overlay(
                             Text("Follow")
+//                            Text(isFollowing ? "Follow" : "Unfollow")
                                 .foregroundStyle(Color.white)
                                 .padding(4)
                         )

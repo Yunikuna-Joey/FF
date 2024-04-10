@@ -43,4 +43,19 @@ class FollowingManager: ObservableObject {
             print("[DEBUG]: Error unfollowing user \(error.localizedDescription)")
         }
     }
+    
+    func queryFollowStatus(userId: String, friendId: String) async -> Bool {
+        do {
+            let snapshot = try await db.collection("Following")
+                .whereField("userId", isEqualTo: userId)
+                .whereField("friendId", isEqualTo: friendId)
+                .getDocuments()
+            
+            return !snapshot.documents.isEmpty
+        }
+        catch {
+            print("[DEBUG]: Error fetching followStatus \(error.localizedDescription)")
+            return false
+        }
+    }
 }
