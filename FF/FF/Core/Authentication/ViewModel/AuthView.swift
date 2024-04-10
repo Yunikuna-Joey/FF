@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import FirebaseAuth
 import Firebase
 import FirebaseFirestoreSwift
 

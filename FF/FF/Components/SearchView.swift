@@ -14,7 +14,7 @@ struct SearchView: View {
     let itemSize: CGFloat = (UIScreen.main.bounds.width - 40 - 20) / 3 - 10
     
     @State private var searchText: String = ""
-    @State private var searchResults = []
+    @State private var searchResults: [User] = []
     private var db = Firestore.firestore()
     
     let username = "List User 1"
@@ -42,7 +42,11 @@ struct SearchView: View {
                     
                     // if it is not empty
                     else {
-                        listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: username, imageArray: imageArray)
+                        ForEach(searchResults.indices, id: \.self) { index in
+                            let user = searchResults[index] 
+                            listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
+                        }
+                        
                     }
                     
                 }
@@ -56,24 +60,24 @@ struct SearchView: View {
                     .padding(.horizontal)
                     .padding(.bottom)
                     .frame(maxWidth: 500) // Set maximum width
-//                    .onChange(of: searchText) {
-//                        searchUsers()
-//                    }
+                    .onChange(of: searchText) {
+                        searchUsers(currSearchText: searchText)
+                    }
                 
             } // end of ZStack
         }
     }
     
-    private func searchUsers() {
+    func searchUsers(currSearchText: String) {
         // should display: No results found
-        if searchText.isEmpty {
+        if currSearchText.isEmpty {
             searchResults = []
+            print("[DEBUG]: The search field is empty")
             return
         }
         
         db.collection("users")
-            .whereField("username", isGreaterThanOrEqualTo: searchText)
-            .whereField("username", isLessThan: searchText + "\u{f8ff}")
+            .whereField("username", isEqualTo: currSearchText)
             .getDocuments { querySnapshot, error in
                 if let error = error {
                     print("Error searching users: \(error.localizedDescription)")
@@ -84,6 +88,11 @@ struct SearchView: View {
                     } ?? []
                 }
             }
+        
+        print("[DEBUG]: The searchUsers function was triggered")
+        print("[DEBUG]: This is the searchResults \(searchResults)")
+        print("[DEBUG]: This is the searchText \(currSearchText)")
+        print("\n")
     }
 }
 
