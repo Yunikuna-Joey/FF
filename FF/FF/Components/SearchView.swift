@@ -77,15 +77,20 @@ struct SearchView: View {
         }
         
         db.collection("users")
-            .whereField("username", isEqualTo: currSearchText)
+            .whereField("username", isGreaterThanOrEqualTo: searchText)
+            .whereField("username", isLessThan: searchText + "\u{f8ff}")
             .getDocuments { querySnapshot, error in
                 if let error = error {
                     print("Error searching users: \(error.localizedDescription)")
                 }
                 else {
-                    searchResults = querySnapshot?.documents.compactMap { document in
-                        try? document.data(as: User.self)
-                    } ?? []
+                    // clear the search results before appending new users
+                    searchResults.removeAll()
+                    for document in querySnapshot?.documents ?? [] {
+                        if let user = try? document.data(as: User.self) {
+                            searchResults.append(user)
+                        }
+                    }
                 }
             }
         
