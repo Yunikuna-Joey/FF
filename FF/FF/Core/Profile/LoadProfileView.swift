@@ -9,8 +9,12 @@ import SwiftUI
 struct LoadProfileView: View {
     // CONSTANTS
     @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var followManager: FollowingManager
     @State private var current: Tab = .status
     @State private var settingsFlag = false
+    
+    // Initializer
+    let resultUser: User
     
     // iterate through the different tabs
     func currSelection(_ tab:Tab) -> Bool {
@@ -25,7 +29,6 @@ struct LoadProfileView: View {
     }
     
     // [test] dynamic user information loading
-    let username = "Womp Womp"
     let value1 = 25
     
     let screenSize = UIScreen.main.bounds.size
@@ -55,7 +58,7 @@ struct LoadProfileView: View {
                     
                     // Stack for username
                     HStack {
-                        Text("@username")
+                        Text(resultUser.username)
                             .font(.headline)
                         // [play with this offset value]
                     }
@@ -65,17 +68,11 @@ struct LoadProfileView: View {
                     HStack(spacing: screenSize.width * 0.15) {
                         // category 1
                         VStack {
-                            Text("Check-Ins")
-                                .font(.headline)
-                            Text("\(value1)")
-                        }
-                        // category 2
-                        VStack {
                             Text("Followers")
                                 .font(.headline)
                             Text("\(value1)")
                         }
-                        // category 3
+                        // category 2
                         VStack {
                             Text("Following")
                                 .font(.headline)
@@ -151,30 +148,39 @@ struct LoadProfileView: View {
                     
                 } // end of VStack
                 
-                // Settings button
+                // Follow || unfollow button
                 VStack {
                     Button(action: {
-                        // toggles converts the flag value to true [test]
-                        settingsFlag.toggle()
-                        print("Settings here for sign out and such")
+                        print("[DEBUG]: Follow || Unfollow button here")
                     }) {
-                        Image(systemName: "gearshape.fill")
-                            .padding()
-                            .foregroundStyle(Color.blue)
+                        RoundedRectangle(cornerRadius: 20)
+                            .foregroundStyle(Color.green)
+                            .overlay(
+                                Text("Follow")
+                                    .foregroundStyle(Color.white)
+                                    .padding()
+                            )
                     }
                 }
-                .padding(.top, screenSize.height * 0.30) // Adjust top padding as needed
-                .padding(.trailing, screenSize.width * 0.01) // Adjust trailing padding as needed
-                // play with sheet and how it feels
-                .sheet(isPresented: $settingsFlag) {
-                    SettingView()
-                }
+                .frame(width: 100, height: screenSize.height * 0.05)
+                .padding(.top, screenSize.height * 0.32) // Adjust top padding as needed
+                .padding(.trailing, screenSize.width * 0.03) // Adjust trailing padding as needed
+
             } // end of ZStack
-            .navigationTitle(username)
+            .navigationTitle(resultUser.username)
         }
     }
 }
 
-#Preview {
-    LoadProfileView()
+//#Preview {
+//    let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "")
+//    LoadProfileView(resultUser: user)
+//}
+
+
+struct LoadProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "")
+        LoadProfileView(resultUser: user)
+    }
 }

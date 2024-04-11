@@ -132,7 +132,7 @@ struct listUserProfiles: View {
                 }
 
                 // username || can add badges underneath to showcase
-                NavigationLink(destination: LoadProfileView()) {
+                NavigationLink(destination: LoadProfileView(resultUser: resultUser)) {
                     Text(resultUser.username)
                         .font(.headline)
                         .foregroundStyle(Color.orange)
