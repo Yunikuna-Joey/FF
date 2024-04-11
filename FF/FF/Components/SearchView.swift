@@ -47,12 +47,10 @@ struct SearchView: View {
                         // old forLoop
                         let currentUser = viewModel.currentSession
                         ForEach(searchResults.indices, id: \.self) { index in
-                            let user = searchResults[index] 
+                            let user = searchResults[index]
                             listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
                         }
-
                     }
-                    
                 }
                 
                 // search bar
@@ -110,6 +108,9 @@ struct SearchView: View {
 }
 
 struct listUserProfiles: View {
+    @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var followManager: FollowingManager
+    
     let profilePicture: Image
     let username: String
     let imageArray: [String]
@@ -117,6 +118,7 @@ struct listUserProfiles: View {
     
     
     var body: some View {
+        let currentUser = viewModel.currentSession
         VStack {
             HStack {
                 // image on top
