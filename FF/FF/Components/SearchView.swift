@@ -108,17 +108,12 @@ struct SearchView: View {
 }
 
 struct listUserProfiles: View {
-    @EnvironmentObject var viewModel: AuthView
-    @EnvironmentObject var followManager: FollowingManager
-    
     let profilePicture: Image
     let username: String
     let imageArray: [String]
-//    let isFollowing: Bool
     
     
     var body: some View {
-        let currentUser = viewModel.currentSession
         VStack {
             HStack {
                 // image on top
@@ -138,22 +133,8 @@ struct listUserProfiles: View {
                 // push to the left
                 Spacer()
                 
-                // Follow and unfollow button || need logic to toggle between Follow and Unfollow
-                Button(action: {
-                    // will need to embed a Task for the actual follow and unfollow functionality
-                    print("Follow / unfollow button")
-                }) {
-                    RoundedRectangle(cornerRadius: 20)
-                        .foregroundStyle(Color.green)
-                        .overlay(
-                            Text("Follow")
-//                            Text(isFollowing ? "Follow" : "Unfollow")
-                                .foregroundStyle(Color.white)
-                                .padding(4)
-                        )
-                        .frame(width: 100, height: 30)
-                        .padding()
-                }
+                // instead of the follow button [This will now hold badges || achievements]
+                
             }
             
             // horizontal row of 3 most recent images
