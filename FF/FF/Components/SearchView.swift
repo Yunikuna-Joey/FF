@@ -45,7 +45,6 @@ struct SearchView: View {
                     // if it is not empty
                     else {
                         // old forLoop
-                        let currentUser = viewModel.currentSession
                         ForEach(searchResults.indices, id: \.self) { index in
                             let user = searchResults[index]
                             listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
@@ -69,6 +68,9 @@ struct SearchView: View {
                     }
                 
             } // end of ZStack
+            .onTapGesture {             // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
         }
     }
     
@@ -82,9 +84,9 @@ struct SearchView: View {
         }
         
         db.collection("users")
-            .whereField("username", isGreaterThanOrEqualTo: currSearchText)
-            .whereField("username", isLessThan: currSearchText + "\u{f8ff}")
-            .whereField("username", isNotEqualTo: currentUsername)
+            .whereField("databaseUsername", isGreaterThanOrEqualTo: currSearchText.lowercased())
+            .whereField("databaseUsername", isLessThan: currSearchText.lowercased() + "\u{f8ff}")
+            .whereField("databaseUsername", isNotEqualTo: currentUsername.lowercased())
             .getDocuments { querySnapshot, error in
                 if let error = error {
                     print("Error searching users: \(error.localizedDescription)")
@@ -156,6 +158,7 @@ struct listUserProfiles: View {
                 .stroke(Color.gray.opacity(0.5))
         )
         .padding()
+        .padding(.vertical, -10)
     }
 }
 
