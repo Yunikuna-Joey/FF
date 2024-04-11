@@ -9,9 +9,10 @@ import SwiftUI
 struct LoadProfileView: View {
     // CONSTANTS
     @EnvironmentObject var viewModel: AuthView
-    @EnvironmentObject var followManager: FollowingManager
+    @EnvironmentObject var followManager: FollowingManager   
     @State private var current: Tab = .status
     @State private var settingsFlag = false
+    @State private var isFollowing = false
     
     // Initializer
     let resultUser: User
@@ -151,23 +152,52 @@ struct LoadProfileView: View {
                 // Follow || unfollow button
                 VStack {
                     Button(action: {
-                        print("[DEBUG]: Follow || Unfollow button here")
+                        Task {
+                            do {
+                                if isFollowing {
+                                    try await followManager.unfollowUser(userId: viewModel.queryCurrentUserId() ?? "", friendId: resultUser.id)
+                                    isFollowing = false
+                                    print("[DEBUG]: The value after unfollow action is \(isFollowing)")
+                                }
+                                else {
+                                    try await followManager.followUser(userId: viewModel.queryCurrentUserId() ?? "", friendId: resultUser.id)
+                                    isFollowing = true
+                                    print("[DEBUG]: The value after follow action is \(isFollowing)")
+                                }
+                            }
+                            
+                            catch {
+                                print("[DEBUG]: Error following user \(error.localizedDescription)")
+                            }
+                        }
                     }) {
                         RoundedRectangle(cornerRadius: 20)
-                            .foregroundStyle(Color.green)
+                            .foregroundStyle(isFollowing ? Color.red : Color.green)
                             .overlay(
-                                Text("Follow")
+                                Text(isFollowing ? "Unfollow" : "Follow")
                                     .foregroundStyle(Color.white)
                                     .padding()
                             )
                     }
-                }
+                } // end of Vstack
                 .frame(width: 100, height: screenSize.height * 0.05)
                 .padding(.top, screenSize.height * 0.32) // Adjust top padding as needed
                 .padding(.trailing, screenSize.width * 0.03) // Adjust trailing padding as needed
 
             } // end of ZStack
             .navigationTitle(resultUser.username)
+            .onAppear(perform: {
+                // query initial follow status
+                Task {
+                    do {
+                        isFollowing = await followManager.queryFollowStatus(userId: viewModel.queryCurrentUserId() ?? "", friendId: resultUser.id)
+                        print("This is the current value of isFollowing \(isFollowing)")
+                    }
+                    catch {
+                        print("[DEBUG]: Error fetching follow status \(error.localizedDescription)")
+                    }
+                }
+            })
         }
     }
 }

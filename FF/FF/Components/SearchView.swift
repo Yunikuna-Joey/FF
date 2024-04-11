@@ -10,7 +10,7 @@ import FirebaseFirestoreSwift
 
 struct SearchView: View {
     @EnvironmentObject var viewModel: AuthView
-    @EnvironmentObject var followingManager: FollowingManager
+    @EnvironmentObject var followManager: FollowingManager
     // hold some image arary... likely just some random users
     let imageArray = ["Car", "car2", "terrifiednootnoot"]
     let itemSize: CGFloat = (UIScreen.main.bounds.width - 40 - 20) / 3 - 10
