@@ -113,7 +113,7 @@ struct RegisterView: View {
                     Task {
                         // success of registration
                         do {
-                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username, imageArray: imageArray)
+                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username, databaseUsername: username.lowercased(), imageArray: imageArray)
                             success = true
                         }
                         // catch error
