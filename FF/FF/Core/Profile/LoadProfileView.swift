@@ -29,8 +29,9 @@ struct LoadProfileView: View {
         case others
     }
     
-    // [test] dynamic user information loading
-    let value1 = 25
+    // Dynamic information loading variables
+    @State private var followers = 0
+    @State private var following = 0
     
     let screenSize = UIScreen.main.bounds.size
     
@@ -71,13 +72,13 @@ struct LoadProfileView: View {
                         VStack {
                             Text("Followers")
                                 .font(.headline)
-                            Text("\(value1)")
+                            Text("\(followers)")
                         }
                         // category 2
                         VStack {
                             Text("Following")
                                 .font(.headline)
-                            Text("\(value1)")
+                            Text("\(following)")
                         }
                     }
                     .offset(y: -screenSize.height * 0.10)
@@ -191,7 +192,8 @@ struct LoadProfileView: View {
                 Task {
                     do {
                         isFollowing = await followManager.queryFollowStatus(userId: viewModel.queryCurrentUserId() ?? "", friendId: resultUser.id)
-                        print("This is the current value of isFollowing \(isFollowing)")
+                        followers = await followManager.queryFollowers(userId: resultUser.id)
+                        following = await followManager.queryFollowing(userId: resultUser.id)
                     }
                     catch {
                         print("[DEBUG]: Error fetching follow status \(error.localizedDescription)")

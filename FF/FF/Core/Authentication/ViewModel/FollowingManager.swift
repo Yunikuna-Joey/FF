@@ -58,4 +58,40 @@ class FollowingManager: ObservableObject {
             return false
         }
     }
+    
+    func queryFollowers(userId: String) async -> Int {
+        do {
+            let snapshot = try await db.collection("Following")
+                .whereField("friendId", isEqualTo: userId)
+                .getDocuments()
+            
+            let followerCount = snapshot.documents.count
+            print("[DEBUG]: This is the follower count \(followerCount)")
+            
+            return followerCount
+        }
+        
+        catch {
+            print("[DEBUG]: There was an error querying followers \(error)")
+            return 0
+        }
+    }
+    
+    func queryFollowing(userId: String) async -> Int {
+        do {
+            let snapshot = try await db.collection("Following")
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments()
+            
+            let followingCount = snapshot.documents.count
+            print("[DEBUG]: This is the following count \(followingCount)")
+            
+            return followingCount
+        }
+        
+        catch {
+            print("[DEBUG]: There was an error querying following \(error)")
+            return 0
+        }
+    }
 }
