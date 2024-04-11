@@ -19,9 +19,6 @@ struct SearchView: View {
     @State private var searchResults: [User] = []
     private var db = Firestore.firestore()
     
-    let username = "List User 1"
-    
-    
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottom) {
@@ -47,7 +44,9 @@ struct SearchView: View {
                         // old forLoop
                         ForEach(searchResults.indices, id: \.self) { index in
                             let user = searchResults[index]
-                            listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
+                            // will probably just pass in an User object and extract everything to make simplier
+//                            listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
+                            listUserProfiles(resultUser: user)
                         }
                     }
                 }
@@ -109,39 +108,46 @@ struct SearchView: View {
     }
 }
 
+// takes in a user object to extract information
 struct listUserProfiles: View {
-    let profilePicture: Image
-    let username: String
-    let imageArray: [String]
-    
+    let resultUser: User
     
     var body: some View {
         VStack {
             HStack {
                 // image on top
-                profilePicture
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                    .padding(.leading, 20)
-                    .padding(.top, 10)
-                
+                if resultUser.profilePicture.isEmpty {
+                    Image(systemName: "person.circle")        // ****** remove systemName for user-uploaded pictures ******
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .padding(.leading, 20)
+                        .padding(.top, 10)
+                }
+                else {
+                    Image(resultUser.profilePicture)
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .padding(.leading, 20)
+                        .padding(.top, 10)
+                }
+
                 // username || can add badges underneath to showcase
                 NavigationLink(destination: LoadProfileView()) {
-                    Text(username)
+                    Text(resultUser.username)
                         .font(.headline)
                         .foregroundStyle(Color.orange)
                 }
-                
+
                 // push to the left
                 Spacer()
-                
+
                 // instead of the follow button [This will now hold badges || achievements]
-                
+
             }
-            
+
             // horizontal row of 3 most recent images
             HStack {
-                ForEach(imageArray, id: \.self) { image in
+                ForEach(resultUser.imageArray, id: \.self) { image in
                     Image(image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -151,7 +157,7 @@ struct listUserProfiles: View {
                 }
             }
             .padding()
-            
+
         } // vstack for one card
         .background(
             RoundedRectangle(cornerRadius: 20)

@@ -61,7 +61,7 @@ class AuthView: ObservableObject {
             self.userSession = result.user
             
             // Data Model registration
-            let user = User(id: result.user.uid, username: username, databaseUsername: username.lowercased(), firstName: firstName, lastName: lastName, email: email, imageArray: imageArray)
+            let user = User(id: result.user.uid, username: username, databaseUsername: username.lowercased(), firstName: firstName, lastName: lastName, email: email, imageArray: imageArray, profilePicture: "")
             let encodedUser = try Firestore.Encoder().encode(user)
             
             // upload data to firestore on this line
