@@ -57,7 +57,7 @@ struct ProfileView: View {
                     
                     // Stack for username
                     HStack {
-                        Text("@username")
+                        Text(viewModel.currentSession?.username ?? "")
                             .font(.headline)
                         // [play with this offset value]
                     }

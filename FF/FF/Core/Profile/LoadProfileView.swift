@@ -139,7 +139,7 @@ struct LoadProfileView: View {
                         case .status:
                             LoadProfileView1(resultUser: resultUser)
                         case .images:
-                            LoadProfileView2()
+                            LoadProfileView2(resultUser: resultUser)
                         case .others:
                             LoadProfileView3()
                         }

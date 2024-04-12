@@ -52,7 +52,7 @@ class AuthView: ObservableObject {
         print("sign-in function")
     }
     
-    // the user is being created.. [test with firebase and check usermodel]
+    // the user is being created..
     func createUser(withEmail email: String, password: String, firstName: String, lastName: String, username: String, databaseUsername: String, imageArray: [String]) async throws {
         print("Create-user function")
         do {
@@ -138,6 +138,38 @@ class AuthView: ObservableObject {
                 print("Error fetching users: \(error.localizedDescription)")
             }
         }
+    }
+    
+    // grab a user's images from their profile
+    func fetchUserImages(userId: String) async -> [String] {
+        var imageList: [String] = []
+        
+        do {
+            // make a query to the user
+            let querySnapshot = try await db.collection("users")
+                .whereField("id", isEqualTo: userId)
+                .getDocuments()
+            
+            // Check if any documents were returned
+            guard !querySnapshot.isEmpty else {
+                print("No documents were found for this user \(userId)")
+                return imageList
+            }
+            
+            // Iterate through the documents [there should always be one]
+            for document in querySnapshot.documents {
+                // find the imageArray field
+                if let images = document.data()["imageArray"] as? [String] {
+                    imageList = images
+                }
+            }
+        }
+        
+        catch {
+            print("[DEBUG]: There was an error fetching user images \(error.localizedDescription)")
+        }
+        
+        return imageList
     }
 }
 

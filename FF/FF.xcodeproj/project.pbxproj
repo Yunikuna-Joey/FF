@@ -207,12 +207,12 @@
 		D4092E402BA5120D00C42840 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */,
 				D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */,
 				D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */,
 				D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */,
 				D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */,
 				D494E4A12BBE91FA00283497 /* SettingView.swift */,
+				D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */,
 				D4843F2F2BC8E967003A20C3 /* LoadProfileView1.swift */,
 				D4843F312BC8E97B003A20C3 /* LoadProfileView2.swift */,
 				D4843F332BC8E987003A20C3 /* LoadProfileView3.swift */,
