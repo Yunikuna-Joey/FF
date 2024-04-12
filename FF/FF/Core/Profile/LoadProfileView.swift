@@ -137,11 +137,11 @@ struct LoadProfileView: View {
                     VStack {
                         switch current {
                         case .status:
-                            ProfileView1()
+                            LoadProfileView1(resultUser: resultUser)
                         case .images:
-                            ProfileView2()
+                            LoadProfileView2()
                         case .others:
-                            ProfileView3()
+                            LoadProfileView3()
                         }
                     }
                     .offset(y: -screenSize.height * 0.10)

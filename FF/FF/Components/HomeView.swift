@@ -23,7 +23,7 @@ struct HomeView: View {
     
     var body: some View {
         // Scroll behavior for multiple statuses
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             // vertical for ordering [spacing between each status update is controlled]
             VStack(spacing: 10) {
                 // for loop for processing a user's status's

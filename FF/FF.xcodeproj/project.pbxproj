@@ -46,6 +46,9 @@
 		D418F7612BC4938300ACDE99 /* Following.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F7602BC4938300ACDE99 /* Following.swift */; };
 		D418F7632BC4954700ACDE99 /* FollowingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F7622BC4954700ACDE99 /* FollowingManager.swift */; };
 		D418F7652BC5D10500ACDE99 /* LoadProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */; };
+		D4843F302BC8E967003A20C3 /* LoadProfileView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4843F2F2BC8E967003A20C3 /* LoadProfileView1.swift */; };
+		D4843F322BC8E97B003A20C3 /* LoadProfileView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4843F312BC8E97B003A20C3 /* LoadProfileView2.swift */; };
+		D4843F342BC8E987003A20C3 /* LoadProfileView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4843F332BC8E987003A20C3 /* LoadProfileView3.swift */; };
 		D494E4A22BBE91FA00283497 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D494E4A12BBE91FA00283497 /* SettingView.swift */; };
 		D4BB30EF2BB25C66009CE546 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BB30EE2BB25C66009CE546 /* LocationManager.swift */; };
 		D4C702442BABF38D0091F1B8 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C702432BABF38D0091F1B8 /* Location.swift */; };
@@ -79,6 +82,9 @@
 		D418F7602BC4938300ACDE99 /* Following.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Following.swift; sourceTree = "<group>"; };
 		D418F7622BC4954700ACDE99 /* FollowingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingManager.swift; sourceTree = "<group>"; };
 		D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadProfileView.swift; sourceTree = "<group>"; };
+		D4843F2F2BC8E967003A20C3 /* LoadProfileView1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadProfileView1.swift; sourceTree = "<group>"; };
+		D4843F312BC8E97B003A20C3 /* LoadProfileView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadProfileView2.swift; sourceTree = "<group>"; };
+		D4843F332BC8E987003A20C3 /* LoadProfileView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadProfileView3.swift; sourceTree = "<group>"; };
 		D494E4A12BBE91FA00283497 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		D4BB30EE2BB25C66009CE546 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		D4C702432BABF38D0091F1B8 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -201,12 +207,15 @@
 		D4092E402BA5120D00C42840 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */,
 				D4E4FAD52B9A8ECB00F5C202 /* ProfileView.swift */,
 				D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */,
 				D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */,
 				D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */,
 				D494E4A12BBE91FA00283497 /* SettingView.swift */,
-				D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */,
+				D4843F2F2BC8E967003A20C3 /* LoadProfileView1.swift */,
+				D4843F312BC8E97B003A20C3 /* LoadProfileView2.swift */,
+				D4843F332BC8E987003A20C3 /* LoadProfileView3.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -384,6 +393,7 @@
 			files = (
 				D4092E392BA5039800C42840 /* AuthView.swift in Sources */,
 				D418F75F2BC1EAC000ACDE99 /* Messages.swift in Sources */,
+				D4843F302BC8E967003A20C3 /* LoadProfileView1.swift in Sources */,
 				D418F7652BC5D10500ACDE99 /* LoadProfileView.swift in Sources */,
 				D4E4FAD82B9A9FC200F5C202 /* RegisterView2.swift in Sources */,
 				D418F7632BC4954700ACDE99 /* FollowingManager.swift in Sources */,
@@ -406,6 +416,8 @@
 				D4C702442BABF38D0091F1B8 /* Location.swift in Sources */,
 				D4092E462BA5378400C42840 /* NavigatorView.swift in Sources */,
 				D4E4FAD02B9A8E6E00F5C202 /* SearchView.swift in Sources */,
+				D4843F322BC8E97B003A20C3 /* LoadProfileView2.swift in Sources */,
+				D4843F342BC8E987003A20C3 /* LoadProfileView3.swift in Sources */,
 				D418F75A2BC1DDD100ACDE99 /* IndividualChatView.swift in Sources */,
 				D4E4FABC2B99C19600F5C202 /* FFApp.swift in Sources */,
 				D4E4FAD22B9A8E7A00F5C202 /* CheckinView.swift in Sources */,
