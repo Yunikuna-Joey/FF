@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct LoadProfileView3: View {
+    @EnvironmentObject var statusProcess: StatusProcessView
     // keep track of current day
     @State private var currSelect: Int?
     
@@ -46,6 +47,8 @@ struct LoadProfileView3: View {
         "November",
         "December"
     ]
+    
+    let resultUser: User
     
     @State private var currMonthName = DateFormatter().monthSymbols[Calendar.current.component(.month, from: Date()) - 1]
     @State private var today = Calendar.current.component(.day, from: Date())
@@ -103,12 +106,36 @@ struct LoadProfileView3: View {
                     }
                     
                     // gets all of the days and marks which one is 'today'
+//                    ForEach(monthDays, id: \.self) { day in
+//                        let isToday = day == today
+//                        CalendarDayView(day: day, selection: currSelect == day, isToday: isToday, action: {
+//                            print("Tapped on this day \(day)")
+//                            currSelect = day
+//                            currStatus = StatusView(username: "User", timeAgo: "Now", status: "Status for day \(day)")
+//                        })
+//                    }
+                    
                     ForEach(monthDays, id: \.self) { day in
                         let isToday = day == today
+                        let tappedDate = Calendar.current.date(bySetting: .day, value: day, of: Date())
                         CalendarDayView(day: day, selection: currSelect == day, isToday: isToday, action: {
-                            print("Tapped on this day \(day)")
-                            currSelect = day
-                            currStatus = StatusView(username: "User", timeAgo: "Now", status: "Status for day \(day)")
+                            Task {
+                                do {
+                                    let statusList = try await statusProcess.fetchCalendarStatus(userId: resultUser.id, day: tappedDate ?? Date())
+                                    if let status = statusList.first {
+                                        currSelect = day
+                                        currStatus = status
+                                    } 
+                                    else {
+                                        // If no status is available for the tapped day, you may handle it here
+                                        // For example, display a message or perform any other action
+                                        print("No status available for day \(day)")
+                                    }
+                                } 
+                                catch {
+                                    print("Error fetching status for day \(day): \(error.localizedDescription)")
+                                }
+                            }
                         })
                     }
                 }
@@ -141,6 +168,13 @@ struct LoadProfileView3: View {
     }
 }
 
-#Preview {
-    LoadProfileView3()
+//#Preview {
+//    LoadProfileView3()
+//}
+
+struct LoadProfileView3_Previews: PreviewProvider {
+    static var previews: some View {
+        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "")
+        LoadProfileView3(resultUser: user)
+    }
 }

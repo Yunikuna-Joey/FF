@@ -70,4 +70,40 @@ class StatusProcessView: ObservableObject {
             }
     }
     
+    func fetchCalendarStatus(userId: String, day: Date) async -> [StatusView] {
+        var statusList: [StatusView] = []
+        do {
+            // create the range for time to filter out the statuses
+            let calendar = Calendar.current
+            let startOfDay = calendar.startOfDay(for: day)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)
+            
+            // query the database collection
+            let querySnapshot = try await db.collection("Statuses")
+                .whereField("userId", isEqualTo: userId)
+                .whereField("timestamp", isGreaterThanOrEqualTo: startOfDay)
+                .whereField("timestamp", isLessThan: endOfDay)
+                .getDocuments()
+            
+            print("[DEBUG]: This is querySnapshot \(querySnapshot)")
+            
+            for document in querySnapshot.documents {
+                // extract the data from the document
+                let username = document["userId"] as? String ?? ""
+                let timestamp = document["timestamp"] as? String ?? ""
+                let content = document["content"] as? String ?? ""
+                
+                let status = StatusView(username: username, timeAgo: timestamp, status: content)
+                
+                statusList.append(status)
+            }
+        }
+        
+        catch {
+            print("[DEBUG]: There was an error fetching this day status \(error.localizedDescription)")
+        }
+        
+        return statusList
+    }
+    
 }

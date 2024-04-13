@@ -141,7 +141,7 @@ struct LoadProfileView: View {
                         case .images:
                             LoadProfileView2(resultUser: resultUser)
                         case .others:
-                            LoadProfileView3()
+                            LoadProfileView3(resultUser: resultUser)
                         }
                     }
                     .offset(y: -screenSize.height * 0.10)
