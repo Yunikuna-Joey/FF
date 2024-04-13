@@ -157,7 +157,7 @@ struct ProfileView3: View {
         let empty = Array(1..<startDay)
         let monthDays = Array(1...daysInMonth)
         
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack {
                 // Add in the dynamic month
                 HStack {
