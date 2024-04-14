@@ -258,26 +258,6 @@ struct RoundedText: View {
     }
 }
 
-struct createButton: View {
-    var text: String
-    
-    var body: some View {
-        Button(action: {
-            print("[DEBUG]: You pressed the creation button")
-        }) {
-            Image(systemName: "plus.app.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 30, height: 30)
-            Text(text)
-                .font(.system(size: 20))
-        }
-        .foregroundStyle(Color.blue)
-        .padding()
-    }
-}
-
-
 struct ProfileView3: View {
     let screenSize = UIScreen.main.bounds.size
     
@@ -287,15 +267,9 @@ struct ProfileView3: View {
             .overlay(
                 VStack {
                     // button to add plan
-                    HStack {
-                        createButton(text: "Create your plan")
-                        Spacer()
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .foregroundStyle(Color.white)
-                    )
+                    createButton(text: "Create your plan")
                     
+                    // pushes button towards the top
                     Spacer()
                 }
                 .padding()
