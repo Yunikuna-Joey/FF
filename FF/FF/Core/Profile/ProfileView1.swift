@@ -59,7 +59,7 @@ struct ProfileStatusUpdateView: View {
     
     var body: some View {
         // what each individual update is going to follow [stacked bottom to top]
-        VStack(alignment: .leading, spacing: 10) {
+        LazyVStack(alignment: .leading, spacing: 10) {
             // stacked left to right
             HStack(spacing: 10) {
                 // profile image on the left

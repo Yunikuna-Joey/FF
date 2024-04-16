@@ -159,13 +159,29 @@ struct PlanScreenView: View {
             VStack {
                 Spacer()
                 
-                TextField("Plan Name?", text: $planTitle)
+                HStack {
+                    TextField("Plan Name?", text: $planTitle)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 20)
+                        .background(Color.gray.opacity(0.33))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                    
+                    Button(action: {
+                        print("[DEBUG]: This will act as the save button (execute backend functionality)")
+                    }) {
+                        Text("Save Plan!")
+                            .foregroundStyle(Color.green)
+                            .font(.headline)
+                    }
                     .padding(.vertical, 8)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 10)
                     .background(Color.gray.opacity(0.33))
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .padding(.bottom)
+                }
             }
         }
     }
