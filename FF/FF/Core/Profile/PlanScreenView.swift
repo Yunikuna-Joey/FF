@@ -67,8 +67,8 @@ struct planButton: View {
 
 // The different type of workouts
 struct Workout: View {
-    @State private var reps: [String: Int] = [:]
     var areaTarget: String
+    @Binding var reps: [String: Int]
     
     // this should represent the key within the dictionary
     var book: [String: [String]] = [
@@ -103,6 +103,7 @@ struct PlanScreenView: View {
     // Categories
     // Legs || Arms || Chest || Back ||
     private var categories: [String] = ["Arms", "Back", "Chest", "Legs"]
+    @State private var currentReps: [String: Int] = [:]
     @State private var selectedCategory: String?
     
     var body: some View {
@@ -115,7 +116,7 @@ struct PlanScreenView: View {
                             planButton(title: categories[index], selectedCategory: $selectedCategory)
                             
                             if selectedCategory == categories[index] {
-                                Workout(areaTarget: categories[index])
+                                Workout(areaTarget: categories[index], reps: $currentReps)
                             }
                             
                         }
