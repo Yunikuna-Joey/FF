@@ -240,42 +240,30 @@ struct StatusView: View {
 //    }
 //} // end of struct
 
-struct RoundedText: View {
-    var text: String
-    var cornerRadius: CGFloat = 10.0
-    var backgroundColor: Color = .blue
-    var textColor: Color = .white
-    
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(backgroundColor)
-            
-            Text(text)
-                .foregroundColor(textColor)
-                .padding()
-        }
-    }
-}
-
 struct ProfileView3: View {
     let screenSize = UIScreen.main.bounds.size
+    @State var planScreenFlag: Bool = false
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
-            .fill(Color.gray)
-            .overlay(
-                VStack {
-                    // button to add plan
-                    createButton(text: "Create your plan")
-                    
-                    // pushes button towards the top
-                    Spacer()
-                }
+        NavigationStack {
+            RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
+                .fill(Color.gray)
+                .overlay(
+                    VStack {
+                        // button to add plan
+                        createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
+                        
+                        // pushes button towards the top
+                        Spacer()
+                    }
+                        .padding()
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding()
+                .navigationDestination(isPresented: $planScreenFlag) {
+                    PlanScreenView()
+                }
+        }
     }
 }
 
