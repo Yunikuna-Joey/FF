@@ -245,25 +245,37 @@ struct ProfileView3: View {
     @State var planScreenFlag: Bool = false
     
     var body: some View {
-        NavigationStack {
-            RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
-                .fill(Color.gray)
-                .overlay(
-                    VStack {
-                        // button to add plan
-                        createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
-                        
-                        // pushes button towards the top
-                        Spacer()
-                    }
-                        .padding()
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
-                .navigationDestination(isPresented: $planScreenFlag) {
-                    PlanScreenView()
-                }
+        // *** Old implementation
+//        NavigationStack {
+//            RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
+//                .fill(Color.gray)
+//                .overlay(
+//                    VStack {
+//                        // button to add plan
+//                        createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
+//                        
+//                        // pushes button towards the top
+//                        Spacer()
+//                    }
+//                        .padding()
+//                )
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                .padding()
+//                .navigationDestination(isPresented: $planScreenFlag) {
+//                    PlanScreenView()
+//                }
+//        }
+        
+        // **** new implementation
+        LazyVStack {
+            createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
+            Spacer()
         }
+        .padding()
+        .sheet(isPresented: $planScreenFlag) {
+            PlanScreenView()
+        }
+        
     }
 }
 

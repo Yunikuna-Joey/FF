@@ -105,30 +105,69 @@ struct PlanScreenView: View {
     private var categories: [String] = ["Arms", "Back", "Chest", "Legs"]
     @State private var currentReps: [String: Int] = [:]
     @State private var selectedCategory: String?
+    @State private var planTitle: String = ""
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
-            .fill(Color.gray)
-            .overlay(
-                ScrollView(showsIndicators: false) {
-                    VStack {
-                        ForEach(categories.indices, id: \.self) { index in
-                            planButton(title: categories[index], selectedCategory: $selectedCategory)
-                            
-                            if selectedCategory == categories[index] {
-                                Workout(areaTarget: categories[index], reps: $currentReps)
-                            }
-                            
-                        }
+//        RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
+//            .fill(Color.gray.opacity(0.50))
+//            .overlay(
+//                ScrollView(showsIndicators: false) {
+//                    VStack {
+//                        ForEach(categories.indices, id: \.self) { index in
+//                            planButton(title: categories[index], selectedCategory: $selectedCategory)
+//                            
+//                            if selectedCategory == categories[index] {
+//                                Workout(areaTarget: categories[index], reps: $currentReps)
+//                            }
+//                            
+//                        }
+//                        
+//                        // pushes button towards the top
+//                        Spacer()
+//                        
+////                        TextField("What's the name of your plan?", text: $planTitle)
+////                            .padding(.vertical, 8)
+////                            .padding(.horizontal, 20)
+////                            .background(Color.gray.opacity(0.33))
+////                            .cornerRadius(10)
+////                            .padding(.bottom)
+//                            
+//                    }
+//                    .padding()
+//                }
+//            )
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .padding()
+        
+        ZStack {
+            ScrollView(showsIndicators: false) {
+                LazyVStack {
+                    ForEach(categories.indices, id: \.self) { index in
+                        planButton(title: categories[index], selectedCategory: $selectedCategory)
                         
-                        // pushes button towards the top
-                        Spacer()
+                        if selectedCategory == categories[index] {
+                            Workout(areaTarget: categories[index], reps: $currentReps)
+                        }
                     }
-                    .padding()
-                }
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding()
+                    
+                    Spacer()
+                    
+                } // end of Vstack
+                .padding()
+            }
+            
+            VStack {
+                Spacer()
+                
+                TextField("Plan Name?", text: $planTitle)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 20)
+                    .background(Color.gray.opacity(0.33))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                    .padding(.bottom)
+            }
+        }
     }
 }
 
