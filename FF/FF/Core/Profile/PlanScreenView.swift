@@ -108,6 +108,11 @@ struct PlanScreenView: View {
     @State private var planTitle: String = ""
     @EnvironmentObject var planManager: PlanManager
     @EnvironmentObject var viewModel: AuthView
+    @Binding var planScreenFlag: Bool
+    
+    init(planScreenFlag: Binding<Bool>) {
+        _planScreenFlag = planScreenFlag
+    }
     
     var body: some View {
         ZStack {
@@ -144,7 +149,10 @@ struct PlanScreenView: View {
                         Task {
                             do {
                                 // we need a final list containing all the various workouts : reps
-                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: <#T##[String : Int]#>)
+                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: currentReps)
+                                
+                                // This flag's purpose is to dismiss the sheet when there is a successful save 
+                                planScreenFlag = false
                             }
                             
                             catch {
@@ -169,6 +177,7 @@ struct PlanScreenView: View {
     }
 }
 
-#Preview {
-    PlanScreenView()
-}
+//#Preview {
+//    @Binding var flag = true
+//    PlanScreenView(planScreenFlag: flag)
+//}

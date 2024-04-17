@@ -266,7 +266,7 @@ struct ProfileView3: View {
             planManager.fetchPlan(userId: currentUser!.id)
         }
         .sheet(isPresented: $planScreenFlag) {
-            PlanScreenView()
+            PlanScreenView(planScreenFlag: $planScreenFlag)
         }
         
     }
