@@ -70,6 +70,7 @@
 		D4E4FADA2B9FD47800F5C202 /* ProfileView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */; };
 		D4E4FADC2B9FD8DE00F5C202 /* ProfileView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */; };
 		D4E4FADE2B9FD8E900F5C202 /* ProfileView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */; };
+		D4F141552BD05B9900BE57C3 /* viewPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F141542BD05B9900BE57C3 /* viewPlanView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -110,6 +111,7 @@
 		D4E4FAD92B9FD47800F5C202 /* ProfileView1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView1.swift; sourceTree = "<group>"; };
 		D4E4FADB2B9FD8DE00F5C202 /* ProfileView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView2.swift; sourceTree = "<group>"; };
 		D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView3.swift; sourceTree = "<group>"; };
+		D4F141542BD05B9900BE57C3 /* viewPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewPlanView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -224,6 +226,7 @@
 				D4843F312BC8E97B003A20C3 /* LoadProfileView2.swift */,
 				D4843F332BC8E987003A20C3 /* LoadProfileView3.swift */,
 				D4843F372BCB0945003A20C3 /* PlanScreenView.swift */,
+				D4F141542BD05B9900BE57C3 /* viewPlanView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -428,6 +431,7 @@
 				D4C702442BABF38D0091F1B8 /* Location.swift in Sources */,
 				D4092E462BA5378400C42840 /* NavigatorView.swift in Sources */,
 				D4E4FAD02B9A8E6E00F5C202 /* SearchView.swift in Sources */,
+				D4F141552BD05B9900BE57C3 /* viewPlanView.swift in Sources */,
 				D4843F322BC8E97B003A20C3 /* LoadProfileView2.swift in Sources */,
 				D4843F342BC8E987003A20C3 /* LoadProfileView3.swift in Sources */,
 				D418F75A2BC1DDD100ACDE99 /* IndividualChatView.swift in Sources */,

@@ -6,35 +6,6 @@
 
 import SwiftUI
 
-struct createButton: View {
-    var text: String
-    @Binding var planScreenFlag: Bool
-    
-    var body: some View {
-        HStack {
-            Button(action: {
-                self.planScreenFlag = true
-                print("[DEBUG]: You pressed the creation button")
-            }) {
-                Image(systemName: "plus.app.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                Text("Create your plan")
-                    .font(.system(size: 20))
-            }
-            .foregroundStyle(Color.blue)
-            .padding()
-            
-            Spacer()
-        }
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .foregroundStyle(Color.white)
-        )
-    }
-}
-
 // Titling the different categories
 struct planButton: View {
     var title: String
@@ -151,7 +122,7 @@ struct PlanScreenView: View {
                                 // we need a final list containing all the various workouts : reps
                                 try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: currentReps)
                                 
-                                // This flag's purpose is to dismiss the sheet when there is a successful save 
+                                // This flag's purpose is to dismiss the sheet when there is a successful save
                                 planScreenFlag = false
                             }
                             
