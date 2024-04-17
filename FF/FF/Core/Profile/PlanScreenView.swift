@@ -41,6 +41,7 @@ struct Workout: View {
     var areaTarget: String
     @Binding var reps: [String: Int]
     @Binding var sets: [String: Int]
+    @Binding var finalPlan: [String: WorkoutDetail]
     
     // this should represent the key within the dictionary
     var book: [String: [String]] = [
@@ -49,9 +50,6 @@ struct Workout: View {
         "Chest": ["Bench Press", "Dumbell Press", "Incline Bench"],
         "Legs": ["Squats", "Seated Leg Extensions", "Calf Raises"],
     ]
-    
-    // workout name : amount of reps
-    @Binding var finalPlan: [String: WorkoutDetail]
     
     var body: some View {
         LazyVStack {
@@ -74,6 +72,12 @@ struct Workout: View {
                         .frame(width: 200)
                     }
                     .padding()
+                    .onChange(of: sets[workout]) { _, newValue in
+                        finalPlan[workout] = WorkoutDetail(sets: newValue ?? 0, reps: reps[workout] ?? 0)
+                    }
+                    .onChange(of: reps[workout]) { _, newValue in
+                        finalPlan[workout] = WorkoutDetail(sets: sets[workout] ?? 0, reps: newValue ?? 0)
+                    }
                     
                     Text(workout)
                         .frame(width: 100)

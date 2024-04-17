@@ -175,24 +175,26 @@ struct ProfileView3: View {
     var body: some View {
         // **** new implementation
         NavigationStack {
-            LazyVStack {
-                createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
-                
-                ForEach(planManager.planList) { plan in
-                    displayWorkoutButton(planTitle: plan.planTitle, viewPlanFlag: $viewPlanFlag)
+            ScrollView(showsIndicators: false) {
+                LazyVStack {
+                    createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
+                    
+                    ForEach(planManager.planList) { plan in
+                        displayWorkoutButton(planTitle: plan.planTitle, viewPlanFlag: $viewPlanFlag)
+                    }
+                    
                 }
-                
-            }
-            .padding(.bottom, 250)
-            .onAppear {
-                let currentUser = viewModel.currentSession
-                planManager.fetchPlan(userId: currentUser!.id)
-            }
-            .sheet(isPresented: $planScreenFlag) {
-                PlanScreenView(planScreenFlag: $planScreenFlag)
-            }
-            .navigationDestination(isPresented: $viewPlanFlag) {
-                viewPlanView()
+                .padding(.bottom, 250)
+                .onAppear {
+                    let currentUser = viewModel.currentSession
+                    planManager.fetchPlan(userId: currentUser!.id)
+                }
+                .sheet(isPresented: $planScreenFlag) {
+                    PlanScreenView(planScreenFlag: $planScreenFlag)
+                }
+                .navigationDestination(isPresented: $viewPlanFlag) {
+                    viewPlanView()
+                }
             }
         }
     }
