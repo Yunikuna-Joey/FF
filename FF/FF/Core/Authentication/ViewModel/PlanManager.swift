@@ -13,7 +13,7 @@ class PlanManager: NSObject, ObservableObject {
     @Published var planList: [Plan] = []
     private let db = Firestore.firestore()
     
-    func savePlan(userId: String, planTitle: String, workoutType: [String: Int]) async {
+    func savePlan(userId: String, planTitle: String, workoutType: [String: WorkoutDetail]) async {
         do {
             // pack the variables into an object newPlan
             let newPlan = Plan(id: UUID().uuidString, userId: userId, planTitle: planTitle, workoutType: workoutType)

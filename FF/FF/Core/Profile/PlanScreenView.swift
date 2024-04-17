@@ -40,6 +40,7 @@ struct planButton: View {
 struct Workout: View {
     var areaTarget: String
     @Binding var reps: [String: Int]
+    @Binding var sets: [String: Int]
     
     // this should represent the key within the dictionary
     var book: [String: [String]] = [
@@ -50,24 +51,39 @@ struct Workout: View {
     ]
     
     // workout name : amount of reps
-    var finalPlan: [String: Int] = [:]
+    @Binding var finalPlan: [String: WorkoutDetail]
     
     var body: some View {
         LazyVStack {
             ForEach(book[areaTarget] ?? [], id: \.self) { workout in
                 HStack {
-                    Stepper(value: Binding(
+                    LazyVStack {
+                        Stepper(value: Binding(
+                            get: { sets[workout] ?? 0 },
+                            set: { sets[workout] = $0 }
+                        ), in: 0...10, label: { Text("Sets: \(sets[workout] ?? 0)") })
+                        .padding()
+                        .frame(width: 200)
+                        
+                        
+                        Stepper(value: Binding(
                             get: { reps[workout] ?? 0 },
                             set: { reps[workout] = $0 }
                         ), in: 0...50, label: { Text("Reps: \(reps[workout] ?? 0)") })
-                            .padding()
+                        .padding()
+                        .frame(width: 200)
+                    }
+                    .padding()
                     
                     Text(workout)
+                        .frame(width: 100)
                         .padding()
-                }
-            }
-        }
-    }
+                    
+                   
+                } // end of hstack
+            }// for loop
+        } // lazy vstack
+    } // body
 }
 
 struct PlanScreenView: View {
@@ -75,8 +91,10 @@ struct PlanScreenView: View {
     // Legs || Arms || Chest || Back ||
     private var categories: [String] = ["Arms", "Back", "Chest", "Legs"]
     @State private var currentReps: [String: Int] = [:]
+    @State private var currentSets: [String: Int] = [:]
     @State private var selectedCategory: String?
     @State private var planTitle: String = ""
+    @State private var finalPlan: [String: WorkoutDetail] = [:]
     @EnvironmentObject var planManager: PlanManager
     @EnvironmentObject var viewModel: AuthView
     @Binding var planScreenFlag: Bool
@@ -93,7 +111,7 @@ struct PlanScreenView: View {
                         planButton(title: categories[index], selectedCategory: $selectedCategory)
                         
                         if selectedCategory == categories[index] {
-                            Workout(areaTarget: categories[index], reps: $currentReps)
+                            Workout(areaTarget: categories[index], reps: $currentReps, sets: $currentSets, finalPlan: $finalPlan)
                         }
                     }
                     
@@ -119,8 +137,8 @@ struct PlanScreenView: View {
                         let userId = viewModel.queryCurrentUserId()
                         Task {
                             do {
-                                // we need a final list containing all the various workouts : reps
-                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: currentReps)
+                                // implement trying to save the sets alongside with reps and workout
+                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: finalPlan)
                                 
                                 // This flag's purpose is to dismiss the sheet when there is a successful save
                                 planScreenFlag = false

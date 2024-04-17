@@ -5,8 +5,13 @@
 //
 
 import Foundation
- 
-// temporary data model... might need to modify fields? 
+
+struct WorkoutDetail: Codable {
+    let sets: Int
+    let reps: Int
+}
+
+// temporary data model... might need to modify fields?
 struct Plan: Identifiable, Codable {
     // plan id
     let id: String
@@ -18,6 +23,5 @@ struct Plan: Identifiable, Codable {
     let planTitle: String
     
     // plan contents
-    let workoutType: [String: Int]
-
+    let workoutType: [String: WorkoutDetail]
 }
