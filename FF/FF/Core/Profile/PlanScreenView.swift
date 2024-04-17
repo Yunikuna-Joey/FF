@@ -106,39 +106,10 @@ struct PlanScreenView: View {
     @State private var currentReps: [String: Int] = [:]
     @State private var selectedCategory: String?
     @State private var planTitle: String = ""
+    @EnvironmentObject var planManager: PlanManager
+    @EnvironmentObject var viewModel: AuthView
     
     var body: some View {
-//        RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
-//            .fill(Color.gray.opacity(0.50))
-//            .overlay(
-//                ScrollView(showsIndicators: false) {
-//                    VStack {
-//                        ForEach(categories.indices, id: \.self) { index in
-//                            planButton(title: categories[index], selectedCategory: $selectedCategory)
-//                            
-//                            if selectedCategory == categories[index] {
-//                                Workout(areaTarget: categories[index], reps: $currentReps)
-//                            }
-//                            
-//                        }
-//                        
-//                        // pushes button towards the top
-//                        Spacer()
-//                        
-////                        TextField("What's the name of your plan?", text: $planTitle)
-////                            .padding(.vertical, 8)
-////                            .padding(.horizontal, 20)
-////                            .background(Color.gray.opacity(0.33))
-////                            .cornerRadius(10)
-////                            .padding(.bottom)
-//                            
-//                    }
-//                    .padding()
-//                }
-//            )
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            .padding()
-        
         ZStack {
             ScrollView(showsIndicators: false) {
                 LazyVStack {
@@ -169,6 +140,17 @@ struct PlanScreenView: View {
                         .padding(.bottom)
                     
                     Button(action: {
+                        let userId = viewModel.queryCurrentUserId()
+                        Task {
+                            do {
+                                // we need a final list containing all the various workouts : reps
+                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: <#T##[String : Int]#>)
+                            }
+                            
+                            catch {
+                                print("[DEBUG]: There was an error processing or saving your plan \(error.localizedDescription)")
+                            }
+                        }
                         print("[DEBUG]: This will act as the save button (execute backend functionality)")
                     }) {
                         Text("Save Plan!")

@@ -18,6 +18,6 @@ struct Plan: Identifiable, Codable {
     let planTitle: String
     
     // plan contents
-    let workoutType: [String]
+    let workoutType: [String: Int]
 
 }

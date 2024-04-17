@@ -241,37 +241,30 @@ struct StatusView: View {
 //} // end of struct
 
 struct ProfileView3: View {
+    @EnvironmentObject var planManager: PlanManager
+    @EnvironmentObject var viewModel: AuthView
     let screenSize = UIScreen.main.bounds.size
     @State var planScreenFlag: Bool = false
     
     var body: some View {
-        // *** Old implementation
-//        NavigationStack {
-//            RoundedRectangle(cornerRadius: 10) // Adjust corner radius as needed
-//                .fill(Color.gray)
-//                .overlay(
-//                    VStack {
-//                        // button to add plan
-//                        createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
-//                        
-//                        // pushes button towards the top
-//                        Spacer()
-//                    }
-//                        .padding()
-//                )
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .padding()
-//                .navigationDestination(isPresented: $planScreenFlag) {
-//                    PlanScreenView()
-//                }
-//        }
-        
         // **** new implementation
         LazyVStack {
             createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
             Spacer()
+            
+            LazyVStack {
+                ForEach(planManager.planList) { plan in
+                    Text(plan.planTitle)
+                        .padding()
+                        .foregroundStyle(Color.orange)
+                }
+            }
         }
         .padding()
+        .onAppear {
+            let currentUser = viewModel.currentSession
+            planManager.fetchPlan(userId: currentUser!.id)
+        }
         .sheet(isPresented: $planScreenFlag) {
             PlanScreenView()
         }
