@@ -181,6 +181,9 @@ struct ProfileView3: View {
                     
                     ForEach(planManager.planList) { plan in
                         displayWorkoutButton(planTitle: plan.planTitle, viewPlanFlag: $viewPlanFlag)
+                            .navigationDestination(isPresented: $viewPlanFlag) {
+                                viewPlanView(plan: plan)
+                            }
                     }
                     
                 }
@@ -192,9 +195,9 @@ struct ProfileView3: View {
                 .sheet(isPresented: $planScreenFlag) {
                     PlanScreenView(planScreenFlag: $planScreenFlag)
                 }
-                .navigationDestination(isPresented: $viewPlanFlag) {
-                    viewPlanView()
-                }
+//                .navigationDestination(isPresented: $viewPlanFlag) {
+//                    viewPlanView()
+//                }
             }
         }
     }
