@@ -8,7 +8,10 @@ import SwiftUI
 
 struct viewPlanView: View {
     @EnvironmentObject var planManager: PlanManager
+    @State private var deleteNavigationFlag: Bool = false
+    @State private var editNavigationFlag: Bool = false
     var plan: Plan
+    
     
     var formattedWorkoutType: String {
             var formattedString = ""
@@ -20,55 +23,72 @@ struct viewPlanView: View {
         }
     
     var body: some View {
-        VStack {
-            Text("\(plan.planTitle)")
-                .padding()
-                .foregroundStyle(Color.orange)
-            
-            
-            HStack {
-                Text("\(formattedWorkoutType)")
+        NavigationStack {
+            VStack {
+                Text("\(plan.planTitle)")
                     .padding()
-                    .foregroundStyle(Color.purple)
+                    .foregroundStyle(Color.orange)
+                
+                
+                HStack {
+                    Text("\(formattedWorkoutType)")
+                        .padding()
+                        .foregroundStyle(Color.purple)
+                    
+                    Spacer()
+                }
                 
                 Spacer()
+                
+                HStack {
+                    // Edit button Here
+                    Button(action: {
+                        editNavigationFlag = true
+                    }) {
+                        Text("Edit Plan")
+                            .padding()
+                            .foregroundStyle(Color.white)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .foregroundStyle(Color.purple)
+                            )
+                        
+                    }
+                    
+                    
+                    
+                    // Delete button here
+                    Button(action: {
+                        Task {
+                            do {
+                                try await planManager.deletePlan(id: plan.id)
+                                deleteNavigationFlag = true
+                            }
+                            catch {
+                                print("[DEBUG]: There was an error deleting the workout plan \(error.localizedDescription)")
+                            }
+                        }
+                    }) {
+                        Text("Delete button")
+                            .padding()
+                            .foregroundStyle(Color.white)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .foregroundStyle(Color.red)
+                            )
+                        
+                    }
+                    
+                    
+                } // end of HStack
+            } // end of vstack
+            .navigationDestination(isPresented: $deleteNavigationFlag) {
+                ProfileView3()
+                    .navigationBarBackButtonHidden(true)
             }
-            
-            Spacer()
-            
-            HStack {
-                // Edit button Here
-                Button(action: {
-                    print("This will act as the edit button")
-                }) {
-                    Text("Edit Plan")
-                        .padding()
-                        .foregroundStyle(Color.white)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .foregroundStyle(Color.purple)
-                        )
-
-                }
-                
-
-                
-                // Delete button here
-                Button(action: {
-                    print("This will act as the delete button")
-                }) {
-                    Text("Delete button")
-                        .padding()
-                        .foregroundStyle(Color.white)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .foregroundStyle(Color.red)
-                        )
-
-                }
-
-
-            } // end of HStack
+            .navigationDestination(isPresented: $editNavigationFlag) {
+                PlanScreenView(planScreenFlag: $editNavigationFlag)
+            }
         }
     }
 }

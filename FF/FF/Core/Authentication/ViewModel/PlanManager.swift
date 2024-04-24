@@ -53,4 +53,17 @@ class PlanManager: NSObject, ObservableObject {
                 }
             }
     }
+    
+    func deletePlan(id: String) async throws {
+        do {
+            try await Firestore.firestore().collection("Plans").document(id).delete()
+        }
+        catch {
+            print("[DEBUG]: Error deleting status: \(error.localizedDescription)")
+        }
+    }
+    
+    func editPlan(planTitle: String, workoutType: [String: WorkoutDetail]) async {
+        
+    }
 }
