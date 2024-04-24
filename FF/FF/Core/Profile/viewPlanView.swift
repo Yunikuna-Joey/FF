@@ -87,7 +87,7 @@ struct viewPlanView: View {
                     .navigationBarBackButtonHidden(true)
             }
             .navigationDestination(isPresented: $editNavigationFlag) {
-                PlanScreenView(planScreenFlag: $editNavigationFlag)
+                editPlanView(plan: plan, planScreenFlag: $editNavigationFlag)
             }
         }
     }
