@@ -56,14 +56,19 @@ class PlanManager: NSObject, ObservableObject {
     
     func deletePlan(id: String) async throws {
         do {
-            try await Firestore.firestore().collection("Plans").document(id).delete()
+            try await db.collection("Plans").document(id).delete()
         }
         catch {
             print("[DEBUG]: Error deleting status: \(error.localizedDescription)")
         }
     }
     
-    func editPlan(planTitle: String, workoutType: [String: WorkoutDetail]) async {
-        
+    func editPlan(id: String, plan: Plan) async throws {
+        do {
+            try await db.collection("Plans").document(plan.id).setData(from: plan)
+        }
+        catch {
+            print("[DEBUG]: Error saving the edited plan \(error.localizedDescription)")
+        }
     }
 }

@@ -19,6 +19,7 @@ struct editPlanView: View {
     @EnvironmentObject var planManager: PlanManager
     @EnvironmentObject var viewModel: AuthView
     @Binding var planScreenFlag: Bool
+    @State private var editFlag: Bool = false
     let plan: Plan
     
     init(plan: Plan, planScreenFlag: Binding<Bool>) {
@@ -31,103 +32,69 @@ struct editPlanView: View {
     }
     
     var body: some View {
-        ZStack {
-            ScrollView(showsIndicators: false) {
-                LazyVStack {
-                    ForEach(categories.indices, id: \.self) { index in
-                        planButton(title: categories[index], selectedCategory: $selectedCategory)
-                        
-                        if selectedCategory == categories[index] {
-                            Workout(areaTarget: categories[index], reps: $currentReps, sets: $currentSets, finalPlan: $finalPlan)
+        NavigationStack {
+            ZStack {
+                ScrollView(showsIndicators: false) {
+                    LazyVStack {
+                        ForEach(categories.indices, id: \.self) { index in
+                            planButton(title: categories[index], selectedCategory: $selectedCategory)
+                            
+                            if selectedCategory == categories[index] {
+                                Workout(areaTarget: categories[index], reps: $currentReps, sets: $currentSets, finalPlan: $finalPlan)
+                            }
                         }
-                    }
+                        
+                        Spacer()
+                        
+                    } // end of LazyVstack
+                    .padding()
                     
-                    Spacer()
-                    
-                } // end of Vstack
-                .padding()
-                
-                HStack {
-                    TextField("Plan Name?", text: $planTitle)
+                    HStack {
+                        TextField("Plan Name?", text: $planTitle)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
+                            .background(Color.gray.opacity(0.33))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.bottom)
+                        
+                        Button(action: {
+                            let userId = viewModel.queryCurrentUserId()
+                            Task {
+                                do {
+                                    // implement trying to save the sets alongside with reps and workout
+                                    let updatedPlan = Plan(id: plan.id, userId: plan.userId, planTitle: planTitle, workoutType: finalPlan)
+                                    try await planManager.editPlan(id: plan.id, plan: updatedPlan)
+                                    
+                                    // This flag's purpose is to dismiss the sheet when there is a successful save
+                                    planScreenFlag = false
+                                    editFlag = true
+                                }
+                                
+                                catch {
+                                    print("[DEBUG]: There was an error processing or saving your plan \(error.localizedDescription)")
+                                }
+                            }
+                            print("[DEBUG]: This will act as the save button (execute backend functionality)")
+                        }) {
+                            Text("Save Plan!")
+                                .foregroundStyle(Color.green)
+                                .font(.headline)
+                        }
                         .padding(.vertical, 8)
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 10)
                         .background(Color.gray.opacity(0.33))
                         .cornerRadius(10)
                         .padding(.horizontal)
                         .padding(.bottom)
-                    
-                    Button(action: {
-                        let userId = viewModel.queryCurrentUserId()
-                        Task {
-                            do {
-                                // implement trying to save the sets alongside with reps and workout
-                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: finalPlan)
-                                
-                                // This flag's purpose is to dismiss the sheet when there is a successful save
-                                planScreenFlag = false
-                            }
-                            
-                            catch {
-                                print("[DEBUG]: There was an error processing or saving your plan \(error.localizedDescription)")
-                            }
-                        }
-                        print("[DEBUG]: This will act as the save button (execute backend functionality)")
-                    }) {
-                        Text("Save Plan!")
-                            .foregroundStyle(Color.green)
-                            .font(.headline)
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
-                    .background(Color.gray.opacity(0.33))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                } // end of Hstack
-            }
-            
-//            VStack {
-//                Spacer()
-//                
-//                HStack {
-//                    TextField("Plan Name?", text: $planTitle)
-//                        .padding(.vertical, 8)
-//                        .padding(.horizontal, 20)
-//                        .background(Color.gray.opacity(0.33))
-//                        .cornerRadius(10)
-//                        .padding(.horizontal)
-//                        .padding(.bottom)
-//                    
-//                    Button(action: {
-//                        let userId = viewModel.queryCurrentUserId()
-//                        Task {
-//                            do {
-//                                // implement trying to save the sets alongside with reps and workout
-//                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: finalPlan)
-//                                
-//                                // This flag's purpose is to dismiss the sheet when there is a successful save
-//                                planScreenFlag = false
-//                            }
-//                            
-//                            catch {
-//                                print("[DEBUG]: There was an error processing or saving your plan \(error.localizedDescription)")
-//                            }
-//                        }
-//                        print("[DEBUG]: This will act as the save button (execute backend functionality)")
-//                    }) {
-//                        Text("Save Plan!")
-//                            .foregroundStyle(Color.green)
-//                            .font(.headline)
-//                    }
-//                    .padding(.vertical, 8)
-//                    .padding(.horizontal, 10)
-//                    .background(Color.gray.opacity(0.33))
-//                    .cornerRadius(10)
-//                    .padding(.horizontal)
-//                    .padding(.bottom)
-//                } // end of Hstack
-//            } // end of vstack
-        } // end of ZStack
+                    } // end of Hstack
+                } // end of scroll View
+            } // end of ZStack
+        }
+        .navigationDestination(isPresented: $editFlag) {
+            ProfileView3()
+                .navigationBarBackButtonHidden(true)
+        }
     }
 }
 

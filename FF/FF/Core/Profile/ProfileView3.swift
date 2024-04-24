@@ -187,7 +187,6 @@ struct ProfileView3: View {
                     }
                     
                 }
-                .padding(.bottom, 250)
                 .onAppear {
                     let currentUser = viewModel.currentSession
                     planManager.fetchPlan(userId: currentUser!.id)
@@ -195,9 +194,6 @@ struct ProfileView3: View {
                 .sheet(isPresented: $planScreenFlag) {
                     PlanScreenView(planScreenFlag: $planScreenFlag)
                 }
-//                .navigationDestination(isPresented: $viewPlanFlag) {
-//                    viewPlanView()
-//                }
             }
         }
     }
