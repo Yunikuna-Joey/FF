@@ -96,15 +96,23 @@ class FollowingManager: ObservableObject {
     }
     
 
-    func queryFollowers(userId: String) async throws {
+    func queryFollowers(userId: String) async throws -> [String] {
+        var followers: [String] = []
         do {
             let snapshot = try await db.collection("Following")
                 .whereField("friendId", isEqualTo: userId)
                 .getDocuments()
-        }
             
-        catch {
-            print("[DEBUG]: There was an error with querying follower Id's \(error.localizedDescription)")
+            let followerIds = snapshot.documents.compactMap { $0["userId"] as? String }
+            
+            for followerId in followerIds {
+                followers.append(followerId)
+            }
+            
+            return followers
+        } catch {
+            print("[DEBUG]: There was an error querying follower Users \(error.localizedDescription)")
+            throw error
         }
     }
     

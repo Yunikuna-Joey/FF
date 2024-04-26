@@ -19,8 +19,8 @@ struct ComposeMessageView: View {
     //*** This should query a user's following
     var body: some View {
         LazyVStack {
-            ForEach(userList.indices, id: \.self) { index in
-                Text(userList[index].username)
+            ForEach(userList, id: \.self) { id in
+                Text(id)
                     .foregroundStyle(Color.black)
                     .padding()
             }
@@ -28,8 +28,7 @@ struct ComposeMessageView: View {
         .onAppear {
             Task {
                 do {
-                    let fetchInformation = try await followManager.queryFollowers(userId: viewModel.queryCurrentUserId() ?? "")
-                    userList = fetchInformation
+                    userList = try await followManager.queryFollowers(userId: viewModel.queryCurrentUserId() ?? "")
                 }
                 catch {
                     print("[DEBUG]: Error queryting in compose \(error.localizedDescription)")
