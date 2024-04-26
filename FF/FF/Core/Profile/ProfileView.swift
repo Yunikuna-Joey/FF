@@ -11,8 +11,11 @@ import SwiftUI
 struct ProfileView: View {
     // CONSTANTS
     @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var followManager: FollowingManager
     @State private var current: Tab = .status
     @State private var settingsFlag = false
+    @State private var followerCount: Int = 0
+    @State private var followingCount: Int = 0
     
     // iterate through the different tabs
     func currSelection(_ tab:Tab) -> Bool {
@@ -65,23 +68,17 @@ struct ProfileView: View {
                     
                     // HStack for user statistics
                     HStack(spacing: screenSize.width * 0.15) {
-                        // category 1
-                        VStack {
-                            Text("Check-Ins")
-                                .font(.headline)
-                            Text("\(value1)")
-                        }
                         // category 2
                         VStack {
                             Text("Followers")
                                 .font(.headline)
-                            Text("\(value1)")
+                            Text("\(followerCount)")
                         }
                         // category 3
                         VStack {
                             Text("Following")
                                 .font(.headline)
-                            Text("\(value1)")
+                            Text("\(followingCount)")
                         }
                     }
                     .offset(y: -screenSize.height * 0.10)
@@ -172,6 +169,12 @@ struct ProfileView: View {
                     SettingView()
                 }
             } // end of ZStack
+            .onAppear {
+                Task {
+                    followerCount = try await followManager.queryFollowersCount(userId: viewModel.queryCurrentUserId() ?? "")
+                    followingCount = try await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
+                }
+            }
         }
         
     } // end of body here

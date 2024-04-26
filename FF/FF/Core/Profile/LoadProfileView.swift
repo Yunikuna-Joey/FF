@@ -192,8 +192,8 @@ struct LoadProfileView: View {
                 Task {
                     do {
                         isFollowing = await followManager.queryFollowStatus(userId: viewModel.queryCurrentUserId() ?? "", friendId: resultUser.id)
-                        followers = await followManager.queryFollowers(userId: resultUser.id)
-                        following = await followManager.queryFollowing(userId: resultUser.id)
+                        followers = await followManager.queryFollowersCount(userId: resultUser.id)
+                        following = await followManager.queryFollowingCount(userId: resultUser.id)
                     }
                     catch {
                         print("[DEBUG]: Error fetching follow status \(error.localizedDescription)")

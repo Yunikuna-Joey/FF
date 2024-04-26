@@ -59,7 +59,7 @@ class FollowingManager: ObservableObject {
         }
     }
     
-    func queryFollowers(userId: String) async -> Int {
+    func queryFollowersCount(userId: String) async -> Int {
         do {
             let snapshot = try await db.collection("Following")
                 .whereField("friendId", isEqualTo: userId)
@@ -77,7 +77,7 @@ class FollowingManager: ObservableObject {
         }
     }
     
-    func queryFollowing(userId: String) async -> Int {
+    func queryFollowingCount(userId: String) async -> Int {
         do {
             let snapshot = try await db.collection("Following")
                 .whereField("userId", isEqualTo: userId)
@@ -94,4 +94,18 @@ class FollowingManager: ObservableObject {
             return 0
         }
     }
+    
+
+    func queryFollowers(userId: String) async throws {
+        do {
+            let snapshot = try await db.collection("Following")
+                .whereField("friendId", isEqualTo: userId)
+                .getDocuments()
+        }
+            
+        catch {
+            print("[DEBUG]: There was an error with querying follower Id's \(error.localizedDescription)")
+        }
+    }
+    
 }

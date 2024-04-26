@@ -23,7 +23,6 @@ struct Messages: Codable, Identifiable, Hashable {
     
     // content of message
     let messageContent: String
-
     
     var id: String {
         return messageId ?? NSUUID().uuidString

@@ -15,6 +15,7 @@ struct FFApp: App {
     @StateObject var statusProcess = StatusProcessView()
     @StateObject var followManager = FollowingManager()
     @StateObject var planManager = PlanManager()
+    @StateObject var messageManager = MessageManager()
     
     // configure firebase within our app
     init() {
@@ -29,6 +30,7 @@ struct FFApp: App {
                 .environmentObject(statusProcess)
                 .environmentObject(followManager)
                 .environmentObject(planManager)
+                .environmentObject(messageManager)
         }
     }
 }

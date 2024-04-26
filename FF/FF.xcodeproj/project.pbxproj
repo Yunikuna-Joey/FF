@@ -74,6 +74,7 @@
 		D4F141592BD8A52C00BE57C3 /* editPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F141582BD8A52C00BE57C3 /* editPlanView.swift */; };
 		D4F1415B2BDB103D00BE57C3 /* LoadviewPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1415A2BDB103C00BE57C3 /* LoadviewPlanView.swift */; };
 		D4F1415D2BDB4AFD00BE57C3 /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1415C2BDB4AFD00BE57C3 /* MessageManager.swift */; };
+		D4F1415F2BDC443500BE57C3 /* ComposeMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1415E2BDC443500BE57C3 /* ComposeMessageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -118,6 +119,7 @@
 		D4F141582BD8A52C00BE57C3 /* editPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = editPlanView.swift; sourceTree = "<group>"; };
 		D4F1415A2BDB103C00BE57C3 /* LoadviewPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadviewPlanView.swift; sourceTree = "<group>"; };
 		D4F1415C2BDB4AFD00BE57C3 /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
+		D4F1415E2BDC443500BE57C3 /* ComposeMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +268,7 @@
 			isa = PBXGroup;
 			children = (
 				D418F7592BC1DDD100ACDE99 /* IndividualChatView.swift */,
+				D4F1415E2BDC443500BE57C3 /* ComposeMessageView.swift */,
 			);
 			path = Messages;
 			sourceTree = "<group>";
@@ -429,6 +432,7 @@
 				D4E4FADA2B9FD47800F5C202 /* ProfileView1.swift in Sources */,
 				D4E4FABE2B99C19600F5C202 /* ContentView.swift in Sources */,
 				D4E4FACE2B9A8A3F00F5C202 /* HomeView.swift in Sources */,
+				D4F1415F2BDC443500BE57C3 /* ComposeMessageView.swift in Sources */,
 				D4E4FADC2B9FD8DE00F5C202 /* ProfileView2.swift in Sources */,
 				D4E4FAD42B9A8E8B00F5C202 /* MessageView.swift in Sources */,
 				D4843F362BCB0617003A20C3 /* Plan.swift in Sources */,
