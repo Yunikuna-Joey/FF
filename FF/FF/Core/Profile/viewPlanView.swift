@@ -20,7 +20,7 @@ struct viewPlanView: View {
                 formattedString += "Sets: \(workoutDetail.sets) Reps: \(workoutDetail.reps) - \(workoutName)\n"
             }
             return formattedString
-        }
+    }
     
     var body: some View {
         NavigationStack {

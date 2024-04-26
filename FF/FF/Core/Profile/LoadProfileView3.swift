@@ -39,7 +39,7 @@ struct LoadProfileView3: View {
                         ForEach(planManager.planList) { plan in
                             displayWorkoutButton(planTitle: plan.planTitle, viewPlanFlag: $viewPlanFlag)
                                 .navigationDestination(isPresented: $viewPlanFlag) {
-                                    viewPlanView(plan: plan)
+                                    LoadviewPlanView(plan: plan)
                                 }
                         }
                     }

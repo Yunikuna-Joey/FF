@@ -72,6 +72,8 @@
 		D4E4FADE2B9FD8E900F5C202 /* ProfileView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */; };
 		D4F141552BD05B9900BE57C3 /* viewPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F141542BD05B9900BE57C3 /* viewPlanView.swift */; };
 		D4F141592BD8A52C00BE57C3 /* editPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F141582BD8A52C00BE57C3 /* editPlanView.swift */; };
+		D4F1415B2BDB103D00BE57C3 /* LoadviewPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1415A2BDB103C00BE57C3 /* LoadviewPlanView.swift */; };
+		D4F1415D2BDB4AFD00BE57C3 /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1415C2BDB4AFD00BE57C3 /* MessageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -114,6 +116,8 @@
 		D4E4FADD2B9FD8E900F5C202 /* ProfileView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView3.swift; sourceTree = "<group>"; };
 		D4F141542BD05B9900BE57C3 /* viewPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewPlanView.swift; sourceTree = "<group>"; };
 		D4F141582BD8A52C00BE57C3 /* editPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = editPlanView.swift; sourceTree = "<group>"; };
+		D4F1415A2BDB103C00BE57C3 /* LoadviewPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadviewPlanView.swift; sourceTree = "<group>"; };
+		D4F1415C2BDB4AFD00BE57C3 /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +215,7 @@
 				D4BB30EE2BB25C66009CE546 /* LocationManager.swift */,
 				D418F7622BC4954700ACDE99 /* FollowingManager.swift */,
 				D4843F392BCB6955003A20C3 /* PlanManager.swift */,
+				D4F1415C2BDB4AFD00BE57C3 /* MessageManager.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -230,6 +235,7 @@
 				D4843F372BCB0945003A20C3 /* PlanScreenView.swift */,
 				D4F141542BD05B9900BE57C3 /* viewPlanView.swift */,
 				D4F141582BD8A52C00BE57C3 /* editPlanView.swift */,
+				D4F1415A2BDB103C00BE57C3 /* LoadviewPlanView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -416,6 +422,7 @@
 				D4E4FACA2B99C1AD00F5C202 /* LoginView.swift in Sources */,
 				D494E4A22BBE91FA00283497 /* SettingView.swift in Sources */,
 				D4092E4F2BA9019500C42840 /* Status.swift in Sources */,
+				D4F1415B2BDB103D00BE57C3 /* LoadviewPlanView.swift in Sources */,
 				D4E4FAD62B9A8ECB00F5C202 /* ProfileView.swift in Sources */,
 				D4092E482BA5865800C42840 /* User.swift in Sources */,
 				D4E4FACC2B9A7BF700F5C202 /* RegisterView.swift in Sources */,
@@ -438,6 +445,7 @@
 				D4F141552BD05B9900BE57C3 /* viewPlanView.swift in Sources */,
 				D4843F322BC8E97B003A20C3 /* LoadProfileView2.swift in Sources */,
 				D4843F342BC8E987003A20C3 /* LoadProfileView3.swift in Sources */,
+				D4F1415D2BDB4AFD00BE57C3 /* MessageManager.swift in Sources */,
 				D418F75A2BC1DDD100ACDE99 /* IndividualChatView.swift in Sources */,
 				D4E4FABC2B99C19600F5C202 /* FFApp.swift in Sources */,
 				D4E4FAD22B9A8E7A00F5C202 /* CheckinView.swift in Sources */,

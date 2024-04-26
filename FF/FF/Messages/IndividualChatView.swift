@@ -6,6 +6,90 @@
 
 import SwiftUI
 
+struct ChatCellView: View {
+    let currentUserFlag: Bool
+    let message: Messages
+    
+    var body: some View {
+        // This will style / format the messages that are from the current user
+        if currentUserFlag {
+            HStack {
+                // timestamp
+                Text(formatTimeAgo(from: message.timestamp))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding()
+                
+                // Push to the right
+                Spacer()
+                
+                // Message content held in its own Hstack
+                HStack {
+                    Text(message.messageContent)
+                        .padding()
+                        .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .trailing)
+                }
+                /*.frame(maxWidth: 256)    */       // needs to be different for different screen sizes
+                .background(Color.blue)
+                .cornerRadius(25)
+                
+                // profile picture
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .foregroundStyle(Color.yellow)
+                    .frame(width: 40, height: 40)
+                    .padding(.horizontal, 5)
+            }
+            .padding(.vertical, 5)
+        }
+        
+        // This will style / format the messages are are NOT from the current user [other users]
+        else {
+            HStack {
+                // recipient picture
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .foregroundStyle(Color.orange)
+                    .frame(width: 40, height: 40)       // needs to be different for different screen sizes
+                    .padding(.horizontal, 5)
+                
+                HStack{
+                    Text(message.messageContent)
+                        .padding()
+                        .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .leading)
+                }
+                //                        .frame(maxWidth: 256)
+                .background(Color.gray)
+                .cornerRadius(25)
+                
+                // timestamp
+                Text(formatTimeAgo(from: message.timestamp))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding()
+                
+                // push to the left
+                Spacer()
+            }
+            .padding(.vertical, 5)
+        }
+    }
+    
+    // helper function to achieve time stamps associated with status's
+    func formatTimeAgo(from date: Date) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        
+        guard let formattedString = formatter.string(from: date, to: Date()) else {
+            return "Unknown"
+        }
+        
+        return formattedString + " ago"
+    }
+}
+
 struct IndividualChatView: View {
     // need to pass in curr user and recipient user pictures
     // need a timestamp
@@ -19,14 +103,13 @@ struct IndividualChatView: View {
     let timestamp = "1:40PM"
     
     var body: some View {
-        let screenSize = UIScreen.main.bounds.size
+//        let screenSize = UIScreen.main.bounds.size
         
         VStack {
             Spacer()
             // Scroll View for message content `
             ScrollView(showsIndicators: false) {
                 VStack {
-                    
                     // This is the case for current user
                     HStack {
                         // timestamp
@@ -40,7 +123,7 @@ struct IndividualChatView: View {
                         
                         // Message content held in its own Hstack
                         HStack {
-                            Text(shortText)
+                            Text(longText)
                                 .padding()
                         }
                         /*.frame(maxWidth: 256)    */       // needs to be different for different screen sizes
@@ -55,7 +138,8 @@ struct IndividualChatView: View {
                             .padding(.horizontal, 5)
                     }
                     .padding(.vertical, 5)
-                    
+                
+                
                     // This is the case for recipient user
                     HStack {
                         // recipient picture
@@ -69,7 +153,7 @@ struct IndividualChatView: View {
                             Text(shortText)
                                 .padding()
                         }
-//                        .frame(maxWidth: 256)
+                        //                        .frame(maxWidth: 256)
                         .background(Color.gray)
                         .cornerRadius(25)
                         
@@ -83,19 +167,30 @@ struct IndividualChatView: View {
                         Spacer()
                     }
                     .padding(.vertical, 5)
+                    
                 }
             }
             
             // Text area for message content to be received
-            TextField("Enter your message here", text: $messageContent)
-                .padding(.vertical, 10)
-            // applies padding to the placeholder text
-                .padding(.leading, 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 25)
-                        .stroke(Color.black, lineWidth: 0.5)
-                )
+            ZStack(alignment: .trailing) {
+                // axis parameter allows for the textfield to expand vertically
+                TextField("Enter your message here", text: $messageContent, axis: .vertical)
+                    .padding(12)
+                    // this is making room for send button
+                    .padding(.trailing, 48)
+                    .background(Color(.systemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .font(.subheadline)
+                
+                Button(action: {
+                    print("[DEBUG]: This will act as a send button")
+                }) {
+                    Text("Send")
+                        .fontWeight(.semibold)
+                }
                 .padding()
+            }
+            .padding()
             
         }
         .navigationTitle("\(username)")
@@ -116,6 +211,11 @@ struct IndividualChatView: View {
     }
 }
 
-#Preview {
-    IndividualChatView()
+struct IndividualChatView_Previews: PreviewProvider {
+    static var previews: some View {
+        IndividualChatView()
+    }
 }
+//#Preview {
+//    IndividualChatView()
+//}
