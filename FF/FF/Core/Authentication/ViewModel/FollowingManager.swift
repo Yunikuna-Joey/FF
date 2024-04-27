@@ -95,23 +95,75 @@ class FollowingManager: ObservableObject {
         }
     }
     
-
-    func queryFollowers(userId: String) async throws -> [String] {
-        var followers: [String] = []
+    // query the follower Id's of the requested ID 
+    func queryFollowers(userId: String) async throws -> [User] {
+        // represents the list of type User being returned from the function
+        var followers: [User] = []
+        
         do {
             let snapshot = try await db.collection("Following")
                 .whereField("friendId", isEqualTo: userId)
                 .getDocuments()
             
-            let followerIds = snapshot.documents.compactMap { $0["userId"] as? String }
+            for document in snapshot.documents {
+                // we want the id's that follow the parameter userID
+                if let followerId = document["userId"] as? String,
+                   let user = try await getUserById(userId: followerId) {
+                    followers.append(user)
+                }
+                
+                else {
+                    print("[DEBUG]: There is an error within queryFollowers")
+                }
+            }
+        
+            print("This is the value of follower: \(followers)")
+            return followers
+        } 
+        
+        catch {
+            print("[DEBUG]: There was an error querying follower Users \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
+    // converts id into a user object
+    func getUserById(userId: String) async throws -> User? {
+        do {
+            //**** make sure when querying user collection, we use lowercase :))))))))!
+            let querySnapshot = try await db.collection("users").getDocuments()
             
-            for followerId in followerIds {
-                followers.append(followerId)
+            for document in querySnapshot.documents {
+                let userData = document.data()
+                
+                if let id = userData["id"] as? String, id == userId,
+                   let username = userData["username"] as? String,
+                   let databaseUsername = userData["databaseUsername"] as? String,
+                   let firstName = userData["firstName"] as? String,
+                   let lastName = userData["lastName"] as? String,
+                   let email = userData["email"] as? String,
+                   let imageArray = userData["imageArray"] as? [String],
+                   let profilePicture = userData["profilePicture"] as? String {
+                    let user = User(
+                        id: id,
+                        username: username, 
+                        databaseUsername: databaseUsername,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        imageArray: imageArray,
+                        profilePicture: profilePicture
+                    )
+                    print("This is the value of user \(user)")
+                    return user
+                }
             }
             
-            return followers
-        } catch {
-            print("[DEBUG]: There was an error querying follower Users \(error.localizedDescription)")
+            print("[DEBUG]: User with ID \(userId) not found.")
+            return nil
+        } 
+        catch {
+            print("[DEBUG]: There was an error getting user by ID \(userId): \(error.localizedDescription)")
             throw error
         }
     }
