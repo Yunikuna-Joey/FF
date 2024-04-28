@@ -10,8 +10,9 @@ struct ComposeMessageView: View {
     @EnvironmentObject var followManager: FollowingManager
     @EnvironmentObject var viewModel: AuthView
     @Binding var composeFlag: Bool
-//    @State var userList: [String] = []
+    @State var searchText: String = ""
     @State var userList: [User] = []
+    @State var filterUserList: [User] = []
     
     init(composeFlag: Binding<Bool>) {
         _composeFlag = composeFlag
@@ -22,7 +23,9 @@ struct ComposeMessageView: View {
         let screenSize = UIScreen.main.bounds.size
         ScrollView(showsIndicators: false) {
             LazyVStack {
-                ForEach(userList, id: \.id) { user in
+                TextField("Search", text: $searchText)
+                    .padding()
+                ForEach(filterUserList, id: \.id) { user in
                     HStack {
                         // profile picture
                         if user.profilePicture.isEmpty {
@@ -56,17 +59,31 @@ struct ComposeMessageView: View {
                 }
             } // end of lazyVStack
             .onAppear {
+                //** onAppear will set both lists to the same values, then use the filtered List
                 Task {
                     do {
+                        // This will act as the original list
                         userList = try await followManager.queryFollowers(userId: viewModel.queryCurrentUserId() ?? "")
+                        // This will act as the modified list 
+                        filterUserList = userList
                     }
                     catch {
                         print("[DEBUG]: Error queryting in compose \(error.localizedDescription)")
                     }
                 }
             }
+            .onChange(of: searchText) { _, newValue in
+                //** Testing empty onChange just for the searchText variable
+                if newValue.isEmpty {
+                    filterUserList = userList
+                }
+                else {
+                    filterUserList = userList.filter { $0.username.localizedCaseInsensitiveContains(newValue)
+                    }
+                }
+            }
         } // end of scroll view
-    }
+    } // end of body here
 }
 
 //#Preview {
