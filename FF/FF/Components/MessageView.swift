@@ -37,15 +37,12 @@ struct MessageView: View {
     @State private var composeFlag: Bool = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 let screenSize = UIScreen.main.bounds.size
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
-                        
-                        //*** we are going to need a compose message button somewhere here
-                        
                         ForEach(chats) { chat in
                             NavigationLink(destination: IndividualChatView()) {
                                 HStack(spacing: 10) {
@@ -94,11 +91,14 @@ struct MessageView: View {
                             .imageScale(.large)
                     }
                     .sheet(isPresented: $composeFlag) {
-                        ComposeMessageView(composeFlag: $composeFlag)
+                        ComposeMessageView(composeFlag: $composeFlag, chatFlag: $chatFlag)
                     }
                 )
                 
             } // end of ZStack
+            .navigationDestination(isPresented: $chatFlag) {
+                IndividualChatView()
+            }
         } // end of NavigationStack
     }
 }

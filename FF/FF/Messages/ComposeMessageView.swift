@@ -10,12 +10,15 @@ struct ComposeMessageView: View {
     @EnvironmentObject var followManager: FollowingManager
     @EnvironmentObject var viewModel: AuthView
     @Binding var composeFlag: Bool
+    @Binding var chatFlag: Bool
     @State var searchText: String = ""
     @State var userList: [User] = []
     @State var filterUserList: [User] = []
     
-    init(composeFlag: Binding<Bool>) {
+    // These flags will control the storyline for composing and viewing a chat window
+    init(composeFlag: Binding<Bool>, chatFlag: Binding<Bool>) {
         _composeFlag = composeFlag
+        _chatFlag = chatFlag
     }
     
     //*** This should query a user's following
@@ -26,31 +29,38 @@ struct ComposeMessageView: View {
                 TextField("Search", text: $searchText)
                     .padding()
                 ForEach(filterUserList, id: \.id) { user in
-                    HStack {
-                        // profile picture
-                        if user.profilePicture.isEmpty {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundStyle(Color.blue)
-                                .padding()
-                        }
-                        
-                        else {
-                            Image(user.profilePicture)
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundStyle(Color.blue)
-                                .padding()
-                        }
-                        
-                        // username
-                        Text(user.username)
-                            .font(.headline)
-                        
-                        Spacer()
+
+                    Button(action: {
+                        composeFlag = false
+                        chatFlag = true
+                        print("You clicked on a composedMessage User")
+                    }) {
+                        HStack {
+                            // profile picture
+                            if user.profilePicture.isEmpty {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundStyle(Color.blue)
+                                    .padding()
+                            }
+                            
+                            else {
+                                Image(user.profilePicture)
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundStyle(Color.blue)
+                                    .padding()
+                            }
+                            
+                            // username
+                            Text(user.username)
+                                .font(.headline)
+                            
+                            Spacer()
+                        } // end of HStack
                     }
-                    
+                        
                     // divider
                     Divider()
                         .frame(width: screenSize.width * 0.80)
