@@ -96,10 +96,14 @@ struct IndividualChatView: View {
     @EnvironmentObject var viewModel: AuthView
 
     @State private var messageContent: String = ""
-    @State private var chatPartner: User?
+//    @State private var chatPartner: User?
     
     //*** This will need to be added in later
-//    let user: User
+    @Binding var chatPartner: User?
+    
+    init(chatPartner: Binding<User?>) {
+        _chatPartner = chatPartner
+    }
 
     
     let username = "Testing Username"
@@ -114,6 +118,9 @@ struct IndividualChatView: View {
             // Scroll View for message content
             ScrollView(showsIndicators: false) {
                 VStack {
+                    //*** lets start with trying to load information for the current User
+//                    ChatCellView(currentUserFlag: true, message: <#T##Messages#>)
+                    
                     // This is the case for current user
                     HStack {
                         // timestamp
@@ -175,7 +182,7 @@ struct IndividualChatView: View {
                 }
             }
             
-            // Text area for message content to be received
+            //*** Text area for message content to be received || This does not need to be modified for dynamic user loading
             ZStack(alignment: .trailing) {
                 // axis parameter allows for the textfield to expand vertically
                 TextField("Enter your message here", text: $messageContent, axis: .vertical)
@@ -188,7 +195,15 @@ struct IndividualChatView: View {
                 
                 Button(action: {
                     print("This will act as the send button")
-//                    messageManager.sendMessage(messageContent: messageContent, toUser: <#T##User#>)
+//                    messageManager.sendMessage(messageContent: messageContent, toUser: chatPartner)
+                    //*** This is unwrapping the chatPartner
+                    if let partner = chatPartner {
+                        messageManager.sendMessage(messageContent: messageContent, toUser: partner)
+                        print("Testing if this statement is triggered")
+                    }
+                    else {
+                        print("This is the value of chatPartner at the time of button press \($chatPartner)")
+                    }
                 }) {
                     Text("Send")
                         .fontWeight(.semibold)
@@ -220,9 +235,10 @@ struct IndividualChatView: View {
     }
 }
 
-struct IndividualChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        IndividualChatView()
-    }
-}
+//struct IndividualChatView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let chatPartner = User(id: "admin", username: "test-user", databaseUsername: "test-user", firstName: "test", lastName: "user", email: "test@email.com", imageArray: [""], profilePicture: "")
+//        IndividualChatView(chatPartner: chatPartner)
+//    }
+//}
 

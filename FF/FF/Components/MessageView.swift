@@ -26,56 +26,18 @@ struct MessageView: View {
     // Array of chat data
     // This should retrieve:
     // [Recipient User, Last message in conversation with Recipient User, time stamp of last message]
-    let chats: [Chat] = [
-        Chat(name: "User 1", timestamp: "10:00 AM", messageContent: "Hello"),
-        Chat(name: "User 2", timestamp: "10:05 AM", messageContent: "Hi there!"),
-        Chat(name: "User 3", timestamp: "10:10 AM", messageContent: "Hey!"),
-        // Add more chats as needed
-    ]
     
     @State private var chatFlag = false
     @State private var composeFlag: Bool = false
+    @State private var chatPartner: User?
     
     var body: some View {
         NavigationStack {
             ZStack {
-                let screenSize = UIScreen.main.bounds.size
+//                let screenSize = UIScreen.main.bounds.size
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
-                        ForEach(chats) { chat in
-                            NavigationLink(destination: IndividualChatView()) {
-                                HStack(spacing: 10) {
-                                    // profile image on the left
-                                    Image(systemName: "person.circle.fill")
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                        .foregroundStyle(Color.blue)
-                                    
-                                    // Username and message content
-                                    VStack(alignment: .leading) {
-                                        Text(chat.name)
-                                            .font(.headline)
-                                        Text(chat.messageContent)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    // Timestamp
-                                    Text(chat.timestamp)
-                                } // end of HStack
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(1)
-                            }
-                            .foregroundStyle(Color.black)
-                            
-                            // Provides the visual separation between each unique chat
-                            Divider()
-                                .frame(width: screenSize.width * 0.80)
-                                .padding(.leading, screenSize.width * 0.20)
-                            
-                        }
                         Spacer()
                     } // end of VStack
                 }
@@ -91,13 +53,17 @@ struct MessageView: View {
                             .imageScale(.large)
                     }
                     .sheet(isPresented: $composeFlag) {
-                        ComposeMessageView(composeFlag: $composeFlag, chatFlag: $chatFlag)
+                        ComposeMessageView(composeFlag: $composeFlag, chatFlag: $chatFlag, chatPartner: $chatPartner)
                     }
                 )
                 
             } // end of ZStack
             .navigationDestination(isPresented: $chatFlag) {
-                IndividualChatView()
+                //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
+//                if let selectedPartner = chatPartner {
+//                    IndividualChatView(chatPartner: $chatPartner)
+//                }
+                IndividualChatView(chatPartner: $chatPartner)
             }
         } // end of NavigationStack
     }

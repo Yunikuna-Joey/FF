@@ -11,14 +11,16 @@ struct ComposeMessageView: View {
     @EnvironmentObject var viewModel: AuthView
     @Binding var composeFlag: Bool
     @Binding var chatFlag: Bool
+    @Binding var chatPartner: User?
     @State var searchText: String = ""
     @State var userList: [User] = []
     @State var filterUserList: [User] = []
     
     // These flags will control the storyline for composing and viewing a chat window
-    init(composeFlag: Binding<Bool>, chatFlag: Binding<Bool>) {
+    init(composeFlag: Binding<Bool>, chatFlag: Binding<Bool>, chatPartner: Binding<User?>) {
         _composeFlag = composeFlag
         _chatFlag = chatFlag
+        _chatPartner = chatPartner
     }
     
     //*** This should query a user's following
