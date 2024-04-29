@@ -200,6 +200,8 @@ struct IndividualChatView: View {
                     if let partner = chatPartner {
                         messageManager.sendMessage(messageContent: messageContent, toUser: partner)
                         print("Testing if this statement is triggered")
+                        // clear the message in the textField after function successfully runs
+                        messageContent = ""
                     }
                     else {
                         print("This is the value of chatPartner at the time of button press \($chatPartner)")

@@ -35,6 +35,7 @@ struct ComposeMessageView: View {
                     Button(action: {
                         composeFlag = false
                         chatFlag = true
+                        chatPartner = user
                         print("You clicked on a composedMessage User")
                     }) {
                         HStack {
