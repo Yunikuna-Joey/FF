@@ -26,7 +26,7 @@ class MessageManager: ObservableObject {
         
         // pack the message object
         let message = Messages(
-            messageId: messageId,
+//            messageId: messageId,
             fromUser: currentUid,
             toUser: chatPartnerId,
             timestamp: Date(),

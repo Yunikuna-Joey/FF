@@ -195,7 +195,6 @@ struct IndividualChatView: View {
                 
                 Button(action: {
                     print("This will act as the send button")
-//                    messageManager.sendMessage(messageContent: messageContent, toUser: chatPartner)
                     //*** This is unwrapping the chatPartner
                     if let partner = chatPartner {
                         messageManager.sendMessage(messageContent: messageContent, toUser: partner)

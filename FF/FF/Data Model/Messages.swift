@@ -9,8 +9,8 @@ import Firebase
 import FirebaseFirestoreSwift
 
 struct Messages: Codable, Identifiable, Hashable {
-    // optional string
-    @DocumentID var messageId: String?
+//    // optional string
+//    @DocumentID var messageId: String?
     
     // who the message was from
     let fromUser: String
@@ -25,9 +25,14 @@ struct Messages: Codable, Identifiable, Hashable {
     let messageContent: String
     
     var id: String {
-        return messageId ?? NSUUID().uuidString
+        return UUID().uuidString
     }
     
+//
+//    var id: String {
+//        return messageId ?? NSUUID().uuidString
+//    }
+//    
     // this will determine who we are chatting with
     var chatPartnerId: String {
         return fromUser == Auth.auth().currentUser?.uid ? toUser : fromUser
