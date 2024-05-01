@@ -9,6 +9,14 @@ import Firebase
 import FirebaseFirestoreSwift
 
 class MessageManager: ObservableObject {
+    // This will hold an array of all the messages
+    @Published var messageList = [Messages]()
+//    let user: User
+//    
+//    init(user: User) {
+//        self.user = user
+//    }
+    
     let dbMessages = Firestore.firestore().collection("Messages")
     
     func sendMessage(messageContent: String, toUser user: User) {
@@ -39,5 +47,24 @@ class MessageManager: ObservableObject {
         // store into firebase for both the currentUser and the chatPartner
         currentUserReference.setData(messageData)
         chatPartnerReference.document(messageId).setData(messageData)
+    }
+    
+    func queryMessage(chatPartner: User, completion: @escaping([Messages]) -> Void) {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        let chatPartnerId = chatPartner.id
+        
+        let query = dbMessages
+            .document(currentUserId)
+            .collection(chatPartnerId)
+            .order(by: "timestamp", descending: false)      // *** revisit the string to ensure it matches our data field in database
+        
+        //*** adds an event listener to the queried document to determine when new chats are 'added' || when chats are sent from users
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
+            var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
+
+            
+            completion(messages)
+        }
     }
 }

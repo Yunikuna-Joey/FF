@@ -119,7 +119,14 @@ struct IndividualChatView: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     //*** lets start with trying to load information for the current User
-//                    ChatCellView(currentUserFlag: true, message: <#T##Messages#>)
+                    
+                    ForEach(messageManager.messageList, id: \.self) { message in
+                        ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
+                    }
+                    
+                    // *** These two cases are for hard-coded messages
+                    // *** remove when in production
+                    
                     
                     // This is the case for current user
                     HStack {
@@ -216,7 +223,10 @@ struct IndividualChatView: View {
         }
         .navigationTitle("\(username)")
         .onAppear {
-            
+            // Validates that a registered user was tapped on then retreives the messages
+            if let chatPartner = chatPartner {
+                populateMessageList(chatPartnerObject: chatPartner)
+            }
         }
         
     }
@@ -233,6 +243,16 @@ struct IndividualChatView: View {
         }
         
         return formattedString + " ago"
+    }
+    
+    func populateMessageList(chatPartnerObject: User) {
+        // This function call must take a specific user []
+        messageManager.queryMessage(chatPartner: chatPartnerObject) { messages in
+            // This will populate the messageList variable in messageManager
+            // ==>
+            // then we will iterate through the messageManager.messageList in MAIN to retrieve the data within the messageList
+            messageManager.messageList.append(contentsOf: messages)
+        }
     }
 }
 
