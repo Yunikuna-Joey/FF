@@ -6,18 +6,7 @@
 
 import SwiftUI
 
-struct Chat: Identifiable {
-    let id = UUID()
-    let name: String
-    let timestamp: String
-    let messageContent: String 
-}
-
 struct MessageView: View {
-    // who it is
-    // when was it
-    // what is the message content
-    
     // [PLAN]: Firebase for chat storage
     // [PLAN]: APN for push notifications
     // [PLAN]:
@@ -26,6 +15,7 @@ struct MessageView: View {
     // Array of chat data
     // This should retrieve:
     // [Recipient User, Last message in conversation with Recipient User, time stamp of last message]
+    @EnvironmentObject var messageManager: MessageManager
     
     @State private var chatFlag = false
     @State private var composeFlag: Bool = false
@@ -38,6 +28,11 @@ struct MessageView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
+                        ForEach(messageManager.inboxList, id: \.self) { conversation in
+                            Text(conversation)
+                                .padding()
+                        }
+                        
                         Spacer()
                     } // end of VStack
                 }
@@ -65,8 +60,17 @@ struct MessageView: View {
 //                }
                 IndividualChatView(chatPartner: $chatPartner)
             }
+            .onAppear {
+                //** everything here will trigger first [PRIORITY] then main executes
+                messageManager.queryInbox { conversations in
+                    self.messageManager.inboxList = conversations
+                    print("[DEBUG1]: This is the value of inboxList: \(conversations)")
+                }
+                print("[DEBUG2]: This is the value of inboxList: \(messageManager.inboxList)")
+            }
         } // end of NavigationStack
     }
+
 }
 
 #Preview {

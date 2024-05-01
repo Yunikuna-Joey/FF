@@ -11,6 +11,13 @@ import FirebaseFirestoreSwift
 class MessageManager: ObservableObject {
     // This will hold an array of all the messages
     @Published var messageList = [Messages]()
+    
+    //**** Associated with the original function of queryInboxView
+    @Published var documentChanges = [DocumentChange]()
+    
+    //***** Associated with the TESTING function of queryInbox
+    @Published var inboxList = [String]()
+    
 //    let user: User
 //    
 //    init(user: User) {
@@ -19,6 +26,7 @@ class MessageManager: ObservableObject {
     
     let dbMessages = Firestore.firestore().collection("Messages")
     
+    // Send messages with-in individual chat view
     func sendMessage(messageContent: String, toUser user: User) {
         // this will act as the fromUser
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
@@ -29,6 +37,10 @@ class MessageManager: ObservableObject {
         // create a document for the current user with the person they are chatting with || 1 document will represent a chat with 2 users
         let currentUserReference = dbMessages.document(currentUid).collection(chatPartnerId).document()
         let chatPartnerReference = dbMessages.document(chatPartnerId).collection(currentUid)
+        
+        // write the most recent message into its own data field
+        let currentUserRecent = dbMessages.document(currentUid).collection("recent-message").document(chatPartnerId)
+        let chatPartnerRecent = dbMessages.document(chatPartnerId).collection("recent-message").document(currentUid)
         
         let messageId = currentUserReference.documentID
         
@@ -47,8 +59,13 @@ class MessageManager: ObservableObject {
         // store into firebase for both the currentUser and the chatPartner
         currentUserReference.setData(messageData)
         chatPartnerReference.document(messageId).setData(messageData)
+        
+        // store into firebase for both the currentUser and chatPartner [recent-message]
+        currentUserRecent.setData(messageData)
+        chatPartnerRecent.setData(messageData)
     }
     
+    // query messages with-in the individual chat window
     func queryMessage(chatPartner: User, completion: @escaping([Messages]) -> Void) {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
         let chatPartnerId = chatPartner.id
@@ -63,8 +80,46 @@ class MessageManager: ObservableObject {
             guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
 
-            
             completion(messages)
+        }
+    }
+    
+    //*** Keep this as the original function
+    func queryInboxView() {
+        // This will query information using the currentUser id so im pretty sure we do not need to pass in the parameter for a current User within function
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let query = dbMessages
+            .document(uid)
+            .collection("recent-message")
+            .order(by: "timestamp", descending: true)
+        
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({
+                $0.type == .added || $0.type == .modified
+            }) else { return }
+            
+            self.documentChanges = changes
+        }
+    }
+    
+    //***** TESTING FUNCTION
+    func queryInbox(completion: @escaping ([String]) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let query = dbMessages
+            .document(uid)
+            .collection("recent-message")
+            .order(by: "timestamp", descending: true)
+        
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({
+                $0.type == .added || $0.type == .modified
+            }) else { return }
+            
+            var conversations = changes.compactMap({ try? $0.document.data(as: String.self )})
+            
+            completion(conversations)
         }
     }
 }
