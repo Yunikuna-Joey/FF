@@ -12,14 +12,24 @@ struct InboxCellView: View {
     @EnvironmentObject var followManager: FollowingManager
     let message: Messages
     @State var username = "" // blank on initial
+    @State var partnerPicture = ""
     
     var body: some View {
         HStack(spacing: 10) {
             // this will represent the chat partner profile picture
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 50, height: 50)
-                .foregroundStyle(Color.blue)
+            if partnerPicture.isEmpty {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundStyle(Color.blue)
+            }
+            
+            else {
+                Image(partnerPicture)
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundStyle(Color.blue)
+            }
             
             // this will represent the name of the chat partner AND most recent message in the conversation
             VStack(alignment: .leading) {
@@ -43,6 +53,7 @@ struct InboxCellView: View {
                 let chatPartnerId = message.fromUser == Auth.auth().currentUser?.uid ? message.toUser : message.fromUser
                 if let user = try await followManager.getUserById(userId: chatPartnerId) {
                     username = user.username
+                    partnerPicture = user.profilePicture
                     print("[DEBUG2]: We are inside of the Task within inboxCellView")
                     print("This is the value of username: \(username)")
                 }
@@ -84,7 +95,6 @@ struct MessageView: View {
         let screenSize = UIScreen.main.bounds.size
         NavigationStack {
             ZStack {
-//                let screenSize = UIScreen.main.bounds.size
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
