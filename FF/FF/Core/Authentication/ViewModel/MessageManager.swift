@@ -15,7 +15,7 @@ class MessageManager: ObservableObject {
     //**** Associated with the original function of queryInboxView
     @Published var documentChanges = [DocumentChange]()
     
-    //***** Associated with the TESTING function of queryInbox
+    //***** Associated with the function of queryInboxList
     @Published var inboxList = [Messages]()
     
     //    let user: User
@@ -100,26 +100,6 @@ class MessageManager: ObservableObject {
             }) else { return }
             
             self.documentChanges = changes
-        }
-    }
-    
-    //***** TESTING FUNCTION
-    func queryInbox(completion: @escaping ([String]) -> Void) {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
-        let query = dbMessages
-            .document(uid)
-            .collection("recent-message")
-            .order(by: "timestamp", descending: true)
-        
-        query.addSnapshotListener { snapshot, _ in
-            guard let changes = snapshot?.documentChanges.filter({
-                $0.type == .added || $0.type == .modified
-            }) else { return }
-            
-            var conversations = changes.compactMap({ try? $0.document.data(as: String.self )})
-            
-            completion(conversations)
         }
     }
     

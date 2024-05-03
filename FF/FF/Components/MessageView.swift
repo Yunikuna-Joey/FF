@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct InboxCellView: View {
     //**** This is to utilize the function to convert ID -> User
@@ -27,12 +28,20 @@ struct InboxCellView: View {
                 
                 Text(message.messageContent)
             }
+            
+            // push in the left direction
+            Spacer()
+            
             //**** left off on determining the timestamp
-//            Text(Tools.formatTimeAgo(from: message.timestamp))
+            Text(formatTimeAgo(from: message.timestamp))
+                .font(.caption)
+                .foregroundStyle(Color.gray)
+            
         }
         .onAppear {
             Task {
-                if let user = try await followManager.getUserById(userId: message.fromUser) {
+                let chatPartnerId = message.fromUser == Auth.auth().currentUser?.uid ? message.toUser : message.fromUser
+                if let user = try await followManager.getUserById(userId: chatPartnerId) {
                     username = user.username
                     print("[DEBUG2]: We are inside of the Task within inboxCellView")
                     print("This is the value of username: \(username)")
@@ -40,6 +49,19 @@ struct InboxCellView: View {
                 print("[DEBUG2]: We are outside of the Task within inboxCellView")
             }
         }
+    }
+    
+    func formatTimeAgo(from date: Date) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        
+        guard let formattedString = formatter.string(from: date, to: Date()) else {
+            return "Unknown"
+        }
+        
+        return formattedString + " ago"
     }
 }
 
