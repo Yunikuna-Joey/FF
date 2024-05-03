@@ -97,7 +97,8 @@ struct MessageView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
-                        ForEach(messageManager.inboxList, id: \.self) { conversation in
+//                        ForEach(messageManager.inboxList, id: \.self) { conversation in
+                        ForEach(messageManager.inboxList.sorted(by: { $0.timestamp > $1.timestamp }), id: \.id) { conversation in
                             InboxCellView(message: conversation)
                                 .padding()
                             
@@ -133,7 +134,8 @@ struct MessageView: View {
             .onAppear {
                 //** everything here will trigger first [PRIORITY] then main executes
                 messageManager.queryInboxList() { message in
-                    self.messageManager.inboxList = message
+//                    self.messageManager.inboxList.removeAll()
+                    self.messageManager.inboxList.append(contentsOf: message)
                     print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
                 }
                 

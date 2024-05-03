@@ -76,8 +76,8 @@ struct ComposeMessageView: View {
                 Task {
                     do {
                         // This will act as the original list
-                        userList = try await followManager.queryFollowers(userId: viewModel.queryCurrentUserId() ?? "")
-                        // This will act as the modified list 
+                        userList = try await followManager.queryFollowing(userId: viewModel.queryCurrentUserId() ?? "")
+                        // This will act as the modified list
                         filterUserList = userList
                     }
                     catch {

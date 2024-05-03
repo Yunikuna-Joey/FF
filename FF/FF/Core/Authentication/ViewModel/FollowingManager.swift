@@ -127,6 +127,38 @@ class FollowingManager: ObservableObject {
         }
     }
     
+    //** This should query all of the id's that the requested UserID follows
+    func queryFollowing(userId: String) async throws -> [User] {
+        // represents the list of type User being returned from the function
+        var following: [User] = []
+        
+        do {
+            let snapshot = try await db.collection("Following")
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments()
+            
+            for document in snapshot.documents {
+                // we want the id's that follow the parameter userID
+                if let followerId = document["friendId"] as? String,
+                   let user = try await getUserById(userId: followerId) {
+                    following.append(user)
+                }
+                
+                else {
+                    print("[DEBUG]: There is an error within queryFollowers")
+                }
+            }
+        
+            print("This is the value of follower: \(following)")
+            return following
+        }
+        
+        catch {
+            print("[DEBUG]: There was an error querying follower Users \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     // converts id into a user object
     func getUserById(userId: String) async throws -> User? {
         do {
