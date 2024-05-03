@@ -121,68 +121,6 @@ struct IndividualChatView: View {
                         ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
                     }
                     
-                    // *** These two cases are for hard-coded messages
-                    // *** remove when in production
-                    
-                    
-                    // This is the case for current user
-//                    HStack {
-//                        // timestamp
-//                        Text(timestamp)
-//                            .font(.caption)
-//                            .foregroundColor(.gray)
-//                            .padding()
-//                        
-//                        // Push to the right
-//                        Spacer()
-//                        
-//                        // Message content held in its own Hstack
-//                        HStack {
-//                            Text(longText)
-//                                .padding()
-//                        }
-//                        /*.frame(maxWidth: 256)    */       // needs to be different for different screen sizes
-//                        .background(Color.blue)
-//                        .cornerRadius(25)
-//                        
-//                        // profile picture
-//                        Image(systemName: "person.circle.fill")
-//                            .resizable()
-//                            .foregroundStyle(Color.yellow)
-//                            .frame(width: 40, height: 40)
-//                            .padding(.horizontal, 5)
-//                    }
-//                    .padding(.vertical, 5)
-                
-                
-                    // This is the case for recipient user
-//                    HStack {
-//                        // recipient picture
-//                        Image(systemName: "person.circle.fill")
-//                            .resizable()
-//                            .foregroundStyle(Color.orange)
-//                            .frame(width: 40, height: 40)       // needs to be different for different screen sizes
-//                            .padding(.horizontal, 5)
-//                        
-//                        HStack{
-//                            Text(shortText)
-//                                .padding()
-//                        }
-//                        //                        .frame(maxWidth: 256)
-//                        .background(Color.gray)
-//                        .cornerRadius(25)
-//                        
-//                        // timestamp
-//                        Text(timestamp)
-//                            .font(.caption)
-//                            .foregroundColor(.gray)
-//                            .padding()
-//                        
-//                        // push to the left
-//                        Spacer()
-//                    }
-//                    .padding(.vertical, 5)
-                    
                 }
             }
             
@@ -248,6 +186,7 @@ struct IndividualChatView: View {
             // This will populate the messageList variable in messageManager
             // ==>
             // then we will iterate through the messageManager.messageList in MAIN to retrieve the data within the messageList
+            messageManager.messageList.removeAll()
             messageManager.messageList.append(contentsOf: messages)
         }
     }

@@ -79,7 +79,6 @@ struct InboxCellView: View {
 struct MessageView: View {
     // [PLAN]: Firebase for chat storage
     // [PLAN]: APN for push notifications
-    // [PLAN]:
     
     
     // Array of chat data
@@ -129,9 +128,6 @@ struct MessageView: View {
             } // end of ZStack
             .navigationDestination(isPresented: $chatFlag) {
                 //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
-//                if let selectedPartner = chatPartner {
-//                    IndividualChatView(chatPartner: $chatPartner)
-//                }
                 IndividualChatView(chatPartner: $chatPartner)
             }
             .onAppear {
