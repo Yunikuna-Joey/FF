@@ -16,13 +16,13 @@ class MessageManager: ObservableObject {
     @Published var documentChanges = [DocumentChange]()
     
     //***** Associated with the TESTING function of queryInbox
-    @Published var inboxList = [String]()
+    @Published var inboxList = [Messages]()
     
-//    let user: User
-//    
-//    init(user: User) {
-//        self.user = user
-//    }
+    //    let user: User
+    //
+    //    init(user: User) {
+    //        self.user = user
+    //    }
     
     let dbMessages = Firestore.firestore().collection("Messages")
     
@@ -46,7 +46,7 @@ class MessageManager: ObservableObject {
         
         // pack the message object
         let message = Messages(
-//            messageId: messageId,
+            // messageId: messageId,
             fromUser: currentUid,
             toUser: chatPartnerId,
             timestamp: Date(),
@@ -79,7 +79,7 @@ class MessageManager: ObservableObject {
         query.addSnapshotListener { snapshot, _ in
             guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
-
+            
             completion(messages)
         }
     }
@@ -120,6 +120,28 @@ class MessageManager: ObservableObject {
             var conversations = changes.compactMap({ try? $0.document.data(as: String.self )})
             
             completion(conversations)
+        }
+    }
+    
+    //**** Another testing function
+    func queryInboxList(completion: @escaping([Messages]) -> Void) {
+        // grabs the current user id when function is called
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        // This should query the Messages collection, currentUserId document, then go into the recent message
+        let query = dbMessages
+            .document(currentUserId)
+            .collection("recent-message")
+            .order(by: "timestamp", descending: true)
+        
+        // add in a event listener within the recent messages field to update concurrently the most-recent message
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({
+                $0.type == .added || $0.type == .modified
+            }) else { return }
+            
+            var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
+            completion(messages)
         }
     }
 }

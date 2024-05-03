@@ -6,6 +6,43 @@
 
 import SwiftUI
 
+struct InboxCellView: View {
+    //**** This is to utilize the function to convert ID -> User
+    @EnvironmentObject var followManager: FollowingManager
+    let message: Messages
+    @State var username = "" // blank on initial
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            // this will represent the chat partner profile picture
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.blue)
+            
+            // this will represent the name of the chat partner AND most recent message in the conversation
+            VStack(alignment: .leading) {
+                Text(username)
+                    .font(.headline)
+                
+                Text(message.messageContent)
+            }
+            //**** left off on determining the timestamp
+//            Text(Tools.formatTimeAgo(from: message.timestamp))
+        }
+        .onAppear {
+            Task {
+                if let user = try await followManager.getUserById(userId: message.fromUser) {
+                    username = user.username
+                    print("[DEBUG2]: We are inside of the Task within inboxCellView")
+                    print("This is the value of username: \(username)")
+                }
+                print("[DEBUG2]: We are outside of the Task within inboxCellView")
+            }
+        }
+    }
+}
+
 struct MessageView: View {
     // [PLAN]: Firebase for chat storage
     // [PLAN]: APN for push notifications
@@ -22,6 +59,7 @@ struct MessageView: View {
     @State private var chatPartner: User?
     
     var body: some View {
+        let screenSize = UIScreen.main.bounds.size
         NavigationStack {
             ZStack {
 //                let screenSize = UIScreen.main.bounds.size
@@ -29,8 +67,12 @@ struct MessageView: View {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
                         ForEach(messageManager.inboxList, id: \.self) { conversation in
-                            Text(conversation)
+                            InboxCellView(message: conversation)
                                 .padding()
+                            
+                            Divider()
+                                .frame(width: screenSize.width * 0.80)
+                                .padding(.leading, screenSize.width * 0.20)
                         }
                         
                         Spacer()
@@ -62,10 +104,11 @@ struct MessageView: View {
             }
             .onAppear {
                 //** everything here will trigger first [PRIORITY] then main executes
-                messageManager.queryInbox { conversations in
-                    self.messageManager.inboxList = conversations
-                    print("[DEBUG1]: This is the value of inboxList: \(conversations)")
+                messageManager.queryInboxList() { message in
+                    self.messageManager.inboxList = message
+                    print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
                 }
+                
                 print("[DEBUG2]: This is the value of inboxList: \(messageManager.inboxList)")
             }
         } // end of NavigationStack
