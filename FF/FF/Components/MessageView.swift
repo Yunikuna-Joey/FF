@@ -133,10 +133,16 @@ struct MessageView: View {
             }
             .onAppear {
                 //** everything here will trigger first [PRIORITY] then main executes
-                messageManager.queryInboxList() { message in
-//                    self.messageManager.inboxList.removeAll()
-                    self.messageManager.inboxList.append(contentsOf: message)
-                    print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
+//                messageManager.queryInboxList() { message in
+//                    self.messageManager.inboxList.append(contentsOf: message)
+//                    print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
+//                }
+                //** only run queryInbox when the list is empty, but within the function, the event listener is always on ==> provides the ability to listen for document changes [i.e new message.. etc]
+                if messageManager.inboxList.isEmpty {
+                    messageManager.queryInboxList() { message in
+                        self.messageManager.inboxList.append(contentsOf: message)
+                        print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
+                    }
                 }
                 
                 print("[DEBUG2]: This is the value of inboxList: \(messageManager.inboxList)")

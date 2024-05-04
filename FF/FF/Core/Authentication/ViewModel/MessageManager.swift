@@ -114,8 +114,6 @@ class MessageManager: ObservableObject {
             .collection("recent-message")
             .order(by: "timestamp", descending: true)
         
-//        inboxList.removeAll()
-        
         // add in a event listener within the recent messages field to update concurrently the most-recent message
         query.addSnapshotListener { snapshot, _ in
             guard let changes = snapshot?.documentChanges.filter({
