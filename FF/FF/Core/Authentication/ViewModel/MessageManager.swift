@@ -128,14 +128,29 @@ class MessageManager: ObservableObject {
     
     
     //*** update the read status of a particular message
-    func updateReadStatus(messageId: String) {
-        dbMessages.document(messageId).updateData(["readStatus": true]) { error in
-            if let error = error {
-                print("[DEBUG]: There was an error updating the readStatus of this particular message \(error.localizedDescription)")
+    func updateReadStatus(userId: String) {
+        let query = dbMessages
+            .document(userId)
+            .collection("recent-message")
+            .order(by: "timestamp", descending: true)
+            .limit(to: 1)
+        
+        query.getDocuments { snapshot, error in
+            guard let documents = snapshot?.documents, !documents.isEmpty else {
+                print("[DEBUG]: No recent messages were found")
+                return
             }
             
-            else {
-                print("[DEBUG]: Successful update of the readStatus")
+            let recentMessageId = documents[0].documentID
+            
+            self.dbMessages.document(recentMessageId).updateData(["readStatus": true]) { error in
+                if let error = error {
+                    print("[DEBUG]: There was an error updating the read status of this message \(error.localizedDescription)")
+                }
+                
+                else {
+                    print("[DEBUG]: There were no issues")
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ struct InboxCellView: View {
     @State var username = "" // blank on initial
     @State var partnerPicture = ""
     @State var chatFlag: Bool = false
+    @State var chatPartnerObjectId: String = ""
     @State private var chatPartnerObject: User?
 
     let message: Messages
@@ -24,7 +25,8 @@ struct InboxCellView: View {
             Button(action: {
                 chatFlag = true
                 // need a function to update the database with the read status 
-                messageManager.updateReadStatus(messageId: message.id)
+//                messageManager.updateReadStatus(messageId: message.id)
+                messageManager.updateReadStatus(userId: chatPartnerObjectId)
             }) {
                 HStack(spacing: 10) {
                     //** This will be conditionally representing whether or not the message has been read or not
@@ -81,6 +83,7 @@ struct InboxCellView: View {
                             username = user.username
                             partnerPicture = user.profilePicture
                             chatPartnerObject = user
+                            chatPartnerObjectId = user.id
                             
                             print("[DEBUG2]: We are inside of the Task within inboxCellView")
                             print("This is the value of username: \(username)")
