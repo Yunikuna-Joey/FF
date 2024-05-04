@@ -38,4 +38,6 @@ struct Messages: Codable, Identifiable, Hashable {
     var currentUserFlag: Bool {
         return fromUser == Auth.auth().currentUser?.uid
     }
+    
+    let readStatus: Bool
 }

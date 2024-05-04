@@ -10,55 +10,90 @@ import FirebaseAuth
 struct InboxCellView: View {
     //**** This is to utilize the function to convert ID -> User
     @EnvironmentObject var followManager: FollowingManager
-    let message: Messages
+    @EnvironmentObject var messageManager: MessageManager
+
     @State var username = "" // blank on initial
     @State var partnerPicture = ""
+    @State var chatFlag: Bool = false
+    @State private var chatPartnerObject: User?
+
+    let message: Messages
     
     var body: some View {
-        HStack(spacing: 10) {
-            // this will represent the chat partner profile picture
-            if partnerPicture.isEmpty {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                    .foregroundStyle(Color.blue)
-            }
-            
-            else {
-                Image(partnerPicture)
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                    .foregroundStyle(Color.blue)
-            }
-            
-            // this will represent the name of the chat partner AND most recent message in the conversation
-            VStack(alignment: .leading) {
-                Text(username)
-                    .font(.headline)
-                
-                Text(message.messageContent)
-            }
-            
-            // push in the left direction
-            Spacer()
-            
-            //**** left off on determining the timestamp
-            Text(formatTimeAgo(from: message.timestamp))
-                .font(.caption)
-                .foregroundStyle(Color.gray)
-            
-        }
-        .onAppear {
-            Task {
-                let chatPartnerId = message.fromUser == Auth.auth().currentUser?.uid ? message.toUser : message.fromUser
-                if let user = try await followManager.getUserById(userId: chatPartnerId) {
-                    username = user.username
-                    partnerPicture = user.profilePicture
-                    print("[DEBUG2]: We are inside of the Task within inboxCellView")
-                    print("This is the value of username: \(username)")
+        NavigationStack {
+            Button(action: {
+                chatFlag = true
+                // need a function to update the database with the read status 
+                messageManager.updateReadStatus(messageId: message.id)
+            }) {
+                HStack(spacing: 10) {
+                    //** This will be conditionally representing whether or not the message has been read or not
+                    if !message.readStatus {
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 10, height: 10)
+                            .padding(.trailing, 8)
+                    }
+                    
+                    else {
+                        Color.clear
+                            .frame(width: 10, height: 10)
+                            .padding(.trailing, 8)
+                    }
+                    
+                    // this will represent the chat partner profile picture
+                    if partnerPicture.isEmpty {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .foregroundStyle(Color.blue)
+                    }
+                    
+                    else {
+                        Image(partnerPicture)
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .foregroundStyle(Color.blue)
+                    }
+                    
+                    // this will represent the name of the chat partner AND most recent message in the conversation
+                    VStack(alignment: .leading) {
+                        Text(username)
+                            .font(.headline)
+                        
+                        Text(message.messageContent)
+                            .foregroundStyle(Color.gray)
+                    }
+                    
+                    // push in the left direction
+                    Spacer()
+                    
+                    //**** left off on determining the timestamp
+                    Text(formatTimeAgo(from: message.timestamp))
+                        .font(.caption)
+                        .foregroundStyle(Color.gray)
+                    
+                } // end of hstack
+                .onAppear {
+                    Task {
+                        let chatPartnerId = message.fromUser == Auth.auth().currentUser?.uid ? message.toUser : message.fromUser
+                        if let user = try await followManager.getUserById(userId: chatPartnerId) {
+                            username = user.username
+                            partnerPicture = user.profilePicture
+                            chatPartnerObject = user
+                            
+                            print("[DEBUG2]: We are inside of the Task within inboxCellView")
+                            print("This is the value of username: \(username)")
+                        }
+                        print("[DEBUG2]: We are outside of the Task within inboxCellView")
+                    }
                 }
-                print("[DEBUG2]: We are outside of the Task within inboxCellView")
-            }
+            } // end of button
+            .buttonStyle(PlainButtonStyle())
+            
+        } // end of NavigationStack
+        .navigationDestination(isPresented: $chatFlag) {
+            IndividualChatView(chatPartner: $chatPartnerObject)
         }
     }
     

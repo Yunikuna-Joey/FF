@@ -50,7 +50,8 @@ class MessageManager: ObservableObject {
             fromUser: currentUid,
             toUser: chatPartnerId,
             timestamp: Date(),
-            messageContent: messageContent
+            messageContent: messageContent,
+            readStatus: false
         )
         
         // encode the Messages object for firestore
@@ -122,6 +123,20 @@ class MessageManager: ObservableObject {
             
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
             completion(messages)
+        }
+    }
+    
+    
+    //*** update the read status of a particular message
+    func updateReadStatus(messageId: String) {
+        dbMessages.document(messageId).updateData(["readStatus": true]) { error in
+            if let error = error {
+                print("[DEBUG]: There was an error updating the readStatus of this particular message \(error.localizedDescription)")
+            }
+            
+            else {
+                print("[DEBUG]: Successful update of the readStatus")
+            }
         }
     }
 }
