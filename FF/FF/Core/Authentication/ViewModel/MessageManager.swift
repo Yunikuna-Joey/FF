@@ -128,30 +128,60 @@ class MessageManager: ObservableObject {
     
     
     //*** update the read status of a particular message
-    func updateReadStatus(userId: String) {
+    func updateReadStatus(currUserId: String) {
         let query = dbMessages
-            .document(userId)
+            .document(currUserId)
             .collection("recent-message")
             .order(by: "timestamp", descending: true)
             .limit(to: 1)
         
+        //** attempt to grab the correct firebase document
         query.getDocuments { snapshot, error in
+            // Step 1: Determine if there is an error retrieving initial documents from query
+            if let error = error {
+                print("[DEBUG]: Error getting documents: \(error.localizedDescription)")
+                return
+            }
+            
+            // Step 2: Determine if there is a message within the recent-message field
             guard let documents = snapshot?.documents, !documents.isEmpty else {
                 print("[DEBUG]: No recent messages were found")
                 return
             }
             
             let recentMessageId = documents[0].documentID
+//            let recentMessageData = documents[0].data()
             
-            self.dbMessages.document(recentMessageId).updateData(["readStatus": true]) { error in
-                if let error = error {
-                    print("[DEBUG]: There was an error updating the read status of this message \(error.localizedDescription)")
-                }
-                
-                else {
-                    print("[DEBUG]: There were no issues")
-                }
-            }
-        }
-    }
+            // Step 3: go into the conversation with the current user and their chat partner
+            self.dbMessages
+                .document(currUserId)
+                .collection("recent-message")
+                .document(recentMessageId)
+                // ** This updates the recent message field
+                .updateData(["readStatus": true]) { error in
+                    // Check if there was an error in the process of updating the read status
+                    if let error = error {
+                        print("[DEBUG]: Error updating read status: \(error.localizedDescription)")
+                    }
+                    // Debug statement to check if the process was successful
+                    else {
+                        print("[DEBUG]: Read status updated successfully.")
+                        self.dbMessages
+                            .document(currUserId)
+                            .collection("recent-message")
+                            .document(recentMessageId)
+                            .getDocument { (document, error) in
+                                if let document = document, document.exists {
+                                    let readStatus = document.get("readStatus") ?? "Unavailable"
+                                    print("[DEBUG]: Read status updated successfully. New read status: \(readStatus)")
+                                } else {
+                                    print("[DEBUG]: Document does not exist")
+                                }
+                            }
+                    }
+            } // self.dbMessages
+        
+
+        } // end of query line
+    } // end of function
 }

@@ -186,7 +186,7 @@ class FollowingManager: ObservableObject {
                         imageArray: imageArray,
                         profilePicture: profilePicture
                     )
-                    print("This is the value of user \(user)")
+//                    print("This is the value of user \(user)")
                     return user
                 }
             }

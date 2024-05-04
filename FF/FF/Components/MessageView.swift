@@ -25,8 +25,8 @@ struct InboxCellView: View {
             Button(action: {
                 chatFlag = true
                 // need a function to update the database with the read status 
-//                messageManager.updateReadStatus(messageId: message.id)
-                messageManager.updateReadStatus(userId: chatPartnerObjectId)
+//                messageManager.updateReadStatusTest(messageId: message.id)
+                messageManager.updateReadStatus(currUserId: Auth.auth().currentUser?.uid ?? "")
             }) {
                 HStack(spacing: 10) {
                     //** This will be conditionally representing whether or not the message has been read or not
@@ -37,11 +37,6 @@ struct InboxCellView: View {
                             .padding(.trailing, 8)
                     }
                     
-                    else {
-                        Color.clear
-                            .frame(width: 10, height: 10)
-                            .padding(.trailing, 8)
-                    }
                     
                     // this will represent the chat partner profile picture
                     if partnerPicture.isEmpty {
@@ -70,7 +65,7 @@ struct InboxCellView: View {
                     // push in the left direction
                     Spacer()
                     
-                    //**** left off on determining the timestamp
+                    // timestamp
                     Text(formatTimeAgo(from: message.timestamp))
                         .font(.caption)
                         .foregroundStyle(Color.gray)
@@ -85,10 +80,10 @@ struct InboxCellView: View {
                             chatPartnerObject = user
                             chatPartnerObjectId = user.id
                             
-                            print("[DEBUG2]: We are inside of the Task within inboxCellView")
-                            print("This is the value of username: \(username)")
+//                            print("[DEBUG2]: We are inside of the Task within inboxCellView")
+//                            print("This is the value of username: \(username)")
                         }
-                        print("[DEBUG2]: We are outside of the Task within inboxCellView")
+//                        print("[DEBUG2]: We are outside of the Task within inboxCellView")
                     }
                 }
             } // end of button
@@ -171,19 +166,14 @@ struct MessageView: View {
             }
             .onAppear {
                 //** everything here will trigger first [PRIORITY] then main executes
-//                messageManager.queryInboxList() { message in
-//                    self.messageManager.inboxList.append(contentsOf: message)
-//                    print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
-//                }
+
                 //** only run queryInbox when the list is empty, but within the function, the event listener is always on ==> provides the ability to listen for document changes [i.e new message.. etc]
                 if messageManager.inboxList.isEmpty {
                     messageManager.queryInboxList() { message in
                         self.messageManager.inboxList.append(contentsOf: message)
-                        print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
+//                        print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
                     }
                 }
-                
-                print("[DEBUG2]: This is the value of inboxList: \(messageManager.inboxList)")
             }
         } // end of NavigationStack
     }

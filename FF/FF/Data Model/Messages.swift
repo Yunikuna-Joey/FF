@@ -8,6 +8,9 @@ import Foundation
 import Firebase
 import FirebaseFirestoreSwift
 
+// ** let variables = declares a constant, and once assigned a value, it CANNOT be mutated
+// ** var variables = declare a variable, and once assigned a value, it CAN be muatated
+
 struct Messages: Codable, Identifiable, Hashable {
     // who the message was from
     let fromUser: String
@@ -39,5 +42,5 @@ struct Messages: Codable, Identifiable, Hashable {
         return fromUser == Auth.auth().currentUser?.uid
     }
     
-    let readStatus: Bool
+    var readStatus: Bool
 }
