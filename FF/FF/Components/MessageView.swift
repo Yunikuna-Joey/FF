@@ -25,8 +25,8 @@ struct InboxCellView: View {
             Button(action: {
                 chatFlag = true
                 // need a function to update the database with the read status 
-//                messageManager.updateReadStatusTest(messageId: message.id)
-                messageManager.updateReadStatus(currUserId: Auth.auth().currentUser?.uid ?? "")
+                messageManager.updateReadStatusTest(currUserId: Auth.auth().currentUser?.uid ?? "", chatPartnerId: chatPartnerObjectId)
+//                messageManager.updateReadStatus(currUserId: Auth.auth().currentUser?.uid ?? "")
             }) {
                 HStack(spacing: 10) {
                     //** This will be conditionally representing whether or not the message has been read or not
@@ -122,6 +122,7 @@ struct MessageView: View {
     @State private var chatFlag = false
     @State private var composeFlag: Bool = false
     @State private var chatPartner: User?
+    @State private var queryInboxFlag: Bool = false
     
     var body: some View {
         let screenSize = UIScreen.main.bounds.size
@@ -168,10 +169,12 @@ struct MessageView: View {
                 //** everything here will trigger first [PRIORITY] then main executes
 
                 //** only run queryInbox when the list is empty, but within the function, the event listener is always on ==> provides the ability to listen for document changes [i.e new message.. etc]
-                if messageManager.inboxList.isEmpty {
+                if messageManager.inboxList.isEmpty && !queryInboxFlag {
                     messageManager.queryInboxList() { message in
                         self.messageManager.inboxList.append(contentsOf: message)
-//                        print("[DEBUG1]: This is the value of inboxList: \(messageManager.inboxList)")
+                    
+                        queryInboxFlag = true
+                        print("Ran inbox function. We should only run this portion once at the beginning and nothing else. The event listener should be taking care of any message updates")
                     }
                 }
             }

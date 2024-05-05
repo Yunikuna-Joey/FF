@@ -25,6 +25,7 @@ class MessageManager: ObservableObject {
     //    }
     
     let dbMessages = Firestore.firestore().collection("Messages")
+//    var listener: ListenerRegistration?
     
     // Send messages with-in individual chat view
     func sendMessage(messageContent: String, toUser user: User) {
@@ -104,7 +105,7 @@ class MessageManager: ObservableObject {
         }
     }
     
-    //**** Another testing function
+    //**** Another testing function [official]
     func queryInboxList(completion: @escaping([Messages]) -> Void) {
         // grabs the current user id when function is called
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
@@ -114,6 +115,8 @@ class MessageManager: ObservableObject {
             .document(currentUserId)
             .collection("recent-message")
             .order(by: "timestamp", descending: true)
+        
+//        listener?.remove()
         
         // add in a event listener within the recent messages field to update concurrently the most-recent message
         query.addSnapshotListener { snapshot, _ in
@@ -132,6 +135,7 @@ class MessageManager: ObservableObject {
         let query = dbMessages
             .document(currUserId)
             .collection("recent-message")
+        // ** we need to include the chatpartner here as well [you got this]
             .order(by: "timestamp", descending: true)
             .limit(to: 1)
         
@@ -150,14 +154,14 @@ class MessageManager: ObservableObject {
             }
             
             let recentMessageId = documents[0].documentID
-//            let recentMessageData = documents[0].data()
+            //            let recentMessageData = documents[0].data()
             
             // Step 3: go into the conversation with the current user and their chat partner
             self.dbMessages
                 .document(currUserId)
                 .collection("recent-message")
                 .document(recentMessageId)
-                // ** This updates the recent message field
+            // ** This updates the recent message field
                 .updateData(["readStatus": true]) { error in
                     // Check if there was an error in the process of updating the read status
                     if let error = error {
@@ -179,9 +183,100 @@ class MessageManager: ObservableObject {
                                 }
                             }
                     }
-            } // self.dbMessages
-        
-
+                } // self.dbMessages
+            
+            
         } // end of query line
     } // end of function
+    
+//        func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
+//            dbMessages
+//                .document(currUserId)
+//                .collection("recent-message")
+//                .document(chatPartnerId)
+//                .updateData(["readStatus" : true]) { error in
+//                    // check if there was an error
+//                    if let error = error {
+//                        print("[DEBUG]: Error updating the readStatus \(error.localizedDescription)")
+//                    }
+//                    else {
+//                        self.dbMessages
+//                            .document(currUserId)
+//                            .collection("recent-message")
+//                            .document(chatPartnerId)
+//                            .getDocument { (document, error) in
+//                                if let document = document, document.exists {
+//                                    let readStatus = document.get("readStatus") ?? "Unavailable"
+//                                    print("[DEBUG]: Read status was updated successfully --\(readStatus)")
+//                                }
+//                                else {
+//                                    print("[DEBUG]: Document does not exist")
+//                                }
+//                            }
+//                    }
+//                }
+//    
+//        }
+    
+//    func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
+//        let recentMessageRef = dbMessages
+//            .document(currUserId)
+//            .collection("recent-message")
+//            .document(chatPartnerId)
+//
+//        recentMessageRef.getDocument { document, error in
+//            if let error = error {
+//                print("[DEBUG]: Error getting document: \(error.localizedDescription)")
+//            } else if let document = document, document.exists {
+//                // Document exists, update the readStatus
+//                recentMessageRef.updateData(["readStatus": true]) { error in
+//                    if let error = error {
+//                        print("[DEBUG]: Error updating readStatus: \(error.localizedDescription)")
+//                    } else {
+//                        print("[DEBUG]: Read status was updated successfully")
+//                    }
+//                }
+//            } else {
+//                // Document doesn't exist, create the document with readStatus as true
+//                recentMessageRef.setData(["readStatus": true]) { error in
+//                    if let error = error {
+//                        print("[DEBUG]: Error creating document: \(error.localizedDescription)")
+//                    } else {
+//                        print("[DEBUG]: Document created successfully with readStatus: true")
+//                    }
+//                }
+//            }
+//        }
+//    }
+    
+    func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
+        dbMessages
+            .document(currUserId)
+            .collection("recent-message")
+            .document(chatPartnerId)
+            .updateData(["readStatus" : true]) { error in
+                // check if there was an error
+                if let error = error {
+                    print("[DEBUG]: Error updating the readStatus \(error.localizedDescription)")
+                }
+                else {
+                    // Find the index of the message in the inboxList array
+                    if let index = self.inboxList.firstIndex(where: { $0.fromUser == chatPartnerId }) {
+                        // Replace the message with the updated readStatus
+                        var updatedMessage = self.inboxList[index]
+                        updatedMessage.readStatus = true
+                        self.inboxList[index] = updatedMessage
+                    }
+                    else {
+                        print("[DEBUG]: Message not found in inboxList.")
+                        print("[DEBUG]: Inbox list: \(self.inboxList)")
+                    }
+                    
+                    print("[DEBUG]: Read status was updated successfully.")
+                    print("[DEBUG]: Inbox list: \(self.inboxList)")
+                }
+            }
+    }
+    
+    
 }

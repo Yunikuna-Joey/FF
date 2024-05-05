@@ -24,10 +24,15 @@ class AuthView: ObservableObject {
     // database variable
     private let db = Firestore.firestore()
     
+    var messageManager: MessageManager
+    
     // check for a current user [behavior: keeps user signed in when exiting the app]
     init() {
         // Attempting to maintain current user from previous session
         self.userSession = Auth.auth().currentUser
+        
+        // injecting and ensuring that message Manager is in here
+        self.messageManager = MessageManager()
         
         // attempt to grab user data when the app is open
         Task {
@@ -77,6 +82,7 @@ class AuthView: ObservableObject {
     // sign out function
     func signOut() {
         do {
+            self.messageManager.inboxList = []
             // sign out user on the backend
             try Auth.auth().signOut()
             // clears user session in presentation view
