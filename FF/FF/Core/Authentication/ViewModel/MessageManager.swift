@@ -111,15 +111,36 @@ class MessageManager: ObservableObject {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
         
         // This should query the Messages collection, currentUserId document, then go into the recent message
+        // ** This will represent messages sent TO the currentUser
         let query = dbMessages
             .document(currentUserId)
             .collection("recent-message")
             .order(by: "timestamp", descending: true)
         
+        // ** This will represent messages sent BY the currentUser
+        let sentMessages = dbMessages
+            .document(currentUserId)
+            .collection("recent-message")
+            .whereField("fromUser", isEqualTo: currentUserId)
+            .order(by: "timestamp", descending: true)
+            
+        
         // add in a event listener within the recent messages field to update concurrently the most-recent message
         query.addSnapshotListener { snapshot, _ in
             guard let changes = snapshot?.documentChanges.filter({
                 $0.type == .added || $0.type == .modified
+            }) else { return }
+            
+            var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
+            completion(messages)
+        }
+        
+        // Event listener for sent messages to update inbox cells 
+        sentMessages.addSnapshotListener { snapshot, _ in
+            //*** play with the filter in event listener
+            // current logic: messages sent by curr User do not have to be read, i.e
+            guard let changes = snapshot?.documentChanges.filter({
+                $0.type == .added
             }) else { return }
             
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
@@ -186,66 +207,6 @@ class MessageManager: ObservableObject {
             
         } // end of query line
     } // end of function
-    
-//        func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
-//            dbMessages
-//                .document(currUserId)
-//                .collection("recent-message")
-//                .document(chatPartnerId)
-//                .updateData(["readStatus" : true]) { error in
-//                    // check if there was an error
-//                    if let error = error {
-//                        print("[DEBUG]: Error updating the readStatus \(error.localizedDescription)")
-//                    }
-//                    else {
-//                        self.dbMessages
-//                            .document(currUserId)
-//                            .collection("recent-message")
-//                            .document(chatPartnerId)
-//                            .getDocument { (document, error) in
-//                                if let document = document, document.exists {
-//                                    let readStatus = document.get("readStatus") ?? "Unavailable"
-//                                    print("[DEBUG]: Read status was updated successfully --\(readStatus)")
-//                                }
-//                                else {
-//                                    print("[DEBUG]: Document does not exist")
-//                                }
-//                            }
-//                    }
-//                }
-//    
-//        }
-    
-//    func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
-//        let recentMessageRef = dbMessages
-//            .document(currUserId)
-//            .collection("recent-message")
-//            .document(chatPartnerId)
-//
-//        recentMessageRef.getDocument { document, error in
-//            if let error = error {
-//                print("[DEBUG]: Error getting document: \(error.localizedDescription)")
-//            } else if let document = document, document.exists {
-//                // Document exists, update the readStatus
-//                recentMessageRef.updateData(["readStatus": true]) { error in
-//                    if let error = error {
-//                        print("[DEBUG]: Error updating readStatus: \(error.localizedDescription)")
-//                    } else {
-//                        print("[DEBUG]: Read status was updated successfully")
-//                    }
-//                }
-//            } else {
-//                // Document doesn't exist, create the document with readStatus as true
-//                recentMessageRef.setData(["readStatus": true]) { error in
-//                    if let error = error {
-//                        print("[DEBUG]: Error creating document: \(error.localizedDescription)")
-//                    } else {
-//                        print("[DEBUG]: Document created successfully with readStatus: true")
-//                    }
-//                }
-//            }
-//        }
-//    }
     
     func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
         dbMessages
