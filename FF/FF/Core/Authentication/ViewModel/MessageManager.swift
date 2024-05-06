@@ -18,14 +18,7 @@ class MessageManager: ObservableObject {
     //***** Associated with the function of queryInboxList
     @Published var inboxList = [Messages]()
     
-    //    let user: User
-    //
-    //    init(user: User) {
-    //        self.user = user
-    //    }
-    
     let dbMessages = Firestore.firestore().collection("Messages")
-//    var listener: ListenerRegistration?
     
     // Send messages with-in individual chat view
     func sendMessage(messageContent: String, toUser user: User) {
@@ -208,6 +201,7 @@ class MessageManager: ObservableObject {
         } // end of query line
     } // end of function
     
+    //*** current implementation of updateReadStatus
     func updateReadStatusTest(currUserId: String, chatPartnerId: String) {
         dbMessages
             .document(currUserId)
@@ -219,18 +213,6 @@ class MessageManager: ObservableObject {
                     print("[DEBUG]: Error updating the readStatus \(error.localizedDescription)")
                 }
                 else {
-                    // Find the index of the message in the inboxList array
-//                    if let index = self.inboxList.firstIndex(where: { $0.fromUser == chatPartnerId }) {
-//                        // Replace the message with the updated readStatus
-//                        var updatedMessage = self.inboxList[index]
-//                        updatedMessage.readStatus = true
-//                        self.inboxList[index] = updatedMessage
-//                    }
-//                    else {
-//                        print("[DEBUG]: Message not found in inboxList.")
-//                        print("[DEBUG]: Inbox list: \(self.inboxList)")
-//                    }
-                    
                     print("[DEBUG]: Read status was updated successfully.")
                     print("[DEBUG]: Inbox list: \(self.inboxList)")
                 }
