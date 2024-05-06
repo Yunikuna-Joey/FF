@@ -122,7 +122,6 @@ struct MessageView: View {
     @State private var chatFlag = false
     @State private var composeFlag: Bool = false
     @State private var chatPartner: User?
-    @State private var queryInboxFlag: Bool = false
     
     var body: some View {
         let screenSize = UIScreen.main.bounds.size
@@ -165,16 +164,22 @@ struct MessageView: View {
                 //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
                 IndividualChatView(chatPartner: $chatPartner)
             }
-            .onAppear {
-                //** everything here will trigger first [PRIORITY] then main executes
-
+            .onAppear {                
                 //** only run queryInbox when the list is empty, but within the function, the event listener is always on ==> provides the ability to listen for document changes [i.e new message.. etc]
-                if messageManager.inboxList.isEmpty && !queryInboxFlag {
+                if messageManager.inboxList.isEmpty {
                     messageManager.queryInboxList() { message in
-                        self.messageManager.inboxList.append(contentsOf: message)
-                    
-                        queryInboxFlag = true
-                        print("Ran inbox function. We should only run this portion once at the beginning and nothing else. The event listener should be taking care of any message updates")
+                        // this is going in one by one
+                        for element in message {
+                            if let index = messageManager.inboxList.firstIndex(where: { $0.fromUser == element.fromUser }) {
+                                messageManager.inboxList[index] = element
+                            } else {
+                                messageManager.inboxList.append(element)
+                            }
+                        }
+                        //** This line was appending the entire array of message instead of going through one by one
+//                        messageManager.inboxList.append(contentsOf: message)
+                        
+                        print("Ran inbox function.")
                     }
                 }
             }

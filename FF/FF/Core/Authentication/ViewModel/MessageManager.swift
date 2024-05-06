@@ -116,8 +116,6 @@ class MessageManager: ObservableObject {
             .collection("recent-message")
             .order(by: "timestamp", descending: true)
         
-//        listener?.remove()
-        
         // add in a event listener within the recent messages field to update concurrently the most-recent message
         query.addSnapshotListener { snapshot, _ in
             guard let changes = snapshot?.documentChanges.filter({
@@ -261,16 +259,16 @@ class MessageManager: ObservableObject {
                 }
                 else {
                     // Find the index of the message in the inboxList array
-                    if let index = self.inboxList.firstIndex(where: { $0.fromUser == chatPartnerId }) {
-                        // Replace the message with the updated readStatus
-                        var updatedMessage = self.inboxList[index]
-                        updatedMessage.readStatus = true
-                        self.inboxList[index] = updatedMessage
-                    }
-                    else {
-                        print("[DEBUG]: Message not found in inboxList.")
-                        print("[DEBUG]: Inbox list: \(self.inboxList)")
-                    }
+//                    if let index = self.inboxList.firstIndex(where: { $0.fromUser == chatPartnerId }) {
+//                        // Replace the message with the updated readStatus
+//                        var updatedMessage = self.inboxList[index]
+//                        updatedMessage.readStatus = true
+//                        self.inboxList[index] = updatedMessage
+//                    }
+//                    else {
+//                        print("[DEBUG]: Message not found in inboxList.")
+//                        print("[DEBUG]: Inbox list: \(self.inboxList)")
+//                    }
                     
                     print("[DEBUG]: Read status was updated successfully.")
                     print("[DEBUG]: Inbox list: \(self.inboxList)")
