@@ -164,7 +164,7 @@ struct MessageView: View {
                 //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
                 IndividualChatView(chatPartner: $chatPartner)
             }
-            .onAppear {                
+            .onAppear {
                 //** only run queryInbox when the list is empty, but within the function, the event listener is always on ==> provides the ability to listen for document changes [i.e new message.. etc]
                 if messageManager.inboxList.isEmpty {
                     messageManager.queryInboxList() { message in
