@@ -101,13 +101,6 @@ struct IndividualChatView: View {
     init(chatPartner: Binding<User?>) {
         _chatPartner = chatPartner
     }
-
-    //*** This is for testing hardcoded messages in this view :) 
-    let username = "Testing Username"
-    let longText = "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of 'de Finibus Bonorum et Malorum' (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, 'Lorem ipsum dolor sit amet..', comes from a line in section 1.10.32."
-    let shortText = "What are you hitting today?"
-    
-    let timestamp = "1:40PM"
     
     var body: some View {
         VStack {
@@ -182,12 +175,18 @@ struct IndividualChatView: View {
     
     func populateMessageList(chatPartnerObject: User) {
         // This function call must take a specific user []
-        messageManager.queryMessage(chatPartner: chatPartnerObject) { messages in
-            // This will populate the messageList variable in messageManager
-            // ==>
-            // then we will iterate through the messageManager.messageList in MAIN to retrieve the data within the messageList
-            messageManager.messageList.removeAll()
-            messageManager.messageList.append(contentsOf: messages)
+        if messageManager.messageList.isEmpty {
+            messageManager.queryMessage(chatPartner: chatPartnerObject) { messages in
+                // This will populate the messageList variable in messageManager
+                // ==>
+                // then we will iterate through the messageManager.messageList in MAIN to retrieve the data within the messageList
+                for message in messages {
+                    messageManager.messageList.append(message)
+                }
+                
+                //            messageManager.messageList.removeAll()
+                //            messageManager.messageList.append(contentsOf: messages)
+            }
         }
     }
 }

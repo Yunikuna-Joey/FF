@@ -45,7 +45,7 @@ class MessageManager: ObservableObject {
             toUser: chatPartnerId,
             timestamp: Date(),
             messageContent: messageContent,
-            readStatus: false
+            readStatus: true // readStatus should be true for the user sending the message
         )
         
         // encode the Messages object for firestore
@@ -57,7 +57,13 @@ class MessageManager: ObservableObject {
         
         // store into firebase for both the currentUser and chatPartner [recent-message]
         currentUserRecent.setData(messageData)
-        chatPartnerRecent.setData(messageData)
+        chatPartnerRecent.setData(messageData) { error in
+            if error == nil {
+                let chatPartnerRecentMsg = self.dbMessages.document(chatPartnerId).collection("recent-message").document(currentUid)
+                chatPartnerRecentMsg.updateData(["readStatus": false])
+                print("Triggered the read status update for the sender?")
+            }
+        }
     }
     
     // query messages with-in the individual chat window
