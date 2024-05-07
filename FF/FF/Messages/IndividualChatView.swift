@@ -31,7 +31,7 @@ struct ChatCellView: View {
                 }
                 .background(Color.blue)
                 .cornerRadius(25)
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .trailing)
 
                 
                 // profile picture
@@ -62,7 +62,7 @@ struct ChatCellView: View {
                 //                        .frame(maxWidth: 256)
                 .background(Color.gray)
                 .cornerRadius(25)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .leading)
                 
                 // timestamp
                 Text(formatTimeAgo(from: message.timestamp))
