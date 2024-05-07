@@ -27,11 +27,12 @@ struct ChatCellView: View {
                 HStack {
                     Text(message.messageContent)
                         .padding()
-                        .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .trailing)
+//                        .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .trailing)
                 }
-                /*.frame(maxWidth: 256)    */       // needs to be different for different screen sizes
                 .background(Color.blue)
                 .cornerRadius(25)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+
                 
                 // profile picture
                 Image(systemName: "person.circle.fill")
@@ -56,11 +57,12 @@ struct ChatCellView: View {
                 HStack{
                     Text(message.messageContent)
                         .padding()
-                        .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .leading)
+//                        .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .leading)
                 }
                 //                        .frame(maxWidth: 256)
                 .background(Color.gray)
                 .cornerRadius(25)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // timestamp
                 Text(formatTimeAgo(from: message.timestamp))
