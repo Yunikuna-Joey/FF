@@ -107,15 +107,16 @@ struct IndividualChatView: View {
             Spacer()
             // Scroll View for message content
             ScrollView(showsIndicators: false) {
-                VStack {
+                LazyVStack {
                     //*** lets start with trying to load information for the current User
-                    
                     ForEach(messageManager.messageList, id: \.self) { message in
                         ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
                     }
                     
-                }
-            }
+                } // end of lazyvstack
+            } // end of scrollView
+            .defaultScrollAnchor(.bottom)
+
             
             //*** Text area for message content to be received || This does not need to be modified for dynamic user loading
             ZStack(alignment: .trailing) {
@@ -151,6 +152,8 @@ struct IndividualChatView: View {
         }
         .navigationTitle("\(chatPartner?.username ?? "Chat")")
         .onAppear {
+            //** attempt to clear the message list
+            messageManager.messageList.removeAll()
             // Validates that a registered user was tapped on then retreives the messages
             if let chatPartner = chatPartner {
                 populateMessageList(chatPartnerObject: chatPartner)
