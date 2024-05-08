@@ -112,7 +112,7 @@ struct IndividualChatView: View {
             ScrollView(showsIndicators: false) {
                 LazyVStack {
                     //*** lets start with trying to load information for the current User
-                    ForEach(messageManager.messageList, id: \.self) { message in
+                    ForEach(messageManager.messageList, id: \.id) { message in
                         ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
                     }
                     
