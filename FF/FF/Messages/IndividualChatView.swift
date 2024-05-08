@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ChatCellView: View {
     let currentUserFlag: Bool
@@ -159,6 +160,11 @@ struct IndividualChatView: View {
             // Validates that a registered user was tapped on then retreives the messages
             if let chatPartner = chatPartner {
                 populateMessageList(chatPartnerObject: chatPartner)
+            }
+        }
+        .onDisappear {
+            if let chatPartner = chatPartner {
+                messageManager.updateReadStatusTest(currUserId: Auth.auth().currentUser?.uid ?? "", chatPartnerId: chatPartner.id)
             }
         }
         
