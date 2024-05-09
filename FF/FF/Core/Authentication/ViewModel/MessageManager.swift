@@ -74,13 +74,17 @@ class MessageManager: ObservableObject {
             let query = dbMessages
                 .document(currentUserId)
                 .collection(chatPartnerId)
-                .order(by: "timestamp", descending: false)      // *** revisit the string to ensure it matches our data field in database
+                // if false then linear order
+                // if true then reverse linear order
+                .order(by: "timestamp", descending: true)
+                .limit(to: 10)
     
             //*** adds an event listener to the queried document to determine when new chats are 'added' || when chats are sent from users
             query.addSnapshotListener { snapshot, _ in
                 guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
                 var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
     
+                messages.reverse()
                 completion(messages)
             }
         }

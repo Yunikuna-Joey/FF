@@ -162,6 +162,7 @@ struct IndividualChatView: View {
             if let chatPartner = chatPartner {
                 populateMessageList(chatPartnerObject: chatPartner)
             }
+            
         }
         // mark the most recent message as read upon leaving the conversationView
         .onDisappear {
@@ -196,7 +197,7 @@ struct IndividualChatView: View {
                 for message in messages {
                     messageManager.messageList.append(message)
                 }
-                
+                print("This is the value of messageList \(messageManager.messageList)")
             }
         }
     }

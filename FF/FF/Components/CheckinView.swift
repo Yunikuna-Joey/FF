@@ -190,7 +190,7 @@ struct CheckinView: View {
                             }
                             
                             catch {
-                                print("Error posting status: \(error)")
+                                print("Error posting status: \(error.localizedDescription)")
                             }
                         }
                         // [revisit on prod]

@@ -59,7 +59,6 @@ struct editPlanView: View {
                             .padding(.bottom)
                         
                         Button(action: {
-                            let userId = viewModel.queryCurrentUserId()
                             Task {
                                 do {
                                     // implement trying to save the sets alongside with reps and workout
