@@ -7,6 +7,14 @@
 import SwiftUI
 import FirebaseAuth
 
+struct ViewOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct ChatCellView: View {
     let currentUserFlag: Bool
     let message: Messages
@@ -100,6 +108,8 @@ struct IndividualChatView: View {
 
     @State private var messageContent: String = ""
     @Binding var chatPartner: User?
+    @State var loadButtonFlag: Bool = false
+    @State var contentOffset: CGFloat = 0
     
     init(chatPartner: Binding<User?>) {
         _chatPartner = chatPartner
@@ -110,8 +120,30 @@ struct IndividualChatView: View {
             Spacer()
             // Scroll View for message content
             ScrollView(showsIndicators: false) {
+
+//                GeometryReader { geometry in
+//                    Color.clear
+//                        .frame(height: 0)
+//                        .id("top")
+//                        .preference(key: ViewOffsetKey.self, value: geometry.frame(in: .global).minY)
+//                } // end of geometry reader
+//                .onPreferenceChange(ViewOffsetKey.self) { value in
+//                    contentOffset = value
+//                    loadButtonFlag = contentOffset >= 0
+//                }
+                
                 LazyVStack {
-                    //*** lets start with trying to load information for the current User
+                    //** conditionally load the button, else: delete from view
+                    if loadButtonFlag {
+                        Button(action: {
+                            print("Real Implementation")
+                        }) {
+                            Text("Load More Messages")
+                                .padding()
+                                .foregroundStyle(Color.blue)
+                        }
+                    }
+                    
                     ForEach(messageManager.messageList, id: \.id) { message in
                         ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
                     }
