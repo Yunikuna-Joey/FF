@@ -154,6 +154,7 @@ struct IndividualChatView: View {
             
         }
         .navigationTitle("\(chatPartner?.username ?? "Chat")")
+        // remove any previous messages within a conversation && populate the messageList to load
         .onAppear {
             //** attempt to clear the message list
             messageManager.messageList.removeAll()
@@ -162,6 +163,7 @@ struct IndividualChatView: View {
                 populateMessageList(chatPartnerObject: chatPartner)
             }
         }
+        // mark the most recent message as read upon leaving the conversationView
         .onDisappear {
             if let chatPartner = chatPartner {
                 messageManager.updateReadStatusTest(currUserId: Auth.auth().currentUser?.uid ?? "", chatPartnerId: chatPartner.id)
@@ -195,8 +197,6 @@ struct IndividualChatView: View {
                     messageManager.messageList.append(message)
                 }
                 
-                //            messageManager.messageList.removeAll()
-                //            messageManager.messageList.append(contentsOf: messages)
             }
         }
     }
