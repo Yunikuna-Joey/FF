@@ -66,24 +66,24 @@ class MessageManager: ObservableObject {
         }
     }
     
-    // query messages with-in the individual chat window
-    func queryMessage(chatPartner: User, completion: @escaping([Messages]) -> Void) {
-        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-        let chatPartnerId = chatPartner.id
-        
-        let query = dbMessages
-            .document(currentUserId)
-            .collection(chatPartnerId)
-            .order(by: "timestamp", descending: false)      // *** revisit the string to ensure it matches our data field in database
-        
-        //*** adds an event listener to the queried document to determine when new chats are 'added' || when chats are sent from users
-        query.addSnapshotListener { snapshot, _ in
-            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
-            var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
-            
-            completion(messages)
+//     query messages with-in the individual chat window ***OFFICIAL
+        func queryMessage(chatPartner: User, completion: @escaping([Messages]) -> Void) {
+            guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+            let chatPartnerId = chatPartner.id
+    
+            let query = dbMessages
+                .document(currentUserId)
+                .collection(chatPartnerId)
+                .order(by: "timestamp", descending: false)      // *** revisit the string to ensure it matches our data field in database
+    
+            //*** adds an event listener to the queried document to determine when new chats are 'added' || when chats are sent from users
+            query.addSnapshotListener { snapshot, _ in
+                guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
+                var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
+    
+                completion(messages)
+            }
         }
-    }
     
     //*** Keep this as the original function
     func queryInboxView() {
@@ -122,7 +122,6 @@ class MessageManager: ObservableObject {
             .collection("recent-message")
             .whereField("fromUser", isEqualTo: currentUserId)
             .order(by: "timestamp", descending: true)
-            
         
         // add in a event listener within the recent messages field to update concurrently the most-recent message
         query.addSnapshotListener { snapshot, _ in
@@ -134,7 +133,7 @@ class MessageManager: ObservableObject {
             completion(messages)
         }
         
-        // Event listener for sent messages to update inbox cells 
+        // Event listener for sent messages to update inbox cells
         sentMessages.addSnapshotListener { snapshot, _ in
             //*** play with the filter in event listener
             // current logic: messages sent by curr User do not have to be read, i.e
@@ -224,6 +223,4 @@ class MessageManager: ObservableObject {
                 }
             }
     }
-    
-    
 }
