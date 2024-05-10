@@ -168,9 +168,6 @@ class MessageManager: ObservableObject {
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
             
             messages.reverse()
-            for message in messages {
-                self.inboxList.append(message)
-            }
             completion(messages)
         }
     }

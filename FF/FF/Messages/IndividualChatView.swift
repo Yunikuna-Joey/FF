@@ -7,14 +7,6 @@
 import SwiftUI
 import FirebaseAuth
 
-struct ViewOffsetKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct ChatCellView: View {
     let currentUserFlag: Bool
     let message: Messages
@@ -109,6 +101,9 @@ struct IndividualChatView: View {
     @State private var messageContent: String = ""
     @Binding var chatPartner: User?
     @State var loadingMessageFlag: Bool = false
+    @State private var topFlag: Bool = false
+    @State private var scrollProxy: ScrollViewProxy? = nil
+    
     
     init(chatPartner: Binding<User?>) {
         _chatPartner = chatPartner
@@ -117,21 +112,28 @@ struct IndividualChatView: View {
     var body: some View {
         VStack {
             Spacer()
-            ScrollViewReader { proxy in
-                // Scroll View for message content
-                ScrollView(showsIndicators: false) {
+            
+                
+            // Scroll View for message content
+            ScrollViewWithDelegate(scrolledToTop: $topFlag, scrollProxy: $scrollProxy, showsIndicators: false) {
+//            ScrollView(showsIndicators: false) {
+                
+                LazyVStack {
+                    //** loading the inital 10 messages in its cells
+                    ForEach(messageManager.messageList, id: \.id) { message in
+                        ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
+                    }
                     
-                    
-                    LazyVStack {
-                        //** loading the inital 10 messages in its cells
-                        ForEach(messageManager.messageList, id: \.id) { message in
-                            ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
-                        }
-                        
-                    } // end of lazyvstack
-                } // end of scrollView
-                .defaultScrollAnchor(.bottom)
-            } // end of scrollViewReader
+                } // end of lazyvstack
+                
+            } // end of scrollViewWithDelegate
+            .defaultScrollAnchor(.bottom)
+            .onChange(of: topFlag) {
+                if topFlag {
+                    print("Top was reached")
+                    self.topFlag = false
+                }
+            }
 
             
             //*** Text area for message content to be received || This does not need to be modified for dynamic user loading

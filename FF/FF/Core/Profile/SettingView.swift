@@ -22,6 +22,26 @@ struct SettingView: View {
                     .padding()
             }
         }
+        
+//        ScrollViewWithDelegate(scrolledToTop: $scrolledToTop, scrollProxy: $scrollProxy, showsIndicators: false) {
+//
+//            
+//            LazyVStack {
+//                ForEach(0..<50) { index in
+//                    Text("Row \(index)")
+//                        .frame(height: 50)
+//                }
+//            }
+//            .frame(maxWidth: .infinity)
+//        }
+//        .onChange(of: scrolledToTop) {
+//            if scrolledToTop {
+//                print("Top of ScrollView reached")
+//                // Reset scrolledToTop to false to detect next scroll to top
+//                self.scrolledToTop = false
+//            }
+//        }
+//        .defaultScrollAnchor(.bottom)
     }
 }
 
