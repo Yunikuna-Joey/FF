@@ -19,6 +19,8 @@ class MessageManager: ObservableObject {
     @Published var inboxList = [Messages]()
     
     let dbMessages = Firestore.firestore().collection("Messages")
+    let pageSize = 10
+    var cursor: DocumentSnapshot?
     
     // Send messages with-in individual chat view
     func sendMessage(messageContent: String, toUser user: User) {
@@ -66,18 +68,53 @@ class MessageManager: ObservableObject {
         }
     }
     
-    // query messages with-in the individual chat window ***OFFICIAL
+    // base function
+//    func queryMessage(chatPartner: User, completion: @escaping([Messages]) -> Void) {
+//        queryMessage(chatPartner: chatPartner, prevDocument: nil, completion: completion)
+//    }
+    
+    // query messages with-in the individual chat window ***OFFICIAL [overloaded function]
     func queryMessage(chatPartner: User, completion: @escaping([Messages]) -> Void) {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
         let chatPartnerId = chatPartner.id
         
+        // first query
         let query = dbMessages
             .document(currentUserId)
             .collection(chatPartnerId)
         // if false then linear order
         // if true then reverse linear order
             .order(by: "timestamp", descending: true)
-            .limit(to: 10)
+            .limit(to: pageSize)
+        
+//        if let prevDocument = prevDocument {
+//            query = query.start(afterDocument: prevDocument)
+//        }
+        //** analyze the document || first query
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                
+                if let error = error {
+                    print("[DEBUG]: There was an error with the initial 10 documents")
+                }
+                return
+            }
+            
+            //*** remove this if any errors at first
+            guard !snapshot.isEmpty else {
+                self.cursor = nil
+                completion([])
+                return
+            }
+            
+            if snapshot.count < self.pageSize {
+                self.cursor = nil
+            }
+            else {
+                self.cursor = snapshot.documents.last
+            }
+        }
+        
         
         //*** adds an event listener to the queried document to determine when new chats are 'added' || when chats are sent from users
         query.addSnapshotListener { snapshot, _ in
@@ -85,6 +122,55 @@ class MessageManager: ObservableObject {
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
             
             messages.reverse()
+            completion(messages)
+        }
+    }
+    
+    // *** testing loading more messages
+    func queryMoreMessages(chatPartner: User, completion: @escaping([Messages]) -> Void) {
+        guard let cursor = cursor else { return }
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        let nextQuery = dbMessages
+            .document(currentUserId)
+            .collection(chatPartner.id)
+            .order(by: "timestamp", descending: true)
+            .limit(to: pageSize)
+            .start(afterDocument: cursor)
+        
+        nextQuery.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                completion([])
+                if let error = error {
+                    print("[DEBUG]: There was an error with the next set of messages \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            guard !snapshot.isEmpty else {
+                self.cursor = nil
+                completion([])
+                return
+            }
+            
+            if snapshot.count < self.pageSize {
+                self.cursor = nil
+                completion([])
+                return
+            }
+            else {
+                self.cursor = snapshot.documents.last
+            }
+        }
+        
+        nextQuery.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
+            var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
+            
+            messages.reverse()
+            for message in messages {
+                self.inboxList.append(message)
+            }
             completion(messages)
         }
     }

@@ -108,8 +108,7 @@ struct IndividualChatView: View {
 
     @State private var messageContent: String = ""
     @Binding var chatPartner: User?
-    @State var loadButtonFlag: Bool = false
-    @State var contentOffset: CGFloat = 0
+    @State var loadingMessageFlag: Bool = false
     
     init(chatPartner: Binding<User?>) {
         _chatPartner = chatPartner
@@ -118,39 +117,21 @@ struct IndividualChatView: View {
     var body: some View {
         VStack {
             Spacer()
-            // Scroll View for message content
-            ScrollView(showsIndicators: false) {
-
-//                GeometryReader { geometry in
-//                    Color.clear
-//                        .frame(height: 0)
-//                        .id("top")
-//                        .preference(key: ViewOffsetKey.self, value: geometry.frame(in: .global).minY)
-//                } // end of geometry reader
-//                .onPreferenceChange(ViewOffsetKey.self) { value in
-//                    contentOffset = value
-//                    loadButtonFlag = contentOffset >= 0
-//                }
-                
-                LazyVStack {
-                    //** conditionally load the button, else: delete from view
-                    if loadButtonFlag {
-                        Button(action: {
-                            print("Real Implementation")
-                        }) {
-                            Text("Load More Messages")
-                                .padding()
-                                .foregroundStyle(Color.blue)
+            ScrollViewReader { proxy in
+                // Scroll View for message content
+                ScrollView(showsIndicators: false) {
+                    
+                    
+                    LazyVStack {
+                        //** loading the inital 10 messages in its cells
+                        ForEach(messageManager.messageList, id: \.id) { message in
+                            ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
                         }
-                    }
-                    
-                    ForEach(messageManager.messageList, id: \.id) { message in
-                        ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
-                    }
-                    
-                } // end of lazyvstack
-            } // end of scrollView
-            .defaultScrollAnchor(.bottom)
+                        
+                    } // end of lazyvstack
+                } // end of scrollView
+                .defaultScrollAnchor(.bottom)
+            } // end of scrollViewReader
 
             
             //*** Text area for message content to be received || This does not need to be modified for dynamic user loading
@@ -205,20 +186,6 @@ struct IndividualChatView: View {
         
     }
     
-    // helper function to achieve time stamps associated with status's
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
-    
     func populateMessageList(chatPartnerObject: User) {
         // This function call must take a specific user []
         if messageManager.messageList.isEmpty {
@@ -232,6 +199,20 @@ struct IndividualChatView: View {
                 print("This is the value of messageList \(messageManager.messageList)")
             }
         }
+    }
+    
+    // helper function to achieve time stamps associated with status's
+    func formatTimeAgo(from date: Date) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        
+        guard let formattedString = formatter.string(from: date, to: Date()) else {
+            return "Unknown"
+        }
+        
+        return formattedString + " ago"
     }
 }
 
