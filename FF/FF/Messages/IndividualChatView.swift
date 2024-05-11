@@ -121,6 +121,12 @@ struct IndividualChatView: View {
                 
                 //*** modify this vstack to determine if lazy is needed here
                 VStack {
+                    // loading indicator
+                    if loadingMessageFlag && topFlag {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                    }
+                    
                     //** loading the inital 10 messages in its cells
                     ForEach(messageManager.messageList, id: \.id) { message in
                         ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
@@ -146,7 +152,7 @@ struct IndividualChatView: View {
                         }
                         
                         // delay the toggle of booleans because of edge case where instances were happening within one time-frame
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             loadingMessageFlag = false
                             topFlag = false
                             botFlag = true
