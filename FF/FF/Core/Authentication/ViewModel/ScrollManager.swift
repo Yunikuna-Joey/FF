@@ -46,6 +46,28 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIScrollView, context: Context) {
+        DispatchQueue.main.async {
+            // Remove all subviews from UIScrollView
+            uiView.subviews.forEach { $0.removeFromSuperview() }
+            
+            // Create new hosting controller with updated content
+            let hostingController = context.coordinator.hostingController(rootView: content())
+            
+            // Add the new hosting controller's view to UIScrollView
+            uiView.addSubview(hostingController.view)
+            
+            // Set constraints
+            hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                hostingController.view.leadingAnchor.constraint(equalTo: uiView.leadingAnchor),
+                hostingController.view.trailingAnchor.constraint(equalTo: uiView.trailingAnchor),
+                hostingController.view.topAnchor.constraint(equalTo: uiView.topAnchor),
+                hostingController.view.bottomAnchor.constraint(equalTo: uiView.bottomAnchor),
+                hostingController.view.widthAnchor.constraint(equalTo: uiView.widthAnchor)
+            ])
+        }
+
+        // Update coordinator properties
         context.coordinator.rootView = content()
         context.coordinator.scrolledToTop = scrolledToTop
     }

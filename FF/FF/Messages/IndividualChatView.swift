@@ -118,7 +118,8 @@ struct IndividualChatView: View {
             ScrollViewWithDelegate(scrolledToTop: $topFlag, scrollProxy: $scrollProxy, showsIndicators: false) {
 //            ScrollView(showsIndicators: false) {
                 
-                LazyVStack {
+                //*** modify this vstack to determine if lazy is needed here
+                VStack {
                     //** loading the inital 10 messages in its cells
                     ForEach(messageManager.messageList, id: \.id) { message in
                         ChatCellView(currentUserFlag: message.currentUserFlag, message: message)
