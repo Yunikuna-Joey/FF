@@ -7,6 +7,7 @@
 import SwiftUI
 import CoreLocation
 import MapKit
+import FirebaseAuth
 
 struct CheckinView: View {
     // env variable to access status functionality
@@ -173,6 +174,7 @@ struct CheckinView: View {
                                 // send into firebase
                                 try await statusModel.postStatus(
                                     userId: userId ?? " ",
+                                    username: viewModel.currentSession?.username ?? "",
                                     content: statusField,
                                     bubbleChoice: bubbleChoice,
                                     timestamp: timestamp,

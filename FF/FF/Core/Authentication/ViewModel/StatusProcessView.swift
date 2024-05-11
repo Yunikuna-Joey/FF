@@ -17,15 +17,17 @@ class StatusProcessView: ObservableObject {
 //    @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
     @Published var statusList: [Status] = []
+    @Published var feedList = [Status]()
     
     private let db = Firestore.firestore()
+    private let dbStatus = Firestore.firestore().collection("Statuses")
     
-    func postStatus(userId: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
+    func postStatus(userId: String, username: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
         do {
             // handle the new status object
-            let newStatus = Status(id: UUID().uuidString, userId: userId, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes)
-            try await Firestore.firestore().collection("Statuses").document(newStatus.id).setData(from: newStatus)
-        } 
+            let newStatus = Status(id: UUID().uuidString, userId: userId, username: username, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes)
+            try await dbStatus.document(newStatus.id).setData(from: newStatus)
+        }
         catch {
             print("[DEBUG]: Error posting status: \(error.localizedDescription)")
         }
@@ -34,16 +36,17 @@ class StatusProcessView: ObservableObject {
     // delete status from firebase || [work on data-type from postId]
     func deleteStatus(postId: String) async throws {
         do {
-            try await Firestore.firestore().collection("statuses").document(postId).delete()
+            try await dbStatus.document(postId).delete()
         }
         catch {
             print("[DEBUG]: Error deleting status: \(error.localizedDescription)")
         }
     }
     
+    // Queries all of the statuses associated only with the given UserID Parameter
     func fetchStatus(userId: String) {
         // query the database collections on userId value
-        db.collection("Statuses")
+        dbStatus
             .whereField("userId", isEqualTo: userId)
             .getDocuments { querySnapshot, error in
                 if let error = error {
@@ -70,40 +73,54 @@ class StatusProcessView: ObservableObject {
             }
     }
     
-    func fetchCalendarStatus(userId: String, day: Date) async -> [StatusView] {
-        var statusList: [StatusView] = []
-        do {
-            // create the range for time to filter out the statuses
-            let calendar = Calendar.current
-            let startOfDay = calendar.startOfDay(for: day)
-            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)
-            
-            // query the database collection
-            let querySnapshot = try await db.collection("Statuses")
-                .whereField("userId", isEqualTo: userId)
-                .whereField("timestamp", isGreaterThanOrEqualTo: startOfDay)
-                .whereField("timestamp", isLessThan: endOfDay)
-                .getDocuments()
-            
-            print("[DEBUG]: This is querySnapshot \(querySnapshot)")
-            
-            for document in querySnapshot.documents {
-                // extract the data from the document
-                let username = document["userId"] as? String ?? ""
-                let timestamp = document["timestamp"] as? String ?? ""
-                let content = document["content"] as? String ?? ""
-                
-                let status = StatusView(username: username, timeAgo: timestamp, status: content)
-                
-                statusList.append(status)
+    // fetch the feed for the requested user
+    func fetchFeed(userId: String, completion: @escaping ([Status]) -> Void) {
+        // first query all of the people that userId parameter follows
+        let query = db.collection("Following")
+            .whereField("userId", isEqualTo: userId)
+        
+        
+        query.getDocuments { snapshot, error in
+            // once the error is hit, it should break out of the function body
+            guard let snapshot = snapshot else {
+                if let error = error {
+                    print("[FetchFeed]: Error grabbing following users \(error.localizedDescription)")
+                }
+                completion([])
+                return
             }
-        }
         
-        catch {
-            print("[DEBUG]: There was an error fetching this day status \(error.localizedDescription)")
-        }
-        
-        return statusList
+            
+            // This will contain all of the friendId's that our current user is following
+            let followingList = snapshot.documents.compactMap { $0.data()["friendId"] as? String }
+            print("FollowingList value \(followingList)")
+            
+            // iterate through the list
+            for friend in followingList {
+               
+                let query2 = self.dbStatus
+                    .whereField("userId", isEqualTo: friend)
+                
+                // for every friendId, attempt to grab their status data
+                query2.getDocuments { statusSnapshot, error in
+                    // error catch
+                    if let error = error {
+                        print("[FetchFeed2]: Error grabbing friend statuses \(error.localizedDescription)")
+                        return
+                    }
+                }
+                
+                query2.addSnapshotListener { snapshot, _ in
+                    guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
+                    
+                    var statuses = changes.compactMap({ try? $0.document.data(as: Status.self )})
+                    
+                    completion(statuses)
+                }
+                
+
+            } // end of forloop
+            
+        } // end of query.getDocuments
     }
-    
 }

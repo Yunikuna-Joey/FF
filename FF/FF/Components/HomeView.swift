@@ -27,18 +27,32 @@ struct HomeView: View {
             // vertical for ordering [spacing between each status update is controlled]
             VStack(spacing: 10) {
                 // for loop for processing a user's status's
-                ForEach(statusProcess.statusList) { status in
-                    if let currentUser = viewModel.currentSession {
-                        StatusUpdateView(status: status, username: currentUser.username, timeAgo: status.timestamp, colors: colors)
-                    }
+//                ForEach(statusProcess.feedList) { status in
+                ForEach(statusProcess.feedList.sorted(by: { $0.timestamp > $1.timestamp })) { status in
+                    
+                    StatusUpdateView(
+                        status: status,
+                        username: status.username,
+                        timeAgo: status.timestamp,
+                        colors: colors
+                    )
+                    
                 }
             }
             // create some extra spacing
             .padding()
         }
         .onAppear {
+            statusProcess.feedList.removeAll()
             // query the process to start fetching statuses based on current string user id else { blank }
-            statusProcess.fetchStatus(userId: viewModel.queryCurrentUserId() ?? "")
+            statusProcess.fetchFeed(userId: viewModel.queryCurrentUserId() ?? "") { statuses in
+                for status in statuses {
+                    statusProcess.feedList.append(status)
+                    print("This is the value of status \(status)")
+                }
+            }
+            
+            print("This is the value of feedlist: \(statusProcess.feedList)")
         }
     }
 }

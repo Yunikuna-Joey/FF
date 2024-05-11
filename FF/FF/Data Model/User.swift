@@ -9,18 +9,6 @@ import Foundation
 // User Data Model [may need to switch for data model file for viewing visually]
 struct User: Identifiable, Codable {            // codable turns JSON => data model object
     
-//    init(id: String, username: String, databaseUsername: String, firstName: String, lastName: String, email: String, imageArray: [String], profilePicture: String) {
-//        
-//        self.id = id
-//        self.username = username
-//        self.databaseUsername = databaseUsername
-//        self.firstName = firstName
-//        self.lastName = lastName
-//        self.email = email
-//        self.imageArray = imageArray
-//        self.profilePicture = profilePicture
-//    }
-    
     let id: String
     let username: String
     let databaseUsername: String

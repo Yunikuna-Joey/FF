@@ -22,6 +22,7 @@ class AuthView: ObservableObject {
     @Published var currentUsername: String?
     
     // database variable
+    private let dbUsers = Firestore.firestore().collection("users")
     private let db = Firestore.firestore()
     
     var messageManager: MessageManager
@@ -177,8 +178,6 @@ class AuthView: ObservableObject {
         
         return imageList
     }
-    
-    // fetch target user
     
 }
 
