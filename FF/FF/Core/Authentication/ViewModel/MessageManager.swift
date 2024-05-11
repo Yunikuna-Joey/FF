@@ -107,8 +107,10 @@ class MessageManager: ObservableObject {
                 return
             }
             
-            if snapshot.count < self.pageSize {
+            if snapshot.count == 0 {
                 self.cursor = nil
+                completion([])
+                return
             }
             else {
                 self.cursor = snapshot.documents.last
@@ -153,7 +155,7 @@ class MessageManager: ObservableObject {
                 return
             }
             
-            if snapshot.count < self.pageSize {
+            if snapshot.count == 0 {
                 self.cursor = nil
                 completion([])
                 return
@@ -167,7 +169,7 @@ class MessageManager: ObservableObject {
             guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
             var messages = changes.compactMap({ try? $0.document.data(as: Messages.self) })
             
-            messages.reverse()
+//            messages.reverse()
             completion(messages)
         }
     }

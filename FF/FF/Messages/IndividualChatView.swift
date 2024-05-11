@@ -129,10 +129,26 @@ struct IndividualChatView: View {
                 
             } // end of scrollViewWithDelegate
             .onChange(of: topFlag) {
-                if topFlag {
-                    print("Top was reached")
-                    self.topFlag = false
+            
+                print("Top was reached")
+               
+               // Set loading flag to true to prevent multiple calls
+                loadingMessageFlag = true
+                
+                if let chatPartner = chatPartner {
+                    messageManager.queryMoreMessages(chatPartner: chatPartner) { messages in
+                        for message in messages {
+                            messageManager.messageList.insert(message, at: 0)
+                        }
+                        
+                        // delay the toggle of booleans because of edge case where instances were happening within one time-frame
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            loadingMessageFlag = false
+                            topFlag = false
+                        }
+                    }
                 }
+                
             }
 
             
@@ -178,6 +194,7 @@ struct IndividualChatView: View {
                 populateMessageList(chatPartnerObject: chatPartner)
             }
             
+            print("*****************ON APPEAR ********************")
         }
         // mark the most recent message as read upon leaving the conversationView
         .onDisappear {
