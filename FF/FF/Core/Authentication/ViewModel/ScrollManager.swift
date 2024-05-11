@@ -15,12 +15,14 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
     @Binding var scrolledToTop: Bool
     @Binding var scrollProxy: ScrollViewProxy?
     var showsIndicators: Bool
+    var shouldScrollBottom: Bool
 
-    init(scrolledToTop: Binding<Bool>, scrollProxy: Binding<ScrollViewProxy?>, showsIndicators: Bool, @ViewBuilder content: @escaping () -> Content) {
+    init(scrolledToTop: Binding<Bool>, scrollProxy: Binding<ScrollViewProxy?>, showsIndicators: Bool, shouldScrollBottom: Bool, @ViewBuilder content: @escaping () -> Content) {
         self.content = content
         self._scrolledToTop = scrolledToTop
         self._scrollProxy = scrollProxy
         self.showsIndicators = showsIndicators
+        self.shouldScrollBottom = shouldScrollBottom
     }
 
     func makeCoordinator() -> Coordinator {
@@ -75,7 +77,7 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
                 context.coordinator.previousContentHeight = uiView.contentSize.height
 
                 // Set content offset to the bottom if scrolledToTop is true
-                if !scrolledToTop {
+                if !scrolledToTop && !shouldScrollBottom {
                     DispatchQueue.main.async {
                         let offsetY = max(0, uiView.contentSize.height - uiView.bounds.size.height)
                         uiView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)

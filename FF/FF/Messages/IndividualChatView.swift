@@ -103,6 +103,7 @@ struct IndividualChatView: View {
     @State var loadingMessageFlag: Bool = false
     @State private var topFlag: Bool = false
     @State private var scrollProxy: ScrollViewProxy? = nil
+    @State private var botFlag: Bool = false
     
     
     init(chatPartner: Binding<User?>) {
@@ -115,7 +116,7 @@ struct IndividualChatView: View {
             
                 
             // Scroll View for message content
-            ScrollViewWithDelegate(scrolledToTop: $topFlag, scrollProxy: $scrollProxy, showsIndicators: false) {
+            ScrollViewWithDelegate(scrolledToTop: $topFlag, scrollProxy: $scrollProxy, showsIndicators: false, shouldScrollBottom: botFlag) {
 //            ScrollView(showsIndicators: false) {
                 
                 //*** modify this vstack to determine if lazy is needed here
@@ -129,6 +130,9 @@ struct IndividualChatView: View {
                 
             } // end of scrollViewWithDelegate
             .onChange(of: topFlag) {
+                
+                // need this check so that we do not load multiple instances of 1 query into the messageList [if already loading, don't load more]
+                guard !loadingMessageFlag else { return }
             
                 print("Top was reached")
                
@@ -145,6 +149,7 @@ struct IndividualChatView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             loadingMessageFlag = false
                             topFlag = false
+                            botFlag = true
                         }
                     }
                 }
