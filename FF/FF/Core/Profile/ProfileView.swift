@@ -36,7 +36,7 @@ struct ProfileView: View {
     let screenSize = UIScreen.main.bounds.size
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             ZStack(alignment: .topTrailing) {
                 VStack {
                     // Cover Photo
