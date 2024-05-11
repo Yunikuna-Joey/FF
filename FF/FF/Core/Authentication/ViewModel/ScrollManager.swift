@@ -32,6 +32,7 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
         scrollView.showsVerticalScrollIndicator = showsIndicators
         scrollView.showsHorizontalScrollIndicator = showsIndicators
         scrollView.delegate = context.coordinator
+    
         let hostingController = context.coordinator.hostingController(rootView: content())
         scrollView.addSubview(hostingController.view)
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -42,6 +43,7 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
             hostingController.view.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             hostingController.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
+        
         return scrollView
     }
 
@@ -65,6 +67,21 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
                 hostingController.view.bottomAnchor.constraint(equalTo: uiView.bottomAnchor),
                 hostingController.view.widthAnchor.constraint(equalTo: uiView.widthAnchor)
             ])
+            
+            // Check if the content height has changed
+            let contentHeightChanged = uiView.contentSize.height != context.coordinator.previousContentHeight
+            if contentHeightChanged {
+                // Update the content height
+                context.coordinator.previousContentHeight = uiView.contentSize.height
+
+                // Set content offset to the bottom if scrolledToTop is true
+                if !scrolledToTop {
+                    DispatchQueue.main.async {
+                        let offsetY = max(0, uiView.contentSize.height - uiView.bounds.size.height)
+                        uiView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                    }
+                }
+            }
         }
 
         // Update coordinator properties
@@ -76,6 +93,7 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
         var scrolledToTop: Bool
         var rootView: Content?
         @Binding var scrolledToTopBinding: Bool
+        var previousContentHeight: CGFloat = 0
 
         init(scrolledToTop: Binding<Bool>) {
             _scrolledToTopBinding = scrolledToTop
@@ -85,6 +103,14 @@ struct ScrollViewWithDelegate<Content: View>: UIViewRepresentable {
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             scrolledToTop = scrollView.contentOffset.y == 0
             scrolledToTopBinding = scrolledToTop
+            
+//            if scrollView.contentOffset.y == 0 {
+//                scrolledToTop = true
+//                scrolledToTopBinding = true
+//            } else {
+//                scrolledToTop = false
+//                scrolledToTopBinding = false
+//            }
         }
 
         func hostingController(rootView: Content) -> UIHostingController<Content> {

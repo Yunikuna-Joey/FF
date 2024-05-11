@@ -128,7 +128,6 @@ struct IndividualChatView: View {
                 } // end of lazyvstack
                 
             } // end of scrollViewWithDelegate
-            .defaultScrollAnchor(.bottom)
             .onChange(of: topFlag) {
                 if topFlag {
                     print("Top was reached")
