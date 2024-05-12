@@ -12,7 +12,6 @@ struct viewPlanView: View {
     @State private var editNavigationFlag: Bool = false
     var plan: Plan
     
-    
     var formattedWorkoutType: String {
             var formattedString = ""
             for (workoutName, workoutDetail) in plan.workoutType {
@@ -83,7 +82,7 @@ struct viewPlanView: View {
                 } // end of HStack
             } // end of vstack
             .navigationDestination(isPresented: $deleteNavigationFlag) {
-                ProfileView3()
+                ProfileView()
                     .navigationBarBackButtonHidden(true)
             }
             .navigationDestination(isPresented: $editNavigationFlag) {

@@ -40,13 +40,14 @@ struct LoadviewPlanView: View {
                 
                 Spacer()
             } // end of vstack
-            .navigationDestination(isPresented: $deleteNavigationFlag) {
-                ProfileView3()
-                    .navigationBarBackButtonHidden(true)
-            }
+//            .navigationDestination(isPresented: $deleteNavigationFlag) {
+//                ProfileView3(planScreenFlag: , viewPlanFlag: )
+//                    .navigationBarBackButtonHidden(true)
+//            }
             .navigationDestination(isPresented: $editNavigationFlag) {
                 editPlanView(plan: plan, planScreenFlag: $editNavigationFlag)
             }
+            
             // This will close the gap provided by the navigation stack
             .navigationBarTitle(Text(""), displayMode: .inline)
         }

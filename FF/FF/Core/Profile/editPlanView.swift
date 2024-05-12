@@ -89,11 +89,12 @@ struct editPlanView: View {
                     } // end of Hstack
                 } // end of scroll View
             } // end of ZStack
-        }
-        .navigationDestination(isPresented: $editFlag) {
-            ProfileView3()
-                .navigationBarBackButtonHidden(true)
-        }
+            .navigationDestination(isPresented: $editFlag) {
+                ProfileView()
+                    .navigationBarBackButtonHidden(true)
+            }
+        } // end of navigationStack
+
     }
 }
 

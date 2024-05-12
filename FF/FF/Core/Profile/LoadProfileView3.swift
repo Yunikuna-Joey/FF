@@ -35,14 +35,14 @@ struct LoadProfileView3: View {
                     }
                     
                     // Assume normal situation where they do have plans
-                    else {
-                        ForEach(planManager.planList) { plan in
-                            displayWorkoutButton(planTitle: plan.planTitle, viewPlanFlag: $viewPlanFlag)
-                                .navigationDestination(isPresented: $viewPlanFlag) {
-                                    LoadviewPlanView(plan: plan)
-                                }
-                        }
-                    }
+//                    else {
+//                        ForEach(planManager.planList) { plan in
+//                            displayWorkoutButton(planTitle: plan.planTitle, viewPlanFlag: $viewPlanFlag)
+//                                .navigationDestination(isPresented: $viewPlanFlag) {
+//                                    LoadviewPlanView(plan: plan)
+//                                }
+//                        }
+//                    }
                     Spacer()
                 }
                 .onAppear {
