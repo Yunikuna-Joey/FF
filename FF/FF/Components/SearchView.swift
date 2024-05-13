@@ -18,9 +18,10 @@ struct SearchView: View {
     @State private var searchText: String = ""
     @State private var searchResults: [User] = []
     private var db = Firestore.firestore()
+    @State private var userFlag: Bool = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack(alignment: .bottom) {
                 // enable scrolling behavior
                 ScrollView(showsIndicators: false) {
@@ -44,7 +45,11 @@ struct SearchView: View {
                         // old forLoop
                         ForEach(searchResults.indices, id: \.self) { index in
                             let user = searchResults[index]
-                            listUserProfiles(resultUser: user)
+                            listUserProfiles(userFlag: $userFlag, resultUser: user)
+                                .navigationDestination(isPresented: $userFlag) {
+                                    LoadProfileView(resultUser: user)
+                                        .navigationTitle(user.username)
+                                }
                         }
                     }
                 }
@@ -108,6 +113,7 @@ struct SearchView: View {
 
 // takes in a user object to extract information
 struct listUserProfiles: View {
+    @Binding var userFlag: Bool
     let resultUser: User
     
     var body: some View {
@@ -130,10 +136,17 @@ struct listUserProfiles: View {
                 }
 
                 // username || can add badges underneath to showcase
-                NavigationLink(
-                    destination: LoadProfileView(resultUser: resultUser)
-                        .navigationTitle(resultUser.username)
-                ) {
+//                NavigationLink(
+//                    destination: LoadProfileView(resultUser: resultUser)
+//                        .navigationTitle(resultUser.username)
+//                ) {
+//                    Text(resultUser.username)
+//                        .font(.headline)
+//                        .foregroundStyle(Color.orange)
+//                }
+                Button(action: {
+                    userFlag = true
+                }) {
                     Text(resultUser.username)
                         .font(.headline)
                         .foregroundStyle(Color.orange)

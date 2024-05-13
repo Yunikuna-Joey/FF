@@ -207,7 +207,7 @@ struct LoadProfileView: View {
                     LoadviewPlanView(plan: loadSelectedPlan)
                         .navigationBarBackButtonHidden(true)
                 }
-                .padding(.top, -100)
+
             } // end of scrollView
             
             
