@@ -8,8 +8,6 @@ import SwiftUI
 
 struct LoadviewPlanView: View {
     @EnvironmentObject var planManager: PlanManager
-    @State private var deleteNavigationFlag: Bool = false
-    @State private var editNavigationFlag: Bool = false
     var plan: Plan
     
     
@@ -23,7 +21,7 @@ struct LoadviewPlanView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        ScrollView(showsIndicators: false) {
             VStack {
                 Text("\(plan.planTitle)")
                     .padding()
@@ -40,18 +38,10 @@ struct LoadviewPlanView: View {
                 
                 Spacer()
             } // end of vstack
-//            .navigationDestination(isPresented: $deleteNavigationFlag) {
-//                ProfileView3(planScreenFlag: , viewPlanFlag: )
-//                    .navigationBarBackButtonHidden(true)
-//            }
-            .navigationDestination(isPresented: $editNavigationFlag) {
-                editPlanView(plan: plan, planScreenFlag: $editNavigationFlag)
-            }
-            
-            // This will close the gap provided by the navigation stack
-            .navigationBarTitle(Text(""), displayMode: .inline)
-        }
-    }
+        } // end of scrollView
+        
+        
+    } // end of body
 }
 //
 //#Preview {

@@ -142,7 +142,7 @@ struct PlanScreenView: View {
                         Task {
                             do {
                                 // implement trying to save the sets alongside with reps and workout
-                                try await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: finalPlan)
+                                await planManager.savePlan(userId: userId ?? "", planTitle: planTitle, workoutType: finalPlan)
                                 
                                 // This flag's purpose is to dismiss the sheet when there is a successful save
                                 planScreenFlag = false
