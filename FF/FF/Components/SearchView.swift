@@ -18,7 +18,7 @@ struct SearchView: View {
     @State private var searchText: String = ""
     @State private var searchResults: [User] = []
     private var db = Firestore.firestore()
-    @State private var userFlag: Bool = false
+    @State private var selectedUser: User? = nil
     
     var body: some View {
         NavigationStack {
@@ -42,13 +42,10 @@ struct SearchView: View {
                     
                     // if it is not empty
                     else {
-                        // old forLoop
-                        ForEach(searchResults.indices, id: \.self) { index in
-                            let user = searchResults[index]
-                            listUserProfiles(userFlag: $userFlag, resultUser: user)
-                                .navigationDestination(isPresented: $userFlag) {
-                                    LoadProfileView(resultUser: user)
-                                        .navigationTitle(user.username)
+                        ForEach(searchResults) { user in
+                            listUserProfiles(resultUser: user)
+                                .onTapGesture {
+                                    selectedUser = user
                                 }
                         }
                     }
@@ -72,6 +69,10 @@ struct SearchView: View {
             } // end of ZStack
             .onTapGesture {             // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+            .navigationDestination(item: $selectedUser) { user in
+                LoadProfileView(resultUser: user)
+                    .navigationTitle(user.username)
             }
         }
     }
@@ -113,7 +114,7 @@ struct SearchView: View {
 
 // takes in a user object to extract information
 struct listUserProfiles: View {
-    @Binding var userFlag: Bool
+//    @Binding var userFlag: Bool
     let resultUser: User
     
     var body: some View {
@@ -144,13 +145,10 @@ struct listUserProfiles: View {
 //                        .font(.headline)
 //                        .foregroundStyle(Color.orange)
 //                }
-                Button(action: {
-                    userFlag = true
-                }) {
-                    Text(resultUser.username)
-                        .font(.headline)
-                        .foregroundStyle(Color.orange)
-                }
+
+                Text(resultUser.username)
+                    .font(.headline)
+                    .foregroundStyle(Color.orange)
 
                 // push to the left
                 Spacer()
