@@ -44,8 +44,6 @@ struct SearchView: View {
                         // old forLoop
                         ForEach(searchResults.indices, id: \.self) { index in
                             let user = searchResults[index]
-                            // will probably just pass in an User object and extract everything to make simplier
-//                            listUserProfiles(profilePicture: Image(systemName: "person.circle"), username: user.username, imageArray: user.imageArray)
                             listUserProfiles(resultUser: user)
                         }
                     }
@@ -134,7 +132,7 @@ struct listUserProfiles: View {
                 // username || can add badges underneath to showcase
                 NavigationLink(
                     destination: LoadProfileView(resultUser: resultUser)
-                        .navigationBarTitle(resultUser.username)
+                        .navigationTitle(resultUser.username)
                 ) {
                     Text(resultUser.username)
                         .font(.headline)
@@ -144,7 +142,6 @@ struct listUserProfiles: View {
                 // push to the left
                 Spacer()
 
-                // instead of the follow button [This will now hold badges || achievements]
 
             }
 

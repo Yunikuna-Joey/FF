@@ -48,6 +48,7 @@ struct LoadProfileView: View {
                         Image("Car")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
+//                            .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)
                             .frame(height: screenSize.height * 0.30)
                             .clipped()
@@ -191,7 +192,6 @@ struct LoadProfileView: View {
                     .padding(.trailing, screenSize.width * 0.03) // Adjust trailing padding as needed
                     
                 } // end of ZStack
-//                .navigationTitle(resultUser.username)
                 .onAppear(perform: {
                     // query initial follow status
                     Task {
@@ -203,13 +203,16 @@ struct LoadProfileView: View {
                         
                     }
                 })
+                .navigationDestination(isPresented: $loadViewPlanFlag) {
+                    LoadviewPlanView(plan: loadSelectedPlan)
+                        .navigationBarBackButtonHidden(true)
+                }
+                .padding(.top, -100)
             } // end of scrollView
-            .navigationDestination(isPresented: $loadViewPlanFlag) {
-                LoadviewPlanView(plan: loadSelectedPlan)
-                    .navigationBarBackButtonHidden(true)
-            }
+            
+            
         } // end of navigationStack
-        
+
         
     } // end of body
 }
