@@ -112,6 +112,24 @@ struct StatusUpdateView: View {
             // below the left => right will be the actual status
             Text(status.content)
                 .font(.body)
+
+            
+            HStack {
+                Button(action: {
+                    print("This will act as the like button")
+                }) {
+                    Image(systemName: "heart")
+                    Text("\(status.likes)")
+                }
+                .foregroundStyle(Color.gray)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(Color.gray, lineWidth: 1)
+                        .frame(width: 50, height: 30)
+                )
+            }
+
+            
         }
         .padding()
         .background(Color.white)
