@@ -6,6 +6,41 @@
 
 import SwiftUI
 
+struct displayLoadWorkoutButton: View {
+    @Binding var viewPlanFlag: Bool
+    var selectedPlan: Plan
+    var onTap: () -> Void
+    
+    var body: some View {
+        HStack  {
+            Button(action: {
+                self.viewPlanFlag = true
+                onTap()
+                print("This will represent the view when clicking on an established plan")
+            }) {
+                Image(systemName: "arrowshape.right.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 30, height: 30)
+                
+                Text(selectedPlan.planTitle)
+                    .font(.system(size: 20))
+            }
+            .foregroundStyle(Color.blue)
+            .padding()
+            
+            Spacer()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .foregroundStyle(Color.white)
+        )
+        .sheet(isPresented: $viewPlanFlag) {
+            LoadviewPlanView(plan: selectedPlan)
+        }
+    }
+}
+
 struct LoadProfileView3: View {
     @EnvironmentObject var statusProcess: StatusProcessView
     @EnvironmentObject var planManager: PlanManager
@@ -22,7 +57,7 @@ struct LoadProfileView3: View {
         // **** new implementation
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                LazyVStack {                    
+                LazyVStack {
                     // If there is no plans underneath a user, display a message
                     if planManager.planList.isEmpty {
                         Text("\(resultUser.username) has not made any workout plans yet!")
@@ -33,7 +68,7 @@ struct LoadProfileView3: View {
                     // Assume normal situation where they do have plans
                     else {
                         ForEach(planManager.planList) { plan in
-                            displayWorkoutButton(
+                            displayLoadWorkoutButton(
                                 viewPlanFlag: $loadViewPlanFlag,
                                 selectedPlan: plan,
                                 onTap: {

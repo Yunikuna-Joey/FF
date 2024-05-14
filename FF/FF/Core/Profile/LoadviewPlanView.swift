@@ -40,6 +40,9 @@ struct LoadviewPlanView: View {
             } // end of vstack
             
         } // end of scrollView
+        .onAppear {
+            print("This is the value of loadSelectedPlan \(plan)")
+        }
         
     } // end of body
 }

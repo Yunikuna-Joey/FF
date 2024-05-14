@@ -203,9 +203,9 @@ struct LoadProfileView: View {
                         
                     }
                 })
-                .navigationDestination(isPresented: $loadViewPlanFlag) {
-                    LoadviewPlanView(plan: loadSelectedPlan)
-                }
+//                .navigationDestination(isPresented: $loadViewPlanFlag) {
+//                    LoadviewPlanView(plan: loadSelectedPlan)
+//                }
 
             } // end of scrollView
             
@@ -222,9 +222,9 @@ struct LoadProfileView: View {
 //}
 
 
-struct LoadProfileView_Previews: PreviewProvider {
-    static var previews: some View {
-        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "")
-        LoadProfileView(resultUser: user)
-    }
-}
+//struct LoadProfileView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "")
+//        LoadProfileView(resultUser: user)
+//    }
+//}
