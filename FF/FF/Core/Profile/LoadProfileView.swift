@@ -205,7 +205,6 @@ struct LoadProfileView: View {
                 })
                 .navigationDestination(isPresented: $loadViewPlanFlag) {
                     LoadviewPlanView(plan: loadSelectedPlan)
-                        .navigationBarBackButtonHidden(true)
                 }
 
             } // end of scrollView

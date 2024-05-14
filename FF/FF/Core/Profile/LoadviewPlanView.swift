@@ -38,8 +38,8 @@ struct LoadviewPlanView: View {
                 
                 Spacer()
             } // end of vstack
+            
         } // end of scrollView
-        
         
     } // end of body
 }
