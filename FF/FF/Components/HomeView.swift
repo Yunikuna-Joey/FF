@@ -63,6 +63,7 @@ struct StatusUpdateView: View {
     @EnvironmentObject var statusProcess: StatusProcessView
     // listens for like count changes
     @State private var likeCount: Int = 0
+    @State private var likeFlag: Bool = false
     // status object
     let status: Status
     
@@ -123,15 +124,26 @@ struct StatusUpdateView: View {
                 Button(action: {
                     Task {
                         likeCount = try await statusProcess.likeStatus(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
+                        likeFlag.toggle()
                     }
                 }) {
-                    Image(systemName: "heart")
+                    Image(systemName: likeFlag ? "heart.fill" : "heart")
+                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
+                    
                     Text("\(likeCount)")
+                        .foregroundStyle(Color.black)
+//                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
+                        
                 }
                 .foregroundStyle(Color.gray)
                 .overlay(
                     RoundedRectangle(cornerRadius: 15)
                         .stroke(Color.gray, lineWidth: 1)
+                        .frame(width: 50, height: 30)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(likeFlag ? Color.blue.opacity(0.80) : Color.clear)
                         .frame(width: 50, height: 30)
                 )
             }
@@ -146,6 +158,7 @@ struct StatusUpdateView: View {
             Task {
                 // initialize all the like counts for each status
                 likeCount = try await statusProcess.fetchLikeCount(postId: status.id)
+                likeFlag = try await statusProcess.fetchLikeFlag(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
             }
         }
     }

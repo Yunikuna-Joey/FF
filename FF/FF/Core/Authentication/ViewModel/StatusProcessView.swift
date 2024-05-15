@@ -197,4 +197,14 @@ class StatusProcessView: ObservableObject {
         
         return snapshot.count
     }
+    
+    // fetch like-boolean status
+    func fetchLikeFlag(postId: String, userId: String) async throws -> Bool {
+        let snapshot = try await dbLikes
+            .whereField("postId", isEqualTo: postId)
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments()
+        
+        return !snapshot.isEmpty
+    }
 }
