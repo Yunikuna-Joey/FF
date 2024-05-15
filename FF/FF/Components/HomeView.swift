@@ -6,6 +6,7 @@
 
 import SwiftUI
 import FirebaseFirestore
+import FirebaseAuth
 
 // Status updates [Dynamically retrieves self-user statuses... need more work for dynamic following]
 struct HomeView: View {
@@ -59,6 +60,9 @@ struct HomeView: View {
 
 // status update structure,,, what each update will follow in terms of pieces
 struct StatusUpdateView: View {
+    @EnvironmentObject var statusProcess: StatusProcessView
+    // listens for like count changes
+    @State private var likeCount: Int = 0
     // status object
     let status: Status
     
@@ -112,14 +116,17 @@ struct StatusUpdateView: View {
             // below the left => right will be the actual status
             Text(status.content)
                 .font(.body)
+                .padding(.bottom)
 
             
             HStack {
                 Button(action: {
-                    print("This will act as the like button")
+                    Task {
+                        likeCount = try await statusProcess.likeStatus(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
+                    }
                 }) {
                     Image(systemName: "heart")
-                    Text("\(status.likes)")
+                    Text("\(likeCount)")
                 }
                 .foregroundStyle(Color.gray)
                 .overlay(
@@ -135,6 +142,12 @@ struct StatusUpdateView: View {
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 2)
+        .onAppear {
+            Task {
+                // initialize all the like counts for each status
+                likeCount = try await statusProcess.fetchLikeCount(postId: status.id)
+            }
+        }
     }
     
     // helper function to achieve time stamps associated with status's

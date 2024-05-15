@@ -21,12 +21,13 @@ class StatusProcessView: ObservableObject {
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
+    private let dbLikes = Firestore.firestore().collection("Likes")
     
     func postStatus(userId: String, username: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
         do {
             // handle the new status object
             let newStatus = Status(id: UUID().uuidString, userId: userId, username: username, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes)
-            try await dbStatus.document(newStatus.id).setData(from: newStatus)
+            try dbStatus.document(newStatus.id).setData(from: newStatus)
         }
         catch {
             print("[DEBUG]: Error posting status: \(error.localizedDescription)")
@@ -122,5 +123,78 @@ class StatusProcessView: ObservableObject {
             } // end of forloop
             
         } // end of query.getDocuments
+    }
+    
+    // updating like count for a status
+    func likeStatus(postId: String, userId: String) async throws -> Int {
+        let statusRef = dbStatus
+            .document(postId)
+        
+        let likeRef = dbLikes
+            .whereField("postId", isEqualTo: postId)
+            .whereField("userId", isEqualTo: userId)
+        
+        do {
+            let statusDoc = try await statusRef.getDocument()
+            var status = try statusDoc.data(as: Status.self)
+            
+            let likeSnapshot = try await likeRef.getDocuments()
+            var likeCount = 0
+            
+            // if there is already a like document
+            if !likeSnapshot.isEmpty {
+                // decrement the like-count
+                status.likes -= 1
+                
+                // set the data from status after incrementing the like count
+                try statusRef.setData(from: status)
+                
+                // delete the like object from Firebase
+                try await likeSnapshot.documents.first?.reference.delete()
+                
+                let updatedSnapshot = try await dbLikes
+                    .whereField("postId", isEqualTo: postId)
+                    .getDocuments()
+                
+                likeCount = updatedSnapshot.count
+            }
+            
+            // if there is no like document
+            else {
+                // increment the like-count
+                status.likes += 1
+                
+                // set the data from status after decrementing the like count
+                try statusRef.setData(from: status)
+                
+                // create the like object
+                let newLike = Likes(id: UUID().uuidString, postId: postId, userId: userId)
+                
+                // store the like object into firebase
+                try dbLikes.document(newLike.id).setData(from: newLike)
+                
+                let updatedSnapshot = try await dbLikes
+                    .whereField("postId", isEqualTo: postId)
+                    .getDocuments()
+                
+                likeCount = updatedSnapshot.count
+            }
+            
+            return likeCount
+            
+        } 
+        catch {
+            print("[DEBUG]: Error liking status: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
+    // initializing the like count
+    func fetchLikeCount(postId: String) async throws -> Int {
+        let snapshot = try await dbLikes
+            .whereField("postId", isEqualTo: postId)
+            .getDocuments()
+        
+        return snapshot.count
     }
 }

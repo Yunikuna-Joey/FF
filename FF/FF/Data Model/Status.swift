@@ -30,5 +30,5 @@ struct Status: Identifiable, Codable {
     let location: String
     
     // integer number representing likes
-    let likes: Int
+    var likes: Int
 }
