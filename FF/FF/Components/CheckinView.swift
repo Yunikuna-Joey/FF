@@ -8,6 +8,7 @@ import SwiftUI
 import CoreLocation
 import MapKit
 import FirebaseAuth
+import PhotosUI
 
 struct CheckinView: View {
     // env variable to access status functionality
@@ -47,7 +48,8 @@ struct CheckinView: View {
     
     // image picker
     @State private var imagePickerFlag: Bool = false
-    @State private var selectedImage: UIImage?
+//    @State private var selectedImage: UIImage?
+    @State private var selectedImages: [UIImage] = []
     
     // screen size
     let screenSize = UIScreen.main.bounds.size
@@ -78,11 +80,14 @@ struct CheckinView: View {
                                 print("Image button here.")
                                 self.imagePickerFlag.toggle()
                             }) {
-                                Image(systemName: "photo")
+                                Image(systemName: "photo.on.rectangle.fill")
                                     .font(.title)
                             }
+//                            .sheet(isPresented: $imagePickerFlag) {
+//                                ImagePicker(selectedImage: $selectedImage)
+//                            }
                             .sheet(isPresented: $imagePickerFlag) {
-                                ImagePicker(selectedImage: $selectedImage)
+                                MultiImagePicker(selectedImages: $selectedImages)
                             }
                             
                         } // end of HStack
@@ -117,14 +122,29 @@ struct CheckinView: View {
                             .padding(.bottom, 25)
                             .lineLimit(1...5)
                         
+                        //*** previous iteration of feature
+//                        if let selectedImage = selectedImage {
+//                            Image(uiImage: selectedImage)
+//                                .resizable()
+//                                .scaledToFit()
+//                                .frame(width: 100, height: 100)
+//                                .clipShape(RoundedRectangle(cornerRadius: 10))
+//                        }
                         
-                        if let selectedImage = selectedImage {
-                            Image(uiImage: selectedImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        // ** horizontal scrolling for the images picked
+                        ScrollView(.horizontal) {
+                            HStack {
+                                ForEach(selectedImages, id: \.self) { image in
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                }
+                            }
                         }
+                        .padding()
+                        
                         
                         // Checkin Field option.... need to determine what UI element to use [recent]
                         HStack {
@@ -245,6 +265,9 @@ struct CheckinView: View {
             .padding()
             
         } // end of navigationStack
+        .onTapGesture {             // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
         
     } // end of var body
     
@@ -350,6 +373,58 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+}
+
+struct MultiImagePicker: UIViewControllerRepresentable {
+    @Binding var selectedImages: [UIImage]
+    
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        var parent: MultiImagePicker
+        
+        // *** initialize the picker
+        init(parent: MultiImagePicker) {
+            self.parent = parent
+        }
+        
+        // *** handles dismissing the picker screen[sheet]
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            picker.dismiss(animated: true)
+            
+            // populates the state variable with all of the images the user picked
+            for result in results {
+                if result.itemProvider.canLoadObject(ofClass: UIImage.self) {
+                    result.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
+                        if let image = image as? UIImage {
+                            DispatchQueue.main.async {
+                                self.parent.selectedImages.append(image)
+                            }
+                        }
+                    }
+                }
+            }
+        } // picker function
+        
+    } // end of class
+    
+    // create the object
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+    
+    // configure the picker with certain settings
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        // max amount of pictures
+        config.selectionLimit = 7 // 0 means no limit on pictures [change as needed]
+        
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    // needed for UIViewControllerRepresentable [but blank cause nothing is happening]
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
 }
 
 struct CheckinView_Preview: PreviewProvider {
