@@ -51,18 +51,20 @@ struct CheckinView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                
                 VStack {
+                    
                     VStack {
+                        
                         HStack(spacing: 10) {
+                            
                             // profile image on the left
                             Image(systemName: "person.circle.fill")
                                 .resizable()
                                 .frame(width: 30, height: 30)
                                 .foregroundColor(.blue)
                             
-                            // Username [viewModel is the final adjustment, "username" is just for testing]
-                            //                        Text(viewModel.currentSession?.username ?? "")
-                            Text("username")
+                            Text("\(viewModel.currentSession?.username ?? "")")
                                 .font(.headline)
                             
                             Spacer()
@@ -119,7 +121,7 @@ struct CheckinView: View {
                             searchNearby()
                         }
                         
-                    } // end of vstack
+                    } // end of inner vstack
                     .padding()
                     .background(Color.white)
                     .cornerRadius(10)
@@ -157,8 +159,10 @@ struct CheckinView: View {
                         }
                     } // end of HStack
                     Spacer()
-                }
+                    
+                } // outer Vstack
                 .padding()
+                
                 // [testing padding here for everything in the vstack except for the check-in button]
                 //            .padding(.top, 40)
                 
@@ -172,7 +176,7 @@ struct CheckinView: View {
                         Task {
                             do {
                                 // send into firebase
-                                try await statusModel.postStatus(
+                                await statusModel.postStatus(
                                     userId: userId ?? " ",
                                     username: viewModel.currentSession?.username ?? "",
                                     content: statusField,
@@ -191,12 +195,13 @@ struct CheckinView: View {
                                 resetPageValues()
                             }
                             
-                            catch {
-                                print("Error posting status: \(error.localizedDescription)")
-                            }
                         }
+                        
+                        
                         // [revisit on prod]
                         printDimensions()
+                        
+                        
                     }) {
                         Rectangle()
                             .foregroundStyle(Color.blue)
@@ -214,7 +219,8 @@ struct CheckinView: View {
                 
             } // end of zstack
             .padding()
-        }
+            
+        } // end of navigationStack
         
     } // end of var body
     
