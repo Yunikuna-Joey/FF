@@ -45,6 +45,10 @@ struct CheckinView: View {
     @State private var isStatusPosted = false
     @Binding var currentTabIndex: Int
     
+    // image picker
+    @State private var imagePickerFlag: Bool = false
+    @State private var selectedImage: UIImage?
+    
     // screen size
     let screenSize = UIScreen.main.bounds.size
     
@@ -68,6 +72,18 @@ struct CheckinView: View {
                                 .font(.headline)
                             
                             Spacer()
+                            
+                            //*** test out image button here [remove later]
+                            Button(action: {
+                                print("Image button here.")
+                                self.imagePickerFlag.toggle()
+                            }) {
+                                Image(systemName: "photo")
+                                    .font(.title)
+                            }
+                            .sheet(isPresented: $imagePickerFlag) {
+                                ImagePicker(selectedImage: $selectedImage)
+                            }
                             
                         } // end of HStack
                         
@@ -101,6 +117,14 @@ struct CheckinView: View {
                             .padding(.bottom, 25)
                             .lineLimit(1...5)
                         
+                        
+                        if let selectedImage = selectedImage {
+                            Image(uiImage: selectedImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
                         
                         // Checkin Field option.... need to determine what UI element to use [recent]
                         HStack {
@@ -292,6 +316,40 @@ extension CheckinView: StatusFormProtocol {
     var validForm: Bool {
         return !statusField.isEmpty && !selectedOption.isEmpty
     }
+}
+
+//*** image picker structure
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var selectedImage: UIImage?
+    @Environment(\.presentationMode) var presentationMode
+    
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        let parent: ImagePicker
+        
+        init(parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.selectedImage = image
+            }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+    }
+        
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = .photoLibrary
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 }
 
 struct CheckinView_Preview: PreviewProvider {
