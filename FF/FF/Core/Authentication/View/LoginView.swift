@@ -3,7 +3,6 @@
 //  FF
 //
 //
-// seems like there can be conflicting behaviors... alert box overrules view redirection
 
 import SwiftUI
 
@@ -20,6 +19,7 @@ struct LoginView: View {
     @State private var register: Bool = false
     
     @State private var redirect: Bool = false
+    @State private var errorFlag: Bool = false
     
     var body: some View {
         // Navigation Stack provides a storyline within our elements.. indicating that another screen will be loaded
@@ -61,7 +61,7 @@ struct LoginView: View {
                     Button(action: {
                         // new logic here
                         Task {
-                            try await viewModel.signIn(withEmail: email, password: password)
+                            self.errorFlag = try await viewModel.signIn(withEmail: email, password: password)
                         }
                     }) {
                         Text("Login")
@@ -81,7 +81,15 @@ struct LoginView: View {
                             // This removes the back button from the screen when redirected from the login view
                             .navigationBarBackButtonHidden(true)
                     }
-                }
+                } // end of hstack
+                
+                
+                // error message here
+                Text("You have entered the wrong email or password!")
+                    .foregroundStyle(Color.red)
+                    .opacity(errorFlag ? 1 : 0)
+                
+                
             } // end of VStack here
             
             .navigationTitle("Welcome to FF")

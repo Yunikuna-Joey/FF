@@ -42,7 +42,8 @@ class AuthView: ObservableObject {
     }
     
     // sign-in function
-    func signIn(withEmail email: String, password: String) async throws {
+    func signIn(withEmail email: String, password: String) async throws -> Bool {
+        print("sign-in function")
         do {
             // responds with a firebase user object
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
@@ -51,11 +52,16 @@ class AuthView: ObservableObject {
             
             // grab user information
             await fetchUser()
+            
+            // false meaning there was no error
+            return false
         }
         catch {
             print("[DEBUG]: Failed to log in with error \(error.localizedDescription)")
+            
+            // true meaning there was an error 
+            return true
         }
-        print("sign-in function")
     }
     
     // the user is being created..
