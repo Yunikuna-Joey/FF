@@ -80,6 +80,8 @@ class StatusProcessView: ObservableObject {
         let query = db.collection("Following")
             .whereField("userId", isEqualTo: userId)
         
+        let userQuery = dbStatus
+            .whereField("userId", isEqualTo: userId)
         
         query.getDocuments { snapshot, error in
             // once the error is hit, it should break out of the function body
@@ -123,6 +125,28 @@ class StatusProcessView: ObservableObject {
             } // end of forloop
             
         } // end of query.getDocuments
+        
+        userQuery.getDocuments { querySnapshot, error in
+            if let error = error {
+                print("[DEBUG]: Error fetching stauses \(error.localizedDescription)")
+                completion([])
+                return
+            }
+            
+            guard let documents = querySnapshot?.documents else {
+                print("[DEBUG]: No documents found")
+                completion([])
+                return
+            }
+        }
+        
+        userQuery.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else { return }
+            
+            var statuses = changes.compactMap({ try? $0.document.data(as: Status.self) })
+            
+            completion(statuses)
+        }
     }
     
     // updating like count for a status

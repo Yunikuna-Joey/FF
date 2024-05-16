@@ -45,14 +45,17 @@ struct HomeView: View {
         }
         .onAppear {
             statusProcess.feedList.removeAll()
-            // query the process to start fetching statuses based on current string user id else { blank }
+                        
+            // query statuses for following based on current string user id else { blank }
             statusProcess.fetchFeed(userId: viewModel.queryCurrentUserId() ?? "") { statuses in
                 for status in statuses {
                     statusProcess.feedList.append(status)
-                    print("This is the value of status \(status)")
+//                    print("This is the value of status \(status)")
                 }
             }
             
+           
+            // Then in main view, we sort the list by timestamp
             print("This is the value of feedlist: \(statusProcess.feedList)")
         }
     }
