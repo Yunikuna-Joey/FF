@@ -31,4 +31,7 @@ struct Status: Identifiable, Codable {
     
     // integer number representing likes
     var likes: Int
+    
+    // image url [this will be uploaded before packed in status object]
+    var imageUrls: [String]
 }

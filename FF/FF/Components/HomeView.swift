@@ -121,6 +121,37 @@ struct StatusUpdateView: View {
             Text(status.content)
                 .font(.body)
                 .padding(.bottom)
+            
+            ScrollView(.horizontal) {
+                HStack(alignment: .top) {
+                    ForEach(status.imageUrls, id: \.self) { imageUrl in
+                        AsyncImage(url: URL(string: imageUrl)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            case .failure:
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    }
+                } // end of hstack
+                .padding(.trailing, 25)
+            }
+            .padding(.leading, 0)
+            .padding(.bottom)
 
             
             HStack {

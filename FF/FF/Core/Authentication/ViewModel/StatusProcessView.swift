@@ -7,6 +7,7 @@
 import Foundation
 import Firebase
 import FirebaseFirestoreSwift
+import FirebaseStorage
 
 protocol StatusFormProtocol {
     var validForm: Bool { get }
@@ -23,10 +24,10 @@ class StatusProcessView: ObservableObject {
     private let dbStatus = Firestore.firestore().collection("Statuses")
     private let dbLikes = Firestore.firestore().collection("Likes")
     
-    func postStatus(userId: String, username: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int) async {
+    func postStatus(userId: String, username: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int, imageUrls: [String]) async {
         do {
             // handle the new status object
-            let newStatus = Status(id: UUID().uuidString, userId: userId, username: username, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes)
+            let newStatus = Status(id: UUID().uuidString, userId: userId, username: username, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes, imageUrls: imageUrls)
             try dbStatus.document(newStatus.id).setData(from: newStatus)
         }
         catch {
@@ -230,5 +231,44 @@ class StatusProcessView: ObservableObject {
             .getDocuments()
         
         return !snapshot.isEmpty
+    }
+    
+    // uploads images into firebaseStorage [not a database]
+    func uploadImages(images: [UIImage]) async throws -> [String] {
+        var imageUrls = [String]()
+        let storageRef = Storage.storage().reference()
+        
+        for image in images {
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                continue
+            }
+            
+            let imageId = UUID().uuidString
+            let imageRef = storageRef.child("images/\(imageId).jpg")
+            
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            
+            let downloadURL = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+                imageRef.putData(imageData, metadata: metadata) { _, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    imageRef.downloadURL { url, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else if let downloadURL = url {
+                            continuation.resume(returning: downloadURL.absoluteString)
+                        }
+                    }
+                }
+            }
+            
+            imageUrls.append(downloadURL)
+        }
+        
+        return imageUrls
     }
 }

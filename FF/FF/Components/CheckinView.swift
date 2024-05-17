@@ -8,6 +8,7 @@ import SwiftUI
 import CoreLocation
 import MapKit
 import FirebaseAuth
+import FirebaseStorage
 import PhotosUI
 
 struct CheckinView: View {
@@ -219,6 +220,8 @@ struct CheckinView: View {
                         // attempt to post the status into the database [submission]
                         Task {
                             do {
+                                let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+                                
                                 // send into firebase
                                 await statusModel.postStatus(
                                     userId: userId ?? " ",
@@ -227,7 +230,8 @@ struct CheckinView: View {
                                     bubbleChoice: bubbleChoice,
                                     timestamp: timestamp,
                                     location: selectedOption,
-                                    likes: 0
+                                    likes: 0,
+                                    imageUrls: imageUrls
                                 )
                                 
                                 // boolean flag to track
@@ -278,6 +282,7 @@ struct CheckinView: View {
         selectedOption = ""
         isStatusPosted = false
         bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower"]
+        selectedImages = []
     }
     
     func printDimensions() {
@@ -375,6 +380,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 }
 
+//*** multiple image picker structure
 struct MultiImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImages: [UIImage]
     
@@ -426,6 +432,8 @@ struct MultiImagePicker: UIViewControllerRepresentable {
     // needed for UIViewControllerRepresentable [but blank cause nothing is happening]
     func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
 }
+
+
 
 struct CheckinView_Preview: PreviewProvider {
     static var previews: some View {
