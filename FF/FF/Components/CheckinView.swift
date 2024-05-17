@@ -220,30 +220,46 @@ struct CheckinView: View {
                         // attempt to post the status into the database [submission]
                         Task {
                             do {
-                                let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+                                // if there are selected images or user-provided images
+                                if !selectedImages.isEmpty {
+                                    let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+                                    
+                                    // send into firebase
+                                    await statusModel.postStatus(
+                                        userId: userId ?? " ",
+                                        username: viewModel.currentSession?.username ?? "",
+                                        content: statusField,
+                                        bubbleChoice: bubbleChoice,
+                                        timestamp: timestamp,
+                                        location: selectedOption,
+                                        likes: 0,
+                                        imageUrls: imageUrls
+                                    )
+                                }
                                 
-                                // send into firebase
-                                await statusModel.postStatus(
-                                    userId: userId ?? " ",
-                                    username: viewModel.currentSession?.username ?? "",
-                                    content: statusField,
-                                    bubbleChoice: bubbleChoice,
-                                    timestamp: timestamp,
-                                    location: selectedOption,
-                                    likes: 0,
-                                    imageUrls: imageUrls
-                                )
+                                // if there are no selected images provided by the user
+                                else {
+                                    await statusModel.postStatus(
+                                        userId: userId ?? "",
+                                        username: viewModel.currentSession?.username ?? "",
+                                        content: statusField,
+                                        bubbleChoice: bubbleChoice,
+                                        timestamp: timestamp,
+                                        location: selectedOption,
+                                        likes: 0,
+                                        imageUrls: [""]
+                                    )
+                                }
                                 
-                                // boolean flag to track
-//                                isStatusPosted = true
-                                
+                                // move to homeView after
                                 currentTabIndex = 0
                                 
                                 // reset page values
                                 resetPageValues()
+                                
                             }
                             
-                        }
+                        } // end of task
                         
                         
                         // [revisit on prod]
@@ -269,7 +285,7 @@ struct CheckinView: View {
             .padding()
             
         } // end of navigationStack
-        .onTapGesture {             // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]
+        .onTapGesture { // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         
