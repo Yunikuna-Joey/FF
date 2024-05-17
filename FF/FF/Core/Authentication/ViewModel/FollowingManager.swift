@@ -16,7 +16,7 @@ class FollowingManager: ObservableObject {
             // create an entry where we see User A follow User B
             let entry = Following(id: UUID().uuidString, userId: userId, friendId: friendId)
             
-            try await db.collection("Following").document(entry.id).setData(from: entry)
+            try db.collection("Following").document(entry.id).setData(from: entry)
         }
         
         catch {
