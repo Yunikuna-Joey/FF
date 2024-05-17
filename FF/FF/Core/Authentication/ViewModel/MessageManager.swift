@@ -87,15 +87,13 @@ class MessageManager: ObservableObject {
             .order(by: "timestamp", descending: true)
             .limit(to: pageSize)
         
-//        if let prevDocument = prevDocument {
-//            query = query.start(afterDocument: prevDocument)
-//        }
+
         //** analyze the document || first query
         query.getDocuments { snapshot, error in
             guard let snapshot = snapshot else {
                 
                 if let error = error {
-                    print("[DEBUG]: There was an error with the initial 10 documents")
+                    print("[DEBUG]: There was an error with the initial 10 documents \(error.localizedDescription)")
                 }
                 return
             }

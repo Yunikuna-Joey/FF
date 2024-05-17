@@ -22,9 +22,12 @@ struct SearchView: View {
     
     var body: some View {
         NavigationStack {
+            
             ZStack(alignment: .bottom) {
-                // enable scrolling behavior
+                
+                
                 ScrollView(showsIndicators: false) {
+                    
                     // if the search bar is empty
                     if searchText.isEmpty {    // revert the condition change for production
                         // grid to hold the pictures
@@ -49,7 +52,7 @@ struct SearchView: View {
                                 }
                         }
                     }
-                }
+                } // end of scrollView
                 
                 // search bar
                 TextField("Search", text: $searchText)

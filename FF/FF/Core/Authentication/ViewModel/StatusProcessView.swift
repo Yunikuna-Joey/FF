@@ -271,4 +271,9 @@ class StatusProcessView: ObservableObject {
         
         return imageUrls
     }
+    
+    // fetch search page content
+    func fetchSearchPageContent() {
+        print("Hello World")
+    }
 }
