@@ -11,8 +11,10 @@ import FirebaseFirestoreSwift
 struct SearchView: View {
     @EnvironmentObject var viewModel: AuthView
     @EnvironmentObject var followManager: FollowingManager
+    @EnvironmentObject var statusProcess: StatusProcessView
+    
     // hold some image arary... likely just some random users
-    let imageArray = ["Car", "car2", "terrifiednootnoot"]
+//    let imageArray = ["Car", "car2", "terrifiednootnoot"]
     let itemSize: CGFloat = (UIScreen.main.bounds.width - 40 - 20) / 3 - 10
     
     @State private var searchText: String = ""
@@ -30,17 +32,24 @@ struct SearchView: View {
                     
                     // if the search bar is empty
                     if searchText.isEmpty {    // revert the condition change for production
-                        // grid to hold the pictures
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: itemSize))]) {
-                            // iterate through the image array
-                            ForEach(imageArray, id: \.self) {
-                                imageName in Image(imageName)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: itemSize + 32, height: itemSize)
-                                    .cornerRadius(5)
-                            }
+                        
+//                        // grid to hold the pictures
+//                        LazyVGrid(columns: [GridItem(.adaptive(minimum: itemSize))]) {
+//                            // iterate through the image array
+//                            ForEach(imageArray, id: \.self) {
+//                                imageName in Image(imageName)
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fill)
+//                                    .frame(width: itemSize + 32, height: itemSize)
+//                                    .cornerRadius(5)
+//                            }
+//                        }
+                        ForEach(statusProcess.searchFeedList) { status in
+                            Text(status.content)
+                                .foregroundStyle(Color.purple)
+                                .padding()
                         }
+                        
                     }
                     
                     // if it is not empty
@@ -77,8 +86,17 @@ struct SearchView: View {
                 LoadProfileView(resultUser: user)
                     .navigationTitle(user.username)
             }
+        } // end of navigation Stack
+        .onAppear {
+            statusProcess.searchFeedList.removeAll()
+            statusProcess.fetchSearchPageContent() { statuses in
+                for status in statuses {
+                    statusProcess.searchFeedList.append(status)
+                }
+            }
         }
-    }
+        
+    } // end of body
     
     // function to search for other users
     func searchUsers(currSearchText: String, currentUsername: String) {

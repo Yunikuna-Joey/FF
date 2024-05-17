@@ -19,6 +19,7 @@ class StatusProcessView: ObservableObject {
     @Published var currentSession: User?
     @Published var statusList: [Status] = []
     @Published var feedList = [Status]()
+    @Published var searchFeedList: [Status] = []
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
@@ -273,7 +274,48 @@ class StatusProcessView: ObservableObject {
     }
     
     // fetch search page content
-    func fetchSearchPageContent() {
-        print("Hello World")
+    func fetchSearchPageContent(completion: @escaping ([Status]) -> Void) {
+        //*** for determining when the range of current day to search for statuses
+        let now = Date()
+        let calendar = Calendar.current
+        let startDay = calendar.startOfDay(for: now)
+        let endDay = calendar.date(byAdding: .day, value: 1, to: startDay)
+        
+        let query = dbStatus
+            .whereField("timestamp", isGreaterThanOrEqualTo: startDay)
+            // may want to revisit this line for warning triggers
+            .whereField("timestamp", isLessThan: endDay as Any)
+        
+        query.getDocuments { snapshot, error in
+            // ** catches errors
+            if let error = error {
+                print("[Search_Content_DEBUG]: Error fetching documents \(error.localizedDescription)")
+                completion([])
+                return
+            }
+            
+            //*** checks for existence
+            guard let documents = snapshot?.documents else {
+                print("No documents found")
+                completion([])
+                return
+            }
+            
+            //** decode documents into Status objects
+            let statuses = documents.compactMap { doc -> Status? in
+                do {
+                    return try doc.data(as: Status.self)
+                }
+                catch {
+                    print("[DEBUG]: Unpacking error \(error.localizedDescription)")
+                    return nil
+                }
+            }
+            
+            //** possibly daily change of the word?
+            let searchResults = statuses.filter { $0.content.contains("#journey") }
+//            self.searchFeedList = searchResults
+            completion(searchResults)
+        }
     }
 }
