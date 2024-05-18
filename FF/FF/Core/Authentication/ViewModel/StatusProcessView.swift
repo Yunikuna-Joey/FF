@@ -325,10 +325,10 @@ class StatusProcessView: ObservableObject {
     }
     
     // add a comment on a post [creates a comment object in firebase]
-    func commentStatus(postId: String, userId: String, profilePicture: String, username: String, content: String, timestamp: Date) async throws {
+    func commentStatus(postId: String, userObject: User, content: String, timestamp: Date) async throws {
         do {
             // Comment object
-            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userId, profilePicture: profilePicture, username: username, content: content, timestamp: timestamp)
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, content: content, timestamp: timestamp)
             
             let commentRef = dbStatus.document(postId)
                 .collection("comments")
