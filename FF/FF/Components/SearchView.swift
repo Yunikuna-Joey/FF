@@ -200,6 +200,73 @@ struct listUserProfiles: View {
     }
 }
 
+struct HashtagCell: View {
+    let status: Status
+    
+    var body: some View {
+        VStack {
+            
+            // ** username of the status and timestamp
+            HStack {
+                Text(status.username)
+                    .font(.headline)
+                
+                Text(formatTimeAgo(from: status.timestamp))
+                    .font(.caption)
+                    .foregroundStyle(Color.gray)
+            }
+            
+            // ** Content [Being either image or video]
+            AsyncImage(url: URL(string: imageUrl)) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .frame(width: 100, height: 200)
+                    
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 200)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                
+                @unknown default:
+                    EmptyView()
+                }
+            }
+            
+            // This should overlay the picture and/or image
+            Text(status.content)
+                .foregroundStyle(Color.purple)
+            
+            // Hold the like and comment icons
+            HStack {
+                Image(systemName: "heart")
+                
+                Image(systemName: "bubble.fill")
+            }
+            
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 2)
+    }
+    
+    func formatTimeAgo(from date: Date) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        
+        guard let formattedString = formatter.string(from: date, to: Date()) else {
+            return "Unknown"
+        }
+        
+        return formattedString + " ago"
+    }
+}
+
 #Preview {
     SearchView()
 }

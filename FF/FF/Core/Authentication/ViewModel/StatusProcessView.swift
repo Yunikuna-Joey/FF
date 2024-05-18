@@ -318,4 +318,24 @@ class StatusProcessView: ObservableObject {
             completion(searchResults)
         }
     }
+    
+    // add a comment on a post [creates a comment object in firebase]
+    func commentStatus(postId: String, userId: String, username: String, content: String, timestamp: Date) async throws {
+        do {
+            // Comment object
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userId, username: username, content: content, timestamp: timestamp)
+            
+            let commentRef = dbStatus.document(postId)
+                .collection("comments")
+                .document()
+            
+            try commentRef.setData(from: newComment)
+                
+        }
+        
+        catch {
+            print("[DEBUG]: Error creating a comment object \(error.localizedDescription)")
+        }
+    }
+    
 }
