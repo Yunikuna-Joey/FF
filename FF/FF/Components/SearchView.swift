@@ -195,6 +195,7 @@ struct HashtagCell: View {
     @State private var likeFlag: Bool = false
     @State private var likeCount: Int = 0
     
+    @State private var commentFlag: Bool = false
     @State private var commentCount: Int = 0
     
     let status: Status
@@ -292,12 +293,16 @@ struct HashtagCell: View {
                 // Comment button
                 Button(action: {
                     print("Comment Button")
+                    commentFlag.toggle()
                 }) {
                     Image(systemName: "bubble")
                         .foregroundStyle(Color.gray)
                     
                     Text("\(commentCount)")
                         .foregroundStyle(Color.black)
+                }
+                .sheet(isPresented: $commentFlag) {
+                    CommentView()
                 }
                 
                 // push to the left so its aligned-left
@@ -311,6 +316,12 @@ struct HashtagCell: View {
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 2)
+        .onAppear {
+            Task {
+                likeCount = try await statusProcess.fetchLikeCount(postId: status.id)
+                likeFlag = try await statusProcess.fetchLikeFlag(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
+            }
+        }
     }
     
     func formatTimeAgo(from date: Date) -> String {

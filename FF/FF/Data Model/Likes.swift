@@ -25,6 +25,9 @@ struct Comments: Identifiable, Codable {
     // UserId
     let userId: String
     
+    // userPicture
+    let profilePicture: String
+    
     // username
     let username: String 
     

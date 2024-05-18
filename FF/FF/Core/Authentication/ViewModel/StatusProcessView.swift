@@ -23,7 +23,7 @@ class StatusProcessView: ObservableObject {
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
-    private let dbLikes = Firestore.firestore().collection("Likes")
+    // private let dbLikes = Firestore.firestore().collection("Statuses").document("likes")
     
     func postStatus(userId: String, username: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int, imageUrls: [String]) async {
         do {
@@ -156,15 +156,17 @@ class StatusProcessView: ObservableObject {
         let statusRef = dbStatus
             .document(postId)
         
-        let likeRef = dbLikes
-            .whereField("postId", isEqualTo: postId)
-            .whereField("userId", isEqualTo: userId)
+        // go into the status collection and create a comments document containing all of the comments associated
+        let likeRef = statusRef
+            .collection("likes")
         
         do {
             let statusDoc = try await statusRef.getDocument()
             var status = try statusDoc.data(as: Status.self)
             
-            let likeSnapshot = try await likeRef.getDocuments()
+            let likeSnapshot = try await likeRef
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments()
             var likeCount = 0
             
             // if there is already a like document
@@ -178,8 +180,7 @@ class StatusProcessView: ObservableObject {
                 // delete the like object from Firebase
                 try await likeSnapshot.documents.first?.reference.delete()
                 
-                let updatedSnapshot = try await dbLikes
-                    .whereField("postId", isEqualTo: postId)
+                let updatedSnapshot = try await likeRef
                     .getDocuments()
                 
                 likeCount = updatedSnapshot.count
@@ -197,10 +198,9 @@ class StatusProcessView: ObservableObject {
                 let newLike = Likes(id: UUID().uuidString, postId: postId, userId: userId)
                 
                 // store the like object into firebase
-                try dbLikes.document(newLike.id).setData(from: newLike)
+                try likeRef.document(newLike.id).setData(from: newLike)
                 
-                let updatedSnapshot = try await dbLikes
-                    .whereField("postId", isEqualTo: postId)
+                let updatedSnapshot = try await likeRef
                     .getDocuments()
                 
                 likeCount = updatedSnapshot.count
@@ -217,7 +217,9 @@ class StatusProcessView: ObservableObject {
     
     // initializing the like count
     func fetchLikeCount(postId: String) async throws -> Int {
-        let snapshot = try await dbLikes
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("likes")
             .whereField("postId", isEqualTo: postId)
             .getDocuments()
         
@@ -226,7 +228,9 @@ class StatusProcessView: ObservableObject {
     
     // fetch like-boolean status
     func fetchLikeFlag(postId: String, userId: String) async throws -> Bool {
-        let snapshot = try await dbLikes
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("likes")
             .whereField("postId", isEqualTo: postId)
             .whereField("userId", isEqualTo: userId)
             .getDocuments()
@@ -321,10 +325,10 @@ class StatusProcessView: ObservableObject {
     }
     
     // add a comment on a post [creates a comment object in firebase]
-    func commentStatus(postId: String, userId: String, username: String, content: String, timestamp: Date) async throws {
+    func commentStatus(postId: String, userId: String, profilePicture: String, username: String, content: String, timestamp: Date) async throws {
         do {
             // Comment object
-            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userId, username: username, content: content, timestamp: timestamp)
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userId, profilePicture: profilePicture, username: username, content: content, timestamp: timestamp)
             
             let commentRef = dbStatus.document(postId)
                 .collection("comments")
