@@ -80,6 +80,8 @@ struct StatusUpdateView: View {
     var body: some View {
         // what each individual update is going to follow [stacked bottom to top]
         VStack(alignment: .leading, spacing: 10) {
+            let screenSize = UIScreen.main.bounds.size
+            
             // stacked left to right
             HStack(spacing: 10) {
                 // profile image on the left
@@ -123,36 +125,39 @@ struct StatusUpdateView: View {
                 .padding(.bottom)
             
             if !status.imageUrls.isEmpty {
-                ScrollView(.horizontal) {
-                    HStack(alignment: .top) {
-                        ForEach(status.imageUrls, id: \.self) { imageUrl in
-                            AsyncImage(url: URL(string: imageUrl)) { phase in
-                                switch phase {
-                                case .empty:
-                                    ProgressView()
-                                        .frame(width: 100, height: 100)
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100, height: 100)
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                case .failure:
-                                    Image(systemName: "xmark.circle")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100, height: 100)
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
-                        }
-                    } // end of hstack
-                    .padding(.trailing, 25)
-                }
-                .padding(.leading, 0)
-                .padding(.bottom)
+                TabView {
+                    ForEach(status.imageUrls, id: \.self) { imageUrl in
+                        AsyncImage(url: URL(string: imageUrl)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(height: screenSize.height * 0.40)
+                                
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: screenSize.height * 0.40)
+                                
+                            case .failure:
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100, height: 200)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                
+                            @unknown default:
+                                EmptyView()
+                            } // end of switch
+                            
+                        } // end of async image
+                         
+                    } // end of for loop
+                    
+                } // end of TabView
+                .tabViewStyle(PageTabViewStyle())
+                .frame(height: screenSize.height * 0.40)
             }
 
             

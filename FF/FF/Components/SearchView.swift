@@ -32,21 +32,9 @@ struct SearchView: View {
                     
                     // if the search bar is empty
                     if searchText.isEmpty {    // revert the condition change for production
-                        
-//                        // grid to hold the pictures
-//                        LazyVGrid(columns: [GridItem(.adaptive(minimum: itemSize))]) {
-//                            // iterate through the image array
-//                            ForEach(imageArray, id: \.self) {
-//                                imageName in Image(imageName)
-//                                    .resizable()
-//                                    .aspectRatio(contentMode: .fill)
-//                                    .frame(width: itemSize + 32, height: itemSize)
-//                                    .cornerRadius(5)
-//                            }
-//                        }
+                
                         ForEach(statusProcess.searchFeedList) { status in
-                            Text(status.content)
-                                .foregroundStyle(Color.purple)
+                            HashtagCell(status: status)
                                 .padding()
                         }
                         
@@ -204,6 +192,8 @@ struct HashtagCell: View {
     let status: Status
     
     var body: some View {
+        let screenSize = UIScreen.main.bounds.size
+        
         VStack {
             
             // ** username of the status and timestamp
@@ -211,40 +201,66 @@ struct HashtagCell: View {
                 Text(status.username)
                     .font(.headline)
                 
+                Spacer()
+                
                 Text(formatTimeAgo(from: status.timestamp))
                     .font(.caption)
                     .foregroundStyle(Color.gray)
             }
             
             // ** Content [Being either image or video]
-            AsyncImage(url: URL(string: imageUrl)) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 100, height: 200)
-                    
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+            TabView {
+                ForEach(status.imageUrls, id: \.self) { imageUrl in
+                    AsyncImage(url: URL(string: imageUrl)) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(height: screenSize.height * 0.40)
+                            
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: screenSize.height * 0.40)
+                            
+                        case .failure:
+                            Image(systemName: "xmark.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            
+                        @unknown default:
+                            EmptyView()
+                        } // end of switch
+                        
+                    } // end of async image
+                     
+                } // end of for loop
                 
-                @unknown default:
-                    EmptyView()
-                }
-            }
+            } // end of TabView
+            .tabViewStyle(PageTabViewStyle())
+            .frame(height: screenSize.height * 0.40)
             
             // This should overlay the picture and/or image
-            Text(status.content)
-                .foregroundStyle(Color.purple)
+            HStack {
+                Text(status.content)
+                    .foregroundStyle(Color.purple)
+                
+                Spacer()
+            }
+            .padding(.top, 10)
             
             // Hold the like and comment icons
-            HStack {
+            HStack(spacing: 10) {
                 Image(systemName: "heart")
                 
                 Image(systemName: "bubble.fill")
+                
+                Spacer()
             }
+            .padding(.top, 10)
             
         }
         .padding()
