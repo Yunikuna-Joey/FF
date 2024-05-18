@@ -314,6 +314,7 @@ class StatusProcessView: ObservableObject {
             
             //** possibly daily change of the word?
             let searchResults = statuses.filter { $0.content.contains("#journey") }
+            print("This is searchResults from status manager \(searchResults)")
 //            self.searchFeedList = searchResults
             completion(searchResults)
         }
