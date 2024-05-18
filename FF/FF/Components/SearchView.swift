@@ -7,6 +7,7 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseAuth
 
 struct SearchView: View {
     @EnvironmentObject var viewModel: AuthView
@@ -189,6 +190,13 @@ struct listUserProfiles: View {
 }
 
 struct HashtagCell: View {
+    @EnvironmentObject var statusProcess: StatusProcessView
+    
+    @State private var likeFlag: Bool = false
+    @State private var likeCount: Int = 0
+    
+    @State private var commentCount: Int = 0
+    
     let status: Status
     
     var body: some View {
@@ -253,12 +261,48 @@ struct HashtagCell: View {
             .padding(.top, 10)
             
             // Hold the like and comment icons
-            HStack(spacing: 10) {
-                Image(systemName: "heart")
+            HStack(spacing: 20) {
+                //*** Like Button
+                Button(action: {
+                    Task {
+                        likeCount = try await statusProcess.likeStatus(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
+                        likeFlag.toggle()
+                    }
+                }) {
+                    Image(systemName: likeFlag ? "heart.fill" : "heart")
+                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
+                    
+                    Text("\(likeCount)")
+                        .foregroundStyle(Color.black)
+//                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
+                        
+                }
+                .foregroundStyle(Color.gray)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(Color.gray, lineWidth: 1)
+                        .frame(width: 50, height: 30)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(likeFlag ? Color.blue.opacity(0.80) : Color.clear)
+                        .frame(width: 50, height: 30)
+                )
                 
-                Image(systemName: "bubble.fill")
+                // Comment button
+                Button(action: {
+                    print("Comment Button")
+                }) {
+                    Image(systemName: "bubble")
+                        .foregroundStyle(Color.gray)
+                    
+                    Text("\(commentCount)")
+                        .foregroundStyle(Color.black)
+                }
                 
+                // push to the left so its aligned-left
                 Spacer()
+                
             }
             .padding(.top, 10)
             

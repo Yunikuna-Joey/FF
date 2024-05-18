@@ -64,9 +64,13 @@ struct HomeView: View {
 // status update structure,,, what each update will follow in terms of pieces
 struct StatusUpdateView: View {
     @EnvironmentObject var statusProcess: StatusProcessView
+    
     // listens for like count changes
     @State private var likeCount: Int = 0
     @State private var likeFlag: Bool = false
+    
+    @State private var commentCount: Int = 0
+    
     // status object
     let status: Status
     
@@ -161,7 +165,8 @@ struct StatusUpdateView: View {
             }
 
             
-            HStack {
+            HStack(spacing: 20) {
+                //** Like button
                 Button(action: {
                     Task {
                         likeCount = try await statusProcess.likeStatus(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
@@ -187,7 +192,22 @@ struct StatusUpdateView: View {
                         .fill(likeFlag ? Color.blue.opacity(0.80) : Color.clear)
                         .frame(width: 50, height: 30)
                 )
+                
+                //** Comment button
+                Button(action: {
+                    print("Comment Button")
+                }) {
+                    Image(systemName: "bubble")
+                        .foregroundStyle(Color.gray)
+                    
+                    Text("\(commentCount)")
+                        .foregroundStyle(Color.black)
+                }
+                
+                // push to the left so its aligned-left
+                Spacer()
             }
+            .padding(.top, 10)
 
             
         }
