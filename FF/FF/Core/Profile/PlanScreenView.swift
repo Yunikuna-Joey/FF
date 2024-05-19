@@ -148,9 +148,9 @@ struct PlanScreenView: View {
                                 planScreenFlag = false
                             }
                             
-                            catch {
-                                print("[DEBUG]: There was an error processing or saving your plan \(error.localizedDescription)")
-                            }
+//                            catch {
+//                                print("[DEBUG]: There was an error processing or saving your plan \(error.localizedDescription)")
+//                            }
                         }
                         print("[DEBUG]: This will act as the save button (execute backend functionality)")
                     }) {

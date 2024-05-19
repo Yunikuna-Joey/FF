@@ -17,9 +17,10 @@ struct User: Identifiable, Codable, Hashable {            // codable turns JSON 
     let email: String
     let imageArray: [String]
     let profilePicture: String
+    let coverPicture: String
 }
 
 // test | admin account
 extension User {
-    static var ADMIN = User(id: NSUUID().uuidString, username: "admin", databaseUsername: "admin", firstName: "Admin", lastName: "Admin", email: "admin@ff.com", imageArray: [], profilePicture: "person.circle")
+    static var ADMIN = User(id: NSUUID().uuidString, username: "admin", databaseUsername: "admin", firstName: "Admin", lastName: "Admin", email: "admin@ff.com", imageArray: [], profilePicture: "person.circle", coverPicture: "person.circle.fill")
 }

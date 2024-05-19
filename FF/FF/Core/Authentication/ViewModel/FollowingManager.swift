@@ -175,7 +175,8 @@ class FollowingManager: ObservableObject {
                    let lastName = userData["lastName"] as? String,
                    let email = userData["email"] as? String,
                    let imageArray = userData["imageArray"] as? [String],
-                   let profilePicture = userData["profilePicture"] as? String {
+                   let profilePicture = userData["profilePicture"] as? String, 
+                   let coverPicture = userData["coverPicture"] as? String {
                     let user = User(
                         id: id,
                         username: username, 
@@ -184,7 +185,8 @@ class FollowingManager: ObservableObject {
                         lastName: lastName,
                         email: email,
                         imageArray: imageArray,
-                        profilePicture: profilePicture
+                        profilePicture: profilePicture,
+                        coverPicture: coverPicture
                     )
 //                    print("This is the value of user \(user)")
                     return user

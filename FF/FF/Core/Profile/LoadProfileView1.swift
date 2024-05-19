@@ -112,7 +112,7 @@ struct LoadProfileStatusUpdateView: View {
 
 struct LoadProfileView1_Previews: PreviewProvider {
     static var previews: some View {
-        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "")
+        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "", coverPicture: "")
         LoadProfileView1(resultUser: user)
     }
 }
