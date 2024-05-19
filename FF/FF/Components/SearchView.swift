@@ -302,7 +302,7 @@ struct HashtagCell: View {
                         .foregroundStyle(Color.black)
                 }
                 .sheet(isPresented: $commentFlag) {
-                    CommentView()
+                    CommentView(status: status)
                 }
                 
                 // push to the left so its aligned-left

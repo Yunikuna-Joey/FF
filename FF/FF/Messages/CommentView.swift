@@ -8,31 +8,26 @@ import SwiftUI
 
 struct CommentView: View {
     let example: Comments = Comments(id: "imagine", postId: "Test1", userId: "admin", profilePicture: "", username: "Testing Offline User", content: "Amazing Post!", timestamp: Date())
+    @EnvironmentObject var statusProcess: StatusProcessView
+    @EnvironmentObject var viewModel: AuthView
     
     @State private var commentText: String = ""
+    
+    let status: Status
     
     var body: some View {
         ZStack(alignment: .bottom) {
             
             ScrollView(showsIndicators: false) {
                 VStack {
-                    CommentCell(comment: example)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(20)
-                        .shadow(radius: 2)
+                    ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
+                        CommentCell(comment: comment)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .shadow(radius: 2)
+                    }
                     
-                    CommentCell(comment: example)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(20)
-                        .shadow(radius: 2)
-                    
-                    CommentCell(comment: example)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(20)
-                        .shadow(radius: 2)
                 } // end of vstack
                 .padding()
                 
@@ -50,6 +45,28 @@ struct CommentView: View {
                 
                 Button(action: {
                     print("Post comment button")
+                    if let currentUserObject = viewModel.currentSession {
+                        Task {
+                            do {
+                                try await statusProcess.commentStatus(
+                                    postId: status.id,
+                                    userObject: currentUserObject,
+                                    content: commentText,
+                                    timestamp: Date()
+                                )
+                                commentText = ""
+                            }
+                            
+                            catch {
+                                print("[Front_End_DEBUG]: There was an error posting your comment.")
+                            }
+                        }
+                        
+                    }
+                    
+                    else {
+                        print("[DEBUG]: Current session is nil so commenting function does not work.")
+                    }
                 }) {
                     Image(systemName: "arrow.up.forward.app")
                         .foregroundStyle(Color.white)
@@ -61,10 +78,22 @@ struct CommentView: View {
                         .padding()
                 )
                 .padding(.trailing, 25)
+                .disabled(commentText.isEmpty)
+                .opacity(commentText.isEmpty ? 0.3 : 1.0)
             } // end of zstack
             .padding()
             
         } // end of zstack
+        .onAppear {
+            statusProcess.commentList.removeAll()
+            
+            statusProcess.fetchComments(postId: status.id) { comments in
+                for comment in comments {
+                    statusProcess.commentList.append(comment)
+                }
+            }
+        }
+        
     } // end of body
 }
 
@@ -141,6 +170,6 @@ struct CommentCell: View {
     }
 }
 
-#Preview {
-    CommentView()
-}
+//#Preview {
+//    CommentView()
+//}

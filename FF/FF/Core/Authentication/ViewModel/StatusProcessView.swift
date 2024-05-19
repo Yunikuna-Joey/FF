@@ -20,6 +20,7 @@ class StatusProcessView: ObservableObject {
     @Published var statusList: [Status] = []
     @Published var feedList = [Status]()
     @Published var searchFeedList: [Status] = []
+    @Published var commentList = [Comments]()
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
@@ -332,14 +333,40 @@ class StatusProcessView: ObservableObject {
             
             let commentRef = dbStatus.document(postId)
                 .collection("comments")
-                .document()
             
-            try commentRef.setData(from: newComment)
+            try commentRef.document(newComment.id).setData(from: newComment)
                 
         }
         
         catch {
             print("[DEBUG]: Error creating a comment object \(error.localizedDescription)")
+        }
+    }
+    
+    // fetch comments for a status
+    func fetchComments(postId: String, completion: @escaping ([Comments]) -> Void) {
+        let query = dbStatus
+            .document(postId)
+            .collection("comments")
+        
+        // handle completion of comments
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                if let error = error {
+                    print("[DEBUG]: Error grabbing/finding comment documents \(error.localizedDescription)")
+                }
+                completion([])
+                return
+            }
+        }
+        
+        // for real time updates
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added}) else { return }
+            
+            var comments = changes.compactMap({ try? $0.document.data(as: Comments.self )})
+            
+            completion(comments)
         }
     }
     
