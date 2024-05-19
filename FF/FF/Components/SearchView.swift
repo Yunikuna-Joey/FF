@@ -134,28 +134,17 @@ struct listUserProfiles: View {
                 if resultUser.profilePicture.isEmpty {
                     Image(systemName: "person.circle")        // ****** remove systemName for user-uploaded pictures ******
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 40, height: 40)
                         .padding(.leading, 20)
-                        .padding(.top, 10)
                 }
                 else {
                     Image(resultUser.profilePicture)
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 40, height: 40)
                         .padding(.leading, 20)
-                        .padding(.top, 10)
                 }
 
                 // username || can add badges underneath to showcase
-//                NavigationLink(
-//                    destination: LoadProfileView(resultUser: resultUser)
-//                        .navigationTitle(resultUser.username)
-//                ) {
-//                    Text(resultUser.username)
-//                        .font(.headline)
-//                        .foregroundStyle(Color.orange)
-//                }
-
                 Text(resultUser.username)
                     .font(.headline)
                     .foregroundStyle(Color.orange)
@@ -165,19 +154,21 @@ struct listUserProfiles: View {
 
 
             }
+            .padding(.vertical)
+            .padding(.trailing)
 
             // horizontal row of 3 most recent images
-            HStack {
-                ForEach(resultUser.imageArray, id: \.self) { image in
-                    Image(image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 100, height: 100)
-                        .clipped()
-                        .cornerRadius(10)
-                }
-            }
-            .padding()
+//            HStack {
+//                ForEach(resultUser.imageArray, id: \.self) { image in
+//                    Image(image)
+//                        .resizable()
+//                        .aspectRatio(contentMode: .fill)
+//                        .frame(width: 100, height: 100)
+//                        .clipped()
+//                        .cornerRadius(10)
+//                }
+//            }
+//            .padding()
 
         } // vstack for one card
         .background(
@@ -189,6 +180,7 @@ struct listUserProfiles: View {
     }
 }
 
+// for displaying hashtag content
 struct HashtagCell: View {
     @EnvironmentObject var statusProcess: StatusProcessView
     
@@ -207,6 +199,10 @@ struct HashtagCell: View {
             
             // ** username of the status and timestamp
             HStack {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                
                 Text(status.username)
                     .font(.headline)
                 
@@ -216,6 +212,15 @@ struct HashtagCell: View {
                     .font(.caption)
                     .foregroundStyle(Color.gray)
             }
+            
+            // This should overlay the picture and/or image
+            HStack {
+                Text(status.content)
+                    .foregroundStyle(Color.purple)
+                
+                Spacer()
+            }
+            .padding(.top, 10)
             
             // ** Content [Being either image or video]
             TabView {
@@ -251,15 +256,6 @@ struct HashtagCell: View {
             } // end of TabView
             .tabViewStyle(PageTabViewStyle())
             .frame(height: screenSize.height * 0.40)
-            
-            // This should overlay the picture and/or image
-            HStack {
-                Text(status.content)
-                    .foregroundStyle(Color.purple)
-                
-                Spacer()
-            }
-            .padding(.top, 10)
             
             // Hold the like and comment icons
             HStack(spacing: 20) {
