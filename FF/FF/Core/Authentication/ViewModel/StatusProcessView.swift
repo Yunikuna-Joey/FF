@@ -370,4 +370,14 @@ class StatusProcessView: ObservableObject {
         }
     }
     
+    // fetch comment count for a status
+    func fetchCommentCount(postId: String) async throws -> Int {
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("comments")
+            .getDocuments()
+        
+        return snapshot.count
+    }
+    
 }

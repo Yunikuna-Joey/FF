@@ -320,6 +320,8 @@ struct HashtagCell: View {
             Task {
                 likeCount = try await statusProcess.fetchLikeCount(postId: status.id)
                 likeFlag = try await statusProcess.fetchLikeFlag(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
+                
+                commentCount = try await statusProcess.fetchCommentCount(postId: status.id)
             }
         }
     }

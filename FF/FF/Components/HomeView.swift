@@ -70,6 +70,7 @@ struct StatusUpdateView: View {
     @State private var likeFlag: Bool = false
     
     @State private var commentCount: Int = 0
+    @State private var commentFlag: Bool = false
     
     // status object
     let status: Status
@@ -196,12 +197,16 @@ struct StatusUpdateView: View {
                 //** Comment button
                 Button(action: {
                     print("Comment Button")
+                    commentFlag.toggle()
                 }) {
                     Image(systemName: "bubble")
                         .foregroundStyle(Color.gray)
                     
                     Text("\(commentCount)")
                         .foregroundStyle(Color.black)
+                }
+                .sheet(isPresented: $commentFlag) {
+                    CommentView(status: status)
                 }
                 
                 // push to the left so its aligned-left
@@ -220,6 +225,9 @@ struct StatusUpdateView: View {
                 // initialize all the like counts for each status
                 likeCount = try await statusProcess.fetchLikeCount(postId: status.id)
                 likeFlag = try await statusProcess.fetchLikeFlag(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
+                
+                // initialize comment count for each status
+                commentCount = try await statusProcess.fetchCommentCount(postId: status.id)
             }
         }
     }
