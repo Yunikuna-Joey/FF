@@ -35,9 +35,12 @@ struct ProfileView: View {
     @State private var selectCoverPicture: UIImage?
     @State private var profilePictureFlag: Bool = false
     @State private var coverPictureFlag: Bool = false
+    @State private var previewPictureFlag: Bool = false
+    
     
     // plan object..?
-    @State var selectedPlan: Plan = Plan(id: "", userId: "", planTitle: "", workoutType: [:])
+    @State var selectedPlan: Plan = EmptyVariable.EmptyPlan
+//    var currentUserObject: User = User(id: "", username: "", databaseUsername: "", firstName: "", lastName: "", email: "", imageArray: [], profilePicture: "", coverPicture: "")
     
     // iterate through the different tabs
     func currSelection(_ tab:Tab) -> Bool {
@@ -54,6 +57,8 @@ struct ProfileView: View {
     let screenSize = UIScreen.main.bounds.size
     
     var body: some View {
+        var currentUserObject: User = EmptyVariable.EmptyUser
+        
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 ZStack(alignment: .topTrailing) {
@@ -66,13 +71,45 @@ struct ProfileView: View {
                             .frame(height: screenSize.height * 0.30)
                             .clipped()
                         
-                        // profile picture
-                        Image("car2")
-                            .resizable()
-                            .frame(width: 200, height: 150)
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                        // [play with this offset value]
-                            .offset(y: -100)
+                        //** profile picture section
+                        if currentUserObject.profilePicture.isEmpty {
+                            Image("car2")
+                                .resizable()
+                                .frame(width: 200, height: 150)
+                                .clipShape(Circle())
+                                // [play with this offset value]
+                                .offset(y: -100)
+                        }
+                        
+                        else {
+                            AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
+                                switch phase {
+                                // Different cases the request might encounter: loading | success | None
+                                case .empty:
+                                    ProgressView()
+                                        .frame(height: screenSize.height * 0.40)
+                                    
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .frame(width: 200, height: 150)
+                                        .clipShape(Circle())
+                                        // [play with this offset value]
+                                        .offset(y: -100)
+                                    
+                                case .failure:
+                                    Image(systemName: "xmark.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 200)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    
+                                @unknown default:
+                                    EmptyView()
+                                } // end of switch
+                                
+                            } // end of async image
+                        }
                             
                         
                         // pushes the cover photo AND profile picture
@@ -83,6 +120,7 @@ struct ProfileView: View {
                             Text(viewModel.currentSession?.username ?? "")
                                 .font(.headline)
                             
+                            // Change photo menu button (down arrow)
                             Button(action: {
                                 print("Change user photo(s) button")
                                 pictureFlag.toggle()
@@ -90,49 +128,75 @@ struct ProfileView: View {
                                 Image(systemName: "chevron.down.circle.fill")
                             }
                             .sheet(isPresented: $pictureFlag) {
-                                VStack {
-                                    HStack {
-                                        
-                                        Button(action: {
-                                            print("This will act as the profile picture change button")
-                                            profilePictureFlag.toggle()
-                                        }) {
-                                            Text("Change profile picture")
+                                NavigationStack {
+                                    VStack {
+                                        //*** Changing the user Profile picture case
+                                        HStack {
+                                            
+                                            Button(action: {
+                                                print("This will act as the profile picture change button")
+                                                profilePictureFlag.toggle()
+                                            }) {
+                                                Text("Change profile picture")
+                                            }
+                                            .sheet(isPresented: $profilePictureFlag) {
+                                                ImagePicker(selectedImage: $selectProfilePicture) {
+                                                    previewPictureFlag = true
+                                                }
+                                            }
+                                            
+                                            Spacer()
                                         }
-                                        .sheet(isPresented: $profilePictureFlag) {
-                                            ImagePicker(selectedImage: $selectProfilePicture)
-                                        }
+                                        .padding()
                                         
-                                        Spacer()
+                                        Divider()
+                                        
+                                        //*** Changing the cover picture case
+                                        HStack {
+                                            
+                                            Button(action: {
+                                                print("This will act as the cover photo change button")
+                                                coverPictureFlag.toggle()
+                                            }) {
+                                                Text("Change cover picture")
+                                            }
+                                            .sheet(isPresented: $coverPictureFlag) {
+                                                ImagePicker(selectedImage: $selectCoverPicture)
+                                            }
+                                            
+                                            Spacer()
+                                        }
+                                        .padding()
+                                        
+                                    } // end of vstack
+                                    //.presentationDetents([.fraction(0.3), .medium, .large])
+                                    .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
+                                    .navigationDestination(isPresented: $previewPictureFlag) {
+                                        PreviewProfilePicture(
+                                            selectedImage: $selectProfilePicture,
+                                            onSave: {
+//                                                saveProfilePicture(selectProfilePicture)
+                                                print("SAve profile picture button.")
+                                                selectProfilePicture = nil
+                                                // exits the parent sheet all together
+                                                pictureFlag = false
+                                            },
+                                            onCancel: {
+                                                selectProfilePicture = nil
+                                                // exits the parent sheet all together
+                                                pictureFlag = false
+                                            }
+                                        )
                                     }
-                                    .padding()
                                     
-                                    Divider()
-                                    
-                                    HStack {
-                                        
-                                        Button(action: {
-                                            print("This will act as the cover photo change button")
-                                            coverPictureFlag.toggle()
-                                        }) {
-                                            Text("Change cover picture")
-                                        }
-                                        .sheet(isPresented: $coverPictureFlag) {
-                                            ImagePicker(selectedImage: $selectCoverPicture)
-                                        }
-                                        
-                                        Spacer()
-                                    }
-                                    .padding()
-                                }
-//                                .presentationDetents([.fraction(0.3), .medium, .large])
-                                .presentationDetents([.fraction(0.25)]) // covers only 30 percent of the screen
-                            }
+                                } // end of navigation stack
+                                
+                            } // end of sheet closure
 
                             
-                        }
+                        } // end of parent hstack
                         .offset(y: -screenSize.height * 0.12)
-                        
+                                                
                         // HStack for user statistics
                         HStack(spacing: screenSize.width * 0.15) {
                             // category 2
@@ -242,6 +306,7 @@ struct ProfileView: View {
                     Task {
                         followerCount =  await followManager.queryFollowersCount(userId: viewModel.queryCurrentUserId() ?? "")
                         followingCount =  await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
+                        currentUserObject = try await followManager.getUserById(userId: viewModel.queryCurrentUserId() ?? "") ?? EmptyVariable.EmptyUser
                     }
                 }
             } // end of scrollView
@@ -255,6 +320,47 @@ struct ProfileView: View {
         } // end of navigation stack
         
     } // end of body here
+}
+
+struct PreviewProfilePicture: View {
+    @Binding var selectedImage: UIImage?
+    var onSave: () -> Void
+    var onCancel: () -> Void
+    
+    var body: some View {
+        VStack {
+            
+            if let selectedImage = selectedImage {
+                Image(uiImage: selectedImage)
+                    .resizable()
+                    .scaledToFill()  // Ensure the image fills the frame without preserving aspect ratio
+                    .frame(width: 200, height: 200)
+                    .clipShape(Circle())
+                    .shadow(radius: 10)
+                    .padding()
+                
+                Button(action: onSave) {
+                    Text("Save")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
+                .padding(.bottom)
+                
+                Button(action: onCancel) {
+                    Text("Cancel")
+                        .foregroundColor(.red)
+                        .padding()
+                }
+            } 
+            else {
+                Text("No Image Selected")
+            }
+            
+        } // end of vstack
+        
+    } // end of body
 }
 
 //#Preview {
