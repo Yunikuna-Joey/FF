@@ -13,16 +13,28 @@ struct ProfileView: View {
     @EnvironmentObject var viewModel: AuthView
     @EnvironmentObject var followManager: FollowingManager
     
+    // Keep track of which tab we are on
     @State private var current: Tab = .status
-    @State private var settingsFlag = false
+    
+    // User information
     @State private var followerCount: Int = 0
     @State private var followingCount: Int = 0
+
+    // Sheet flags
+    @State private var settingsFlag = false
+    @State private var pictureFlag = false
     
     // This one is for viewing a plan
     @State var viewPlanFlag: Bool = false
     
     // This one is for creating a new plan
     @State var planScreenFlag: Bool = false
+    
+    // Cover || Profile Picture
+    @State private var selectProfilePicture: UIImage?
+    @State private var selectCoverPicture: UIImage?
+    @State private var profilePictureFlag: Bool = false
+    @State private var coverPictureFlag: Bool = false
     
     // plan object..?
     @State var selectedPlan: Plan = Plan(id: "", userId: "", planTitle: "", workoutType: [:])
@@ -46,7 +58,7 @@ struct ProfileView: View {
             ScrollView(showsIndicators: false) {
                 ZStack(alignment: .topTrailing) {
                     VStack {
-                        // Cover Photo
+                        // Cover Photo case 
                         Image("Car")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -61,6 +73,7 @@ struct ProfileView: View {
                             .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
                         // [play with this offset value]
                             .offset(y: -100)
+                            
                         
                         // pushes the cover photo AND profile picture
                         Spacer()
@@ -69,7 +82,54 @@ struct ProfileView: View {
                         HStack {
                             Text(viewModel.currentSession?.username ?? "")
                                 .font(.headline)
-                            // [play with this offset value]
+                            
+                            Button(action: {
+                                print("Change user photo(s) button")
+                                pictureFlag.toggle()
+                            }) {
+                                Image(systemName: "chevron.down.circle.fill")
+                            }
+                            .sheet(isPresented: $pictureFlag) {
+                                VStack {
+                                    HStack {
+                                        
+                                        Button(action: {
+                                            print("This will act as the profile picture change button")
+                                            profilePictureFlag.toggle()
+                                        }) {
+                                            Text("Change profile picture")
+                                        }
+                                        .sheet(isPresented: $profilePictureFlag) {
+                                            ImagePicker(selectedImage: $selectProfilePicture)
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
+                                    
+                                    Divider()
+                                    
+                                    HStack {
+                                        
+                                        Button(action: {
+                                            print("This will act as the cover photo change button")
+                                            coverPictureFlag.toggle()
+                                        }) {
+                                            Text("Change cover picture")
+                                        }
+                                        .sheet(isPresented: $coverPictureFlag) {
+                                            ImagePicker(selectedImage: $selectCoverPicture)
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
+                                }
+//                                .presentationDetents([.fraction(0.3), .medium, .large])
+                                .presentationDetents([.fraction(0.25)]) // covers only 30 percent of the screen
+                            }
+
+                            
                         }
                         .offset(y: -screenSize.height * 0.12)
                         
