@@ -239,7 +239,7 @@ class StatusProcessView: ObservableObject {
         return !snapshot.isEmpty
     }
     
-    // uploads images into firebaseStorage [not a database]
+    // uploads array of images into firebaseStorage [not a database]
     func uploadImages(images: [UIImage]) async throws -> [String] {
         var imageUrls = [String]()
         let storageRef = Storage.storage().reference()
@@ -276,6 +276,41 @@ class StatusProcessView: ObservableObject {
         }
         
         return imageUrls
+    }
+    
+    //** Singular UIImage upload [changing cover | profile picture case]
+    func uploadImage(image: UIImage) async throws -> String {
+        let storageRef = Storage.storage().reference()
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "InvalidImageData", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert image to JPEG data."])
+        }
+        
+        let imageId = UUID().uuidString
+        let imageRef = storageRef.child("images/\(imageId).jpg")
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        let downloadURL = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+            imageRef.putData(imageData, metadata: metadata) { _, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                imageRef.downloadURL { url, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else if let downloadURL = url {
+                        continuation.resume(returning: downloadURL.absoluteString)
+                    }
+                }
+            }
+        }
+        
+        print("Reached the end of upload image function [singular]")
+        return downloadURL
     }
     
     // fetch search page content

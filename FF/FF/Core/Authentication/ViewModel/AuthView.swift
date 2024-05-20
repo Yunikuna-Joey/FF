@@ -185,6 +185,32 @@ class AuthView: ObservableObject {
         return imageList
     }
     
+    // Updates the profile picture for a given userID [currentUser scenario]
+    func updateProfilePicture(userId: String, profilePictureUrl: String) {
+//        print("Beginning of function")
+//        print("Value of userId \(userId)")
+//        print("Value of url \(profilePictureUrl)")
+        guard !userId.isEmpty else {
+            print("Error: userId is empty.")
+            return
+        }
+        
+        let query = Firestore.firestore().collection("users")
+            .document(userId)
+            
+        
+        query.updateData(["profilePicture": profilePictureUrl]) { error in
+            if let error = error {
+                print("[DEBUG]: Error updating profile picture \(error.localizedDescription)")
+            }
+            
+            else {
+                print("Updating profile picture was successful")
+            }
+        }
+        
+        print("end of function")
+    }
 }
 
 //#Preview {

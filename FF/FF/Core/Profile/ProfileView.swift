@@ -11,6 +11,7 @@ import SwiftUI
 struct ProfileView: View {
     // CONSTANTS
     @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var statusProcess: StatusProcessView
     @EnvironmentObject var followManager: FollowingManager
     
     // Keep track of which tab we are on
@@ -175,11 +176,27 @@ struct ProfileView: View {
                                         PreviewProfilePicture(
                                             selectedImage: $selectProfilePicture,
                                             onSave: {
-//                                                saveProfilePicture(selectProfilePicture)
-                                                print("SAve profile picture button.")
-                                                selectProfilePicture = nil
-                                                // exits the parent sheet all together
-                                                pictureFlag = false
+                                                Task {
+                                                    print("Determine if the task is being ran first.")
+                                                    print("Select Profile Picture: \(selectProfilePicture)")
+                                                    
+                                                    if let selectProfilePicture = selectProfilePicture {
+                                                        // save the image to Firebase Storage
+                                                        let imageUrl = try await statusProcess.uploadImage(image: selectProfilePicture)
+                                                        
+                                                        // update the User object with profile picture URL
+                                                        viewModel.updateProfilePicture(userId: viewModel.queryCurrentUserId() ?? "", profilePictureUrl: imageUrl)
+                                                        
+                                                        
+                                                    }
+                                                    
+                                                    print("Save profile picture button.")
+                                                    selectProfilePicture = nil
+                                                    // exits the parent sheet all together
+                                                    pictureFlag = false
+                                                    
+                                                }
+                                                
                                             },
                                             onCancel: {
                                                 selectProfilePicture = nil
@@ -187,7 +204,8 @@ struct ProfileView: View {
                                                 pictureFlag = false
                                             }
                                         )
-                                    }
+                                        
+                                    } // end of navigationDestination closure
                                     
                                 } // end of navigation stack
                                 
