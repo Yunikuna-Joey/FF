@@ -18,6 +18,7 @@ struct ProfileView: View {
     @State private var current: Tab = .status
     
     // User information
+    @State private var currentUserObject: User = EmptyVariable.EmptyUser
     @State private var followerCount: Int = 0
     @State private var followingCount: Int = 0
 
@@ -58,7 +59,6 @@ struct ProfileView: View {
     let screenSize = UIScreen.main.bounds.size
     
     var body: some View {
-        var currentUserObject: User = EmptyVariable.EmptyUser
         
         NavigationStack {
             ScrollView(showsIndicators: false) {
