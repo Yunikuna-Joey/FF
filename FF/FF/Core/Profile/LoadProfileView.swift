@@ -45,21 +45,98 @@ struct LoadProfileView: View {
                 ZStack(alignment: .topTrailing) {
                     VStack {
                         // Cover Photo
-                        Image("Car")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-//                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: screenSize.height * 0.30)
-                            .clipped()
+                        if resultUser.coverPicture.isEmpty {
+                            Image("Car")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                            //                            .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: screenSize.height * 0.30)
+                                .clipped()
+                        }
+                        
+                        else {
+                            AsyncImage(url: URL(string: resultUser.coverPicture)) { phase in
+                                switch phase {
+                                    
+                                case.empty:
+                                    ProgressView()
+                                        .frame(height: screenSize.height * 0.4)
+                                    
+                                case.success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: screenSize.height * 0.30)
+                                        .clipped()
+                                    
+                                case.failure:
+                                    HStack {
+                                        Image(systemName: "xmark.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 100, height: 200)
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        
+                                        Spacer()
+                                        
+                                        Text("Could not load cover photo at this moment.")
+                                            .foregroundStyle(Color.red.opacity(0.6))
+                                            .padding()
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
+                                
+                                @unknown default:
+                                    EmptyView()
+                                    
+                                } // end of switch closure
+                                
+                            } // Asyc image closure
+                            
+                        } // else statement
                         
                         // profile picture
-                        Image("car2")
-                            .resizable()
-                            .frame(width: 200, height: 150)
-                            .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
-                        // [play with this offset value]
-                            .offset(y: -100)
+                        if resultUser.profilePicture.isEmpty {
+                            Image("car2")
+                                .resizable()
+                                .frame(width: 200, height: 150)
+                                .clipShape(Circle())
+                            // [play with this offset value]
+                                .offset(y: -100)
+                        }
+                        
+                        else {
+                            AsyncImage(url: URL(string: resultUser.profilePicture)) { phase in
+                                
+                                switch phase {
+                                case.empty:
+                                    ProgressView()
+                                        .frame(height: screenSize.height * 0.40)
+                                    
+                                case.success(let image):
+                                    image
+                                        .resizable()
+                                        .frame(width: 200, height: 150)
+                                        .clipShape(Circle())
+                                        .offset(y: -100)
+                                    
+                                case.failure:
+                                    Image(systemName: "xmark.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 200)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    
+                                @unknown default:
+                                    EmptyView()
+                                } // end of switch
+                                
+                            } // end of async image
+                            
+                        }
                         
                         // pushes the cover photo AND profile picture
                         Spacer()

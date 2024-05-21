@@ -152,6 +152,7 @@ struct ProfileView: View {
                                 } // end of switch
                                 
                             } // end of async image
+                            
                         }
                             
                         
