@@ -69,7 +69,7 @@ struct ProfileView: View {
                         if currentUserObject.coverPicture.isEmpty {
                             Image("Car")
                                 .resizable()
-                                .aspectRatio(contentMode: .fill)
+                                .aspectRatio(contentMode: .fit)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: screenSize.height * 0.30)
                                 .clipped()
@@ -85,17 +85,28 @@ struct ProfileView: View {
                                 case.success(let image):
                                     image
                                         .resizable()
-                                        .aspectRatio(contentMode: .fill)
+                                        .aspectRatio(contentMode: .fit)
                                         .frame(maxWidth: .infinity)
                                         .frame(height: screenSize.height * 0.30)
                                         .clipped()
                                     
                                 case.failure:
-                                    Image(systemName: "xmark.circle")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100, height: 200)
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    HStack {
+                                        Image(systemName: "xmark.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 100, height: 200)
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        
+                                        Spacer()
+                                        
+                                        Text("Could not load cover photo at this moment.")
+                                            .foregroundStyle(Color.red.opacity(0.6))
+                                            .padding()
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
                                     
                                 @unknown default:
                                     EmptyView()
