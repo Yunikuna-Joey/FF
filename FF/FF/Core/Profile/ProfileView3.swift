@@ -32,6 +32,10 @@ struct createButton: View {
             RoundedRectangle(cornerRadius: 10)
                 .foregroundStyle(Color.white)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray, lineWidth: 2)
+        )
     }
 }
 
@@ -61,8 +65,12 @@ struct displayWorkoutButton: View {
             Spacer()
         }
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 50)
                 .foregroundStyle(Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 50)
+                .stroke(Color.gray, lineWidth: 2)
         )
     }
 }
@@ -80,8 +88,11 @@ struct ProfileView3: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 LazyVStack {
+                    // Create a workout button here
                     createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
+                        .padding(.horizontal)
                     
+                    // Various other workout plan buttons here
                     ForEach(planManager.planList) { plan in
                         displayWorkoutButton(
                             viewPlanFlag: $viewPlanFlag,
@@ -90,6 +101,7 @@ struct ProfileView3: View {
                                 selectedPlan = plan
                             }
                         )
+                        .padding(.horizontal)
                     }
                     
                 }
