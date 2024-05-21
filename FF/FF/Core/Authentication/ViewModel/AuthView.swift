@@ -191,7 +191,7 @@ class AuthView: ObservableObject {
 //        print("Value of userId \(userId)")
 //        print("Value of url \(profilePictureUrl)")
         guard !userId.isEmpty else {
-            print("Error: userId is empty.")
+            print("[Error]: userId is empty.")
             return
         }
         
@@ -210,6 +210,26 @@ class AuthView: ObservableObject {
         }
         
         print("end of function")
+    }
+    
+    func updateCoverPicture(userId: String, coverPictureUrl: String) {
+        guard !userId.isEmpty else {
+            print("Error: userId is empty")
+            return
+        }
+        
+        let query = Firestore.firestore().collection("users")
+            .document(userId)
+        
+        query.updateData(["coverPicture": coverPictureUrl]) { error in
+            if let error = error {
+                print("[DEBUG]: Error updating the cover picture \(error.localizedDescription)")
+            }
+            
+            else {
+                print("Updating cover picture was successful")
+            }
+        }
     }
 }
 

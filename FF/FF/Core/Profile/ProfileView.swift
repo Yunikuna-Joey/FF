@@ -37,7 +37,8 @@ struct ProfileView: View {
     @State private var selectCoverPicture: UIImage?
     @State private var profilePictureFlag: Bool = false
     @State private var coverPictureFlag: Bool = false
-    @State private var previewPictureFlag: Bool = false
+    @State private var previewProfileFlag: Bool = false
+    @State private var previewCoverFlag: Bool = false
     
     
     // plan object..?
@@ -65,12 +66,42 @@ struct ProfileView: View {
                 ZStack(alignment: .topTrailing) {
                     VStack {
                         // Cover Photo case 
-                        Image("Car")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: screenSize.height * 0.30)
-                            .clipped()
+                        if currentUserObject.coverPicture.isEmpty {
+                            Image("Car")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: screenSize.height * 0.30)
+                                .clipped()
+                        }
+                        
+                        else {
+                            AsyncImage(url: URL(string: currentUserObject.coverPicture)) { phase in
+                                switch phase {
+                                case.empty:
+                                    ProgressView()
+                                        .frame(height: screenSize.height * 0.4)
+                                    
+                                case.success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: screenSize.height * 0.30)
+                                        .clipped()
+                                    
+                                case.failure:
+                                    Image(systemName: "xmark.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 200)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                        }
                         
                         //** profile picture section
                         if currentUserObject.profilePicture.isEmpty {
@@ -142,7 +173,7 @@ struct ProfileView: View {
                                             }
                                             .sheet(isPresented: $profilePictureFlag) {
                                                 ImagePicker(selectedImage: $selectProfilePicture) {
-                                                    previewPictureFlag = true
+                                                    previewProfileFlag = true
                                                 }
                                             }
                                             
@@ -162,7 +193,9 @@ struct ProfileView: View {
                                                 Text("Change cover picture")
                                             }
                                             .sheet(isPresented: $coverPictureFlag) {
-                                                ImagePicker(selectedImage: $selectCoverPicture)
+                                                ImagePicker(selectedImage: $selectCoverPicture) {
+                                                    previewCoverFlag = true
+                                                }
                                             }
                                             
                                             Spacer()
@@ -172,7 +205,7 @@ struct ProfileView: View {
                                     } // end of vstack
                                     //.presentationDetents([.fraction(0.3), .medium, .large])
                                     .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
-                                    .navigationDestination(isPresented: $previewPictureFlag) {
+                                    .navigationDestination(isPresented: $previewProfileFlag) {
                                         PreviewProfilePicture(
                                             selectedImage: $selectProfilePicture,
                                             onSave: {
@@ -206,6 +239,29 @@ struct ProfileView: View {
                                         )
                                         
                                     } // end of navigationDestination closure
+                                    .navigationDestination(isPresented: $previewCoverFlag) {
+                                        PreviewCoverPicture(
+                                            selectedImage: $selectCoverPicture,
+                                            onSave: {
+                                                Task {
+                                                    if let selectCoverPicture = selectCoverPicture {
+                                                        let imageUrl = try await statusProcess.uploadImage(image: selectCoverPicture)
+                                                        
+                                                        viewModel.updateCoverPicture(userId: viewModel.queryCurrentUserId() ?? "", coverPictureUrl: imageUrl)
+                                                    }
+                                                    
+                                                    print("Save cover picture button")
+                                                    selectCoverPicture = nil
+                                                    pictureFlag = false
+                                                }
+                                            },
+                                            onCancel: {
+                                                selectCoverPicture = nil
+                                                // exits the parent view
+                                                pictureFlag = false
+                                            }
+                                        )
+                                    }
                                     
                                 } // end of navigation stack
                                 
@@ -372,6 +428,48 @@ struct PreviewProfilePicture: View {
                         .padding()
                 }
             } 
+            else {
+                Text("No Image Selected")
+            }
+            
+        } // end of vstack
+        
+    } // end of body
+}
+
+struct PreviewCoverPicture: View {
+    @Binding var selectedImage: UIImage?
+    var onSave: () -> Void
+    var onCancel: () -> Void
+    
+    var body: some View {
+        let screenSize = UIScreen.main.bounds.size
+        VStack {
+            
+            if let selectedImage = selectedImage {
+                Image(uiImage: selectedImage)
+                    .resizable()
+                    .scaledToFill()  // Ensure the image fills the frame without preserving aspect ratio
+                    .frame(width: 200, height: 200)
+//                    .clipShape(Circle())
+                    .shadow(radius: 10)
+                    .padding()
+                
+                Button(action: onSave) {
+                    Text("Save")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
+                .padding(.bottom)
+                
+                Button(action: onCancel) {
+                    Text("Cancel")
+                        .foregroundColor(.red)
+                        .padding()
+                }
+            }
             else {
                 Text("No Image Selected")
             }
