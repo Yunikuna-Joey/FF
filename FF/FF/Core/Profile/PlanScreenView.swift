@@ -14,7 +14,12 @@ struct planButton: View {
     var body: some View {
         HStack {
             Button(action: {
-                selectedCategory = title
+                if selectedCategory == title {
+                    selectedCategory = nil
+                }
+                else {
+                    selectedCategory = title
+                }
                 print("[DEBUG]: You pressed one of the \(title) button")
             }) {
                 Image(systemName: "arrowshape.right.circle.fill")
@@ -43,7 +48,7 @@ struct Workout: View {
     @Binding var sets: [String: Int]
     @Binding var finalPlan: [String: WorkoutDetail]
     
-    // this should represent the key within the dictionary
+    // This should represent the key within the dictionary
     var book: [String: [String]] = [
         "Arms": ["Bicep Curl", "Hammer Curl", "Isolation Curl"],
         "Back": ["Deadlift", "Seated Rows", "Cable Rows"],
@@ -55,41 +60,84 @@ struct Workout: View {
         LazyVStack {
             ForEach(book[areaTarget] ?? [], id: \.self) { workout in
                 HStack {
-                    LazyVStack {
-                        Stepper(value: Binding(
-                            get: { sets[workout] ?? 0 },
-                            set: { sets[workout] = $0 }
-                        ), in: 0...10, label: { Text("Sets: \(sets[workout] ?? 0)") })
-                        .padding()
-                        .frame(width: 200)
-                        
-                        
-                        Stepper(value: Binding(
-                            get: { reps[workout] ?? 0 },
-                            set: { reps[workout] = $0 }
-                        ), in: 0...50, label: { Text("Reps: \(reps[workout] ?? 0)") })
-                        .padding()
-                        .frame(width: 200)
-                    }
-                    .padding()
-                    .onChange(of: sets[workout]) { _, newValue in
-                        finalPlan[workout] = WorkoutDetail(sets: newValue ?? 0, reps: reps[workout] ?? 0)
-                    }
-                    .onChange(of: reps[workout]) { _, newValue in
-                        finalPlan[workout] = WorkoutDetail(sets: sets[workout] ?? 0, reps: newValue ?? 0)
-                    }
-                    
+                    //* Categories
                     Text(workout)
-                        .frame(width: 100)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Color.purple)
                         .padding()
                     
-                   
-                } // end of hstack
-            }// for loop
-        } // lazy vstack
-    } // body
+                    Spacer()
+                    
+                    //* Individual Workouts
+                    HStack {
+                        
+                        VStack {
+//                            Spacer()
+                            
+                            Text("Sets")
+                                .font(.system(size: 15, weight: .medium))
+                            
+                            Picker("", selection: Binding(
+                                get: { sets[workout] ?? 0 },
+                                set: { newValue in
+                                    sets[workout] = newValue
+                                    finalPlan[workout] = WorkoutDetail(sets: newValue, reps: reps[workout] ?? 0)
+                                }
+                            )) {
+                                ForEach(0...10, id: \.self) { value in
+                                    Text("\(value)")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(width: 50, height: 50)
+                            .clipped()
+                            .background(Circle().fill(Color.purple).frame(width: 50, height: 75))
+                            
+                            Spacer()
+                        }
+                        
+                        VStack {
+//                            Spacer()
+                            
+                            Text("Reps")
+                                .font(.system(size: 15, weight: .medium))
+                            
+                            Picker("", selection: Binding(
+                                get: { reps[workout] ?? 0 },
+                                set: { newValue in
+                                    reps[workout] = newValue
+                                    finalPlan[workout] = WorkoutDetail(sets: sets[workout] ?? 0, reps: newValue)
+                                }
+                            )) {
+                                ForEach(0...50, id: \.self) { value in
+                                    Text("\(value)")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(width: 50, height: 50)
+                            .clipped()
+                            .background(Circle().fill(Color.purple).frame(width: 50, height: 75))
+                            
+                            Spacer()
+                        }
+                    } // end of Hstack for reps and sets
+                    .padding(.horizontal)
+                    
+                } // end of HStack
+                
+            } // end of ForEach
+            
+        } // end of LazyVStack
+        
+    } // end of body
+    
 }
 
+// ** Initial Creation of a plan
 struct PlanScreenView: View {
     // Categories
     // Legs || Arms || Chest || Back ||

@@ -7,6 +7,7 @@
 import SwiftUI
 
 // we need this one to take in a plan object and manipulate it from there
+// ** After intial creation
 struct editPlanView: View {
     // Categories
     // Legs || Arms || Chest || Back ||
@@ -33,9 +34,13 @@ struct editPlanView: View {
     
     var body: some View {
         NavigationStack {
+            
             ZStack {
+                
                 ScrollView(showsIndicators: false) {
+                    
                     LazyVStack {
+                        
                         ForEach(categories.indices, id: \.self) { index in
                             planButton(title: categories[index], selectedCategory: $selectedCategory)
                             
@@ -49,6 +54,7 @@ struct editPlanView: View {
                     } // end of LazyVstack
                     .padding()
                     
+                    //** Bottom Title Bar
                     HStack {
                         TextField("Plan Name?", text: $planTitle)
                             .padding(.vertical, 8)
@@ -88,11 +94,13 @@ struct editPlanView: View {
                         .padding(.bottom)
                     } // end of Hstack
                 } // end of scroll View
+                
             } // end of ZStack
             .navigationDestination(isPresented: $editFlag) {
                 ProfileView()
                     .navigationBarBackButtonHidden(true)
             }
+            
         } // end of navigationStack
 
     }
