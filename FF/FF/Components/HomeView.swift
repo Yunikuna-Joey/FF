@@ -202,6 +202,12 @@ struct StatusUpdateView: View {
                 .tabViewStyle(PageTabViewStyle())
                 .frame(height: screenSize.height * 0.40)
             }
+            
+            //*** bottom border
+            Rectangle()
+                .fill(Color.black)
+                .frame(height: 1)
+                .padding(.vertical, 5)
 
             
             HStack(spacing: 20) {

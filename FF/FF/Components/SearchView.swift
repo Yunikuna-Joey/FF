@@ -321,6 +321,12 @@ struct HashtagCell: View {
             .tabViewStyle(PageTabViewStyle())
             .frame(height: screenSize.height * 0.40)
             
+            //** bottom border
+            Rectangle()
+                .fill(Color.black)
+                .frame(height: 1)
+                .padding(.vertical, 5)
+            
             // Hold the like and comment icons
             HStack(spacing: 20) {
                 //*** Like Button
