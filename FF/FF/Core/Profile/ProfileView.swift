@@ -222,8 +222,6 @@ struct ProfileView: View {
                                             selectedImage: $selectProfilePicture,
                                             onSave: {
                                                 Task {
-                                                    print("Determine if the task is being ran first.")
-                                                    print("Select Profile Picture: \(selectProfilePicture)")
                                                     
                                                     if let selectProfilePicture = selectProfilePicture {
                                                         // save the image to Firebase Storage
@@ -400,6 +398,7 @@ struct ProfileView: View {
                         followerCount =  await followManager.queryFollowersCount(userId: viewModel.queryCurrentUserId() ?? "")
                         followingCount =  await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
                         currentUserObject = try await followManager.getUserById(userId: viewModel.queryCurrentUserId() ?? "") ?? EmptyVariable.EmptyUser
+//                        print("This is the value of currentUserObject \(currentUserObject)")
                     }
                 }
             } // end of scrollView
@@ -462,7 +461,7 @@ struct PreviewCoverPicture: View {
     var onCancel: () -> Void
     
     var body: some View {
-        let screenSize = UIScreen.main.bounds.size
+//        let screenSize = UIScreen.main.bounds.size
         VStack {
             
             if let selectedImage = selectedImage {

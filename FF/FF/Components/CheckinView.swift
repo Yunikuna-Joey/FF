@@ -64,12 +64,45 @@ struct CheckinView: View {
                     VStack {
                         
                         HStack(spacing: 10) {
-                            
-                            // profile image on the left
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                                .foregroundColor(.blue)
+                            if let currentUserObject = viewModel.currentSession {
+                                if currentUserObject.profilePicture.isEmpty {
+                                    // profile image on the left
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .frame(width: 30, height: 30)
+                                        .foregroundColor(.blue)
+                                }
+                                
+                                else {
+                                    AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
+                                        
+                                        switch phase {
+                                        case.empty:
+                                            ProgressView()
+                                                .frame(width: 30, height: 30)
+                                            
+                                        case.success(let image):
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 30, height: 30)
+                                                .clipShape(Circle())
+                                               
+                                            
+                                        case.failure:
+                                            Image(systemName: "xmark.circle")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 30, height: 30)
+                                                .clipShape(Circle())
+                                            
+                                        @unknown default:
+                                            EmptyView()
+                                        } // end of switch
+                                        
+                                    } // end of async image
+                                }
+                            }
                             
                             Text("\(viewModel.currentSession?.username ?? "")")
                                 .font(.headline)

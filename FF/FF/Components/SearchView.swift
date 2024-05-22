@@ -138,10 +138,37 @@ struct listUserProfiles: View {
                         .padding(.leading, 20)
                 }
                 else {
-                    Image(resultUser.profilePicture)
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .padding(.leading, 20)
+                    AsyncImage(url: URL(string: resultUser.profilePicture)) { phase in
+                        switch phase {
+                        case.empty:
+                            ProgressView()
+                                .frame(width: 30, height: 30)
+                            
+                        case.success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                                .padding(.leading, 20)
+                            
+                        case.failure:
+                            HStack {
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                                    .padding(.leading, 20)
+                                
+                                Spacer()
+                            }
+                            .padding()
+                            
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
                 }
 
                 // username || can add badges underneath to showcase
@@ -183,6 +210,9 @@ struct listUserProfiles: View {
 // for displaying hashtag content
 struct HashtagCell: View {
     @EnvironmentObject var statusProcess: StatusProcessView
+    @EnvironmentObject var followManager: FollowingManager
+    
+    @State private var statusUserObject: User = EmptyVariable.EmptyUser
     
     @State private var likeFlag: Bool = false
     @State private var likeCount: Int = 0
@@ -199,9 +229,43 @@ struct HashtagCell: View {
             
             // ** username of the status and timestamp
             HStack {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 30, height: 30)
+                if statusUserObject.profilePicture.isEmpty {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                }
+                
+                else {
+                    AsyncImage(url: URL(string: statusUserObject.profilePicture)) { phase in
+                        switch phase {
+                        case.empty:
+                            ProgressView()
+                                .frame(width: 30, height: 30)
+                            
+                        case.success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
+                            
+                        case.failure:
+                            HStack {
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                
+                                Spacer()
+                            }
+                            .padding()
+                            
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                }
                 
                 Text(status.username)
                     .font(.headline)
@@ -318,6 +382,8 @@ struct HashtagCell: View {
                 likeFlag = try await statusProcess.fetchLikeFlag(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "")
                 
                 commentCount = try await statusProcess.fetchCommentCount(postId: status.id)
+                
+                statusUserObject = try await followManager.getUserById(userId: status.userId) ?? EmptyVariable.EmptyUser
             }
         }
     }

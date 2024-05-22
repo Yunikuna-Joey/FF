@@ -47,10 +47,33 @@ struct InboxCellView: View {
                     }
                     
                     else {
-                        Image(partnerPicture)
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundStyle(Color.blue)
+                        if let chatPartnerObject = chatPartnerObject {
+                            AsyncImage(url: URL(string: chatPartnerObject.profilePicture)) { phase in
+                                switch phase {
+                                case .empty:
+                                    ProgressView()
+                                        .frame(width: 50, height: 50)
+                                    
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                    
+                                case .failure:
+                                    Image(systemName: "xmark.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    
+                                @unknown default:
+                                    EmptyView()
+                                } // end of switch
+                                
+                            } // end of async image
+                        }
                     }
                     
                     // this will represent the name of the chat partner AND most recent message in the conversation

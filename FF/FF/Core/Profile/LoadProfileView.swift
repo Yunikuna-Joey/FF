@@ -49,7 +49,6 @@ struct LoadProfileView: View {
                             Image("Car")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                            //                            .aspectRatio(contentMode: .fit)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: screenSize.height * 0.30)
                                 .clipped()
