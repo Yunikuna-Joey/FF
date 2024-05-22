@@ -347,8 +347,15 @@ struct ProfileView: View {
                                     )
                             }
                         }
-                        .foregroundStyle(Color.blue)
+//                        .foregroundStyle(Color.blue)
+                        .overlay(
+                            Rectangle()
+                                .frame(height: 0.25)
+                                .offset(y: 20)
+                                .foregroundStyle(Color.gray)
+                        )
                         .offset(y: -screenSize.height * 0.10)
+                        
                         
                         // VStack for the actual different tab views
                         VStack {

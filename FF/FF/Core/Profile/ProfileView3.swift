@@ -28,14 +28,14 @@ struct createButton: View {
             
             Spacer()
         }
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .foregroundStyle(Color.white)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray, lineWidth: 2)
-        )
+//        .background(
+//            RoundedRectangle(cornerRadius: 10)
+//                .foregroundStyle(Color.white)
+//        )
+//        .overlay(
+//            RoundedRectangle(cornerRadius: 10)
+//                .stroke(Color.gray, lineWidth: 2)
+//        )
     }
 }
 
@@ -64,14 +64,14 @@ struct displayWorkoutButton: View {
             
             Spacer()
         }
-        .background(
-            RoundedRectangle(cornerRadius: 50)
-                .foregroundStyle(Color.white)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 50)
-                .stroke(Color.gray, lineWidth: 2)
-        )
+//        .background(
+//            RoundedRectangle(cornerRadius: 50)
+//                .foregroundStyle(Color.white)
+//        )
+//        .overlay(
+//            RoundedRectangle(cornerRadius: 50)
+//                .stroke(Color.gray, lineWidth: 2)
+//        )
     }
 }
 
@@ -90,7 +90,9 @@ struct ProfileView3: View {
                 LazyVStack {
                     // Create a workout button here
                     createButton(text: "Create your plan", planScreenFlag: $planScreenFlag)
-                        .padding(.horizontal)
+//                        .padding(.horizontal)
+                    
+                    Divider()
                     
                     // Various other workout plan buttons here
                     ForEach(planManager.planList) { plan in
@@ -101,7 +103,8 @@ struct ProfileView3: View {
                                 selectedPlan = plan
                             }
                         )
-                        .padding(.horizontal)
+//                        .padding(.horizontal)
+                        Divider()
                     }
                     
                 }

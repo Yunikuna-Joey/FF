@@ -17,46 +17,65 @@ struct viewPlanCell: View {
                 if let workoutDetail = plan.workoutType[workoutName] {
                     
                     HStack {
+                        //* Workout Name
                         Text(workoutName)
-                            .font(.system(size: 20, weight: .regular))
+                            .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(Color.purple)
+                            .padding()
                         
                         Spacer()
                         
-                        VStack {
-                            Text("Sets")
-                            
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple)
-                                    .frame(width: 70, height: 70)
+                        HStack {
+                            //* Workout Sets
+                            VStack {
+                                Spacer()
                                 
-                                Text("\(workoutDetail.sets)")
-                                    .font(.system(size: 32, weight: .medium))
-                                    .foregroundColor(.white)
+                                Text("Sets")
+                                    .font(.system(size: 15, weight: .medium))
+                                
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.purple)
+                                        .frame(width: 35, height: 35)
+                                    
+                                    Text("\(workoutDetail.sets)")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                                
+                                Spacer()
                             }
                             
-                            Spacer()
-                        }
-                        
-                        VStack {
-                            Text("Reps")
                             
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple)
-                                    .frame(width: 70, height: 70)
+                            //* Workout Reps
+                            VStack {
+                                Spacer()
                                 
-                                Text("\(workoutDetail.reps)")
-                                    .font(.system(size: 32, weight: .medium))
-                                    .foregroundColor(.white)
+                                Text("Reps")
+                                    .font(.system(size: 15, weight: .medium))
+                                
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.purple)
+                                        .frame(width: 35, height: 35)
+                                    
+                                    Text("\(workoutDetail.reps)")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                                
+                                Spacer()
                             }
-                            
-                            Spacer()
                         }
+                        .padding(.horizontal)
                         
                     } // end of hstack
                     .padding()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 50)
+                            .stroke(Color.gray, lineWidth: 1)
+                            .padding()
+                    )
                     
                     Divider()
                     
