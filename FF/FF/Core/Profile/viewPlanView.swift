@@ -74,6 +74,7 @@ struct viewPlanView: View {
     @EnvironmentObject var planManager: PlanManager
     @State private var deleteNavigationFlag: Bool = false
     @State private var editNavigationFlag: Bool = false
+    @State private var deleteAlertFlag: Bool = false
     var plan: Plan
     
 //    var formattedWorkoutType: String {
@@ -88,10 +89,13 @@ struct viewPlanView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                // Holds the title | Edit Button | Trash Button
                 HStack {
+                    //** Title
                     Text("\(plan.planTitle)")
                         .foregroundStyle(Color.orange)
                     
+                    //** Edit Button
                     Button(action: {
                         editNavigationFlag = true
                     }) {
@@ -99,45 +103,45 @@ struct viewPlanView: View {
                             .foregroundStyle(Color.blue.opacity(0.8))
                             .font(.system(size: 25))
                     }
-                }
+                    
+                    //** Delete Button
+                    Button(action: {
+                        deleteAlertFlag = true
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundStyle(Color.red.opacity(0.70))
+                            .font(.system(size: 25))
+                    }
+                    .alert(isPresented: $deleteAlertFlag) {
+                        Alert(
+                            title: Text("Delete Plan?"),
+                            message: Text("Are you sure you want to delete this plan?"),
+                            primaryButton: .destructive(Text("Delete")) {
+                                Task {
+                                    do {
+                                        try await planManager.deletePlan(id: plan.id)
+                                        deleteNavigationFlag = true
+                                    }
+                                    catch {
+                                        print("[DEBUG]: There was an error deleting the workout plan \(error.localizedDescription)")
+                                    }
+                                }
+                            },
+                            secondaryButton: .cancel()
+                        )
+                    }
+                    
+                } // end of hstack
                 
+                //** Each individual workout: Workout Type | Sets <-> Reps
                 ScrollView {
                     HStack {
-                        //                    Text("\(formattedWorkoutType)")
-                        //                        .padding()
-                        //                        .foregroundStyle(Color.purple)
                         viewPlanCell(plan: plan)
                         
                         Spacer()
                     }
                     
                     Spacer()
-                    
-                    HStack {
-                        // Delete button here
-                        Button(action: {
-                            Task {
-                                do {
-                                    try await planManager.deletePlan(id: plan.id)
-                                    deleteNavigationFlag = true
-                                }
-                                catch {
-                                    print("[DEBUG]: There was an error deleting the workout plan \(error.localizedDescription)")
-                                }
-                            }
-                        }) {
-                            Text("Delete button")
-                                .padding()
-                                .foregroundStyle(Color.white)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .foregroundStyle(Color.red)
-                                )
-                            
-                        }
-                        
-                        
-                    } // end of HStack
                     
                 } // end of scrollView
                 
