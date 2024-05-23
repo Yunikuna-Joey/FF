@@ -21,25 +21,29 @@ struct LoadviewPlanView: View {
     }
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack {
+
+        VStack {
+            //** Plan title || Share/Grab button?
+            HStack {
                 Text("\(plan.planTitle)")
-                    .padding()
                     .foregroundStyle(Color.orange)
-                
-                
+            }
+            .padding(.top, 10)
+            
+            // Workout content
+            ScrollView(showsIndicators: false) {
                 HStack {
-                    Text("\(formattedWorkoutType)")
-                        .padding()
-                        .foregroundStyle(Color.purple)
+                    viewPlanCell(plan: plan)
                     
                     Spacer()
                 }
                 
                 Spacer()
-            } // end of vstack
+            }
             
-        } // end of scrollView
+            Spacer()
+        } // end of vstack
+        
         .onAppear {
             print("This is the value of loadSelectedPlan \(plan)")
         }

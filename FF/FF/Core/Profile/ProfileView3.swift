@@ -78,7 +78,9 @@ struct displayWorkoutButton: View {
 struct ProfileView3: View {
     @EnvironmentObject var planManager: PlanManager
     @EnvironmentObject var viewModel: AuthView
+    
     let screenSize = UIScreen.main.bounds.size
+    
     @Binding var planScreenFlag: Bool
     @Binding var viewPlanFlag: Bool
     @Binding var selectedPlan: Plan

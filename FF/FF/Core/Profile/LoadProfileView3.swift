@@ -31,10 +31,10 @@ struct displayLoadWorkoutButton: View {
             
             Spacer()
         }
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .foregroundStyle(Color.white)
-        )
+//        .background(
+//            RoundedRectangle(cornerRadius: 10)
+//                .foregroundStyle(Color.white)
+//        )
         .sheet(isPresented: $viewPlanFlag) {
             LoadviewPlanView(plan: selectedPlan)
         }
@@ -75,6 +75,8 @@ struct LoadProfileView3: View {
                                     loadSelectedPlan = plan
                                 }
                             )
+                            
+                            Divider()
                         }
                     }
                     Spacer()
