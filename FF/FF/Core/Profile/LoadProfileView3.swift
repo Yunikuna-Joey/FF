@@ -59,7 +59,7 @@ struct LoadProfileView3: View {
             ScrollView(showsIndicators: false) {
                 LazyVStack {
                     // If there is no plans underneath a user, display a message
-                    if planManager.planList.isEmpty {
+                    if planManager.loadPlanList.isEmpty {
                         Text("\(resultUser.username) has not made any workout plans yet!")
                             .foregroundStyle(Color.black)
                             .padding()
@@ -67,7 +67,7 @@ struct LoadProfileView3: View {
                     
                     // Assume normal situation where they do have plans
                     else {
-                        ForEach(planManager.planList) { plan in
+                        ForEach(planManager.loadPlanList) { plan in
                             displayLoadWorkoutButton(
                                 viewPlanFlag: $loadViewPlanFlag,
                                 selectedPlan: plan,
@@ -80,7 +80,8 @@ struct LoadProfileView3: View {
                     Spacer()
                 } // end of LazyVStack
                 .onAppear {
-                    planManager.fetchPlan(userId: resultUser.id)
+                    planManager.loadPlanList.removeAll()
+                    planManager.loadFetchPlan(userId: resultUser.id)
                 }
                 
             } // end of scrollView

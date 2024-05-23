@@ -110,6 +110,7 @@ struct ProfileView3: View {
                 }
                 .onAppear {
                     let currentUser = viewModel.currentSession
+                    planManager.planList.removeAll()
                     planManager.fetchPlan(userId: currentUser!.id)
                 }
             }

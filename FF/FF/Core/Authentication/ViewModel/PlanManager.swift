@@ -11,6 +11,7 @@ import Firebase
 // This will hold functions related to the workout plans
 class PlanManager: NSObject, ObservableObject {
     @Published var planList: [Plan] = []
+    @Published var loadPlanList: [Plan] = []
     private let db = Firestore.firestore()
     
     func savePlan(userId: String, planTitle: String, workoutType: [String: WorkoutDetail]) async {
@@ -41,6 +42,34 @@ class PlanManager: NSObject, ObservableObject {
                 }
                 
                 self.planList = documents.compactMap { document in
+                    do {
+                        let plan = try document.data(as: Plan.self)
+                        return plan
+                    }
+                    
+                    catch {
+                        print("[DEBUG]: Error decoding plans: \(error.localizedDescription)")
+                        return nil
+                    }
+                }
+            }
+    }
+    
+    func loadFetchPlan(userId: String) {
+        db.collection("Plans")
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    print("[DEBUG]: Error fetching plans \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let documents = querySnapshot?.documents else {
+                    print("[DEBUG]: No documents found")
+                    return
+                }
+                
+                self.loadPlanList = documents.compactMap { document in
                     do {
                         let plan = try document.data(as: Plan.self)
                         return plan

@@ -34,6 +34,7 @@ struct ProfileView1: View {
             .padding()
         }
         .onAppear {
+            statusProcess.statusList.removeAll()
             statusProcess.fetchStatus(userId: Auth.auth().currentUser?.uid ?? "")
         }
     }
