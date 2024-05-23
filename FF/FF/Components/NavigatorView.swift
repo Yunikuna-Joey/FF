@@ -11,6 +11,22 @@ struct NavigatorView: View {
     @State private var currentTabIndex = 0
     @State private var isStatusPosted = false
     
+    init() {
+        // Customize tab bar appearance
+        let appearance = UITabBarAppearance()
+        let blurEffect = UIBlurEffect(style: .systemMaterial)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.alpha = 0.2 // Set the opacity
+        
+        appearance.backgroundEffect = blurEffect // Apply the blur effect
+        appearance.backgroundColor = .clear // Clear background color
+        appearance.shadowImage = UIImage() // Remove the default shadow
+        appearance.shadowColor = nil // Remove shadow color
+        
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
     var body: some View {
         // nav menu with all of the pages [start: home, end: profile]
         TabView (selection: $currentTabIndex) {
@@ -20,6 +36,16 @@ struct NavigatorView: View {
                     Text("Home")
                 }
                 .tag(0)
+                .background(
+                    ZStack {
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)).opacity(0.7), Color(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)).opacity(0.7), Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)).opacity(0.7)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .edgesIgnoringSafeArea(.all)
+                    }
+                )
             
             SearchView()
                 .tabItem {
