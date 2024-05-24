@@ -51,12 +51,13 @@ struct SearchView: View {
                         }
                     }
                 } // end of scrollView
+                .padding(.bottom, 60)
                 
                 // search bar
                 TextField("Search", text: $searchText)
                     .padding(.vertical, 8)
                     .padding(.horizontal, 20)
-                    .background(Color.gray.opacity(0.33))
+                    .background(Color.white.opacity(0.33))
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .padding(.bottom)
@@ -68,6 +69,16 @@ struct SearchView: View {
                     }
                 
             } // end of ZStack
+            .background(
+                ZStack {
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)).opacity(0.7), Color(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)).opacity(0.7), Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)).opacity(0.7)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .edgesIgnoringSafeArea(.all)
+                }
+            )
             .onTapGesture {             // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
@@ -183,6 +194,14 @@ struct listUserProfiles: View {
             }
             .padding(.vertical)
             .padding(.trailing)
+            .background(
+                ZStack {
+                    Color.gray.opacity(0.2)
+                    BlurView(style: .systemMaterial)
+                }
+            )
+            .cornerRadius(10)
+            .shadow(radius: 5)
 
             // horizontal row of 3 most recent images
 //            HStack {
@@ -198,10 +217,6 @@ struct listUserProfiles: View {
 //            .padding()
 
         } // vstack for one card
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.gray.opacity(0.5))
-        )
         .padding()
         .padding(.vertical, -10)
     }
