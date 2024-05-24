@@ -24,9 +24,7 @@ struct InboxCellView: View {
         NavigationStack {
             Button(action: {
                 chatFlag = true
-                // need a function to update the database with the read status 
                 messageManager.updateReadStatusTest(currUserId: Auth.auth().currentUser?.uid ?? "", chatPartnerId: chatPartnerObjectId)
-//                messageManager.updateReadStatus(currUserId: Auth.auth().currentUser?.uid ?? "")
             }) {
                 HStack(spacing: 10) {
                     //** This will be conditionally representing whether or not the message has been read or not
@@ -94,6 +92,15 @@ struct InboxCellView: View {
                         .foregroundStyle(Color.gray)
                     
                 } // end of hstack
+                .padding()
+                .background(
+                    ZStack {
+                        Color.white.opacity(0.2)
+                        BlurView(style: .systemMaterial)
+                    }
+                )
+                .cornerRadius(10)
+                .shadow(radius: 5)
                 .onAppear {
                     Task {
                         let chatPartnerId = message.fromUser == Auth.auth().currentUser?.uid ? message.toUser : message.fromUser
@@ -102,11 +109,7 @@ struct InboxCellView: View {
                             partnerPicture = user.profilePicture
                             chatPartnerObject = user
                             chatPartnerObjectId = user.id
-                            
-//                            print("[DEBUG2]: We are inside of the Task within inboxCellView")
-//                            print("This is the value of username: \(username)")
                         }
-//                        print("[DEBUG2]: We are outside of the Task within inboxCellView")
                     }
                 }
             } // end of button
@@ -183,6 +186,9 @@ struct MessageView: View {
                 )
                 
             } // end of ZStack
+            .background(
+                BackgroundView()
+            )
             .navigationDestination(isPresented: $chatFlag) {
                 //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
                 IndividualChatView(chatPartner: $chatPartner)
@@ -195,17 +201,18 @@ struct MessageView: View {
                         for element in message {
                             if let index = messageManager.inboxList.firstIndex(where: { $0.fromUser == element.fromUser }) {
                                 messageManager.inboxList[index] = element
-                            } else {
+                            } 
+                            else {
                                 messageManager.inboxList.append(element)
                             }
-                        }
-                        //** This line was appending the entire array of message instead of going through one by one
-//                        messageManager.inboxList.append(contentsOf: message)
-                        
-                        print("Ran inbox function.")
-                    }
-                }
-            }
+                        } // end of for loop
+                    
+                    } // end of variable unwrapping
+                    
+                } // end of if statement
+                
+            } // end of onAppear closure
+            
         } // end of NavigationStack
     }
 
