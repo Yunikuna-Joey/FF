@@ -201,9 +201,14 @@ struct CheckinView: View {
                         
                     } // end of inner vstack
                     .padding()
-                    .background(Color.white)
+                    .background(
+                        ZStack {
+                            Color.white.opacity(0.2)
+                            BlurView(style: .systemMaterial)
+                        }
+                    )
                     .cornerRadius(10)
-                    .shadow(radius: 2)
+                    .shadow(radius: 5)
                     
                     // bubbles at the bottom row
                     HStack {
@@ -316,6 +321,9 @@ struct CheckinView: View {
                 
             } // end of zstack
             .padding()
+            .background(
+                BackgroundView()
+            )
             
         } // end of navigationStack
         .onTapGesture { // attempt to remove the keyboard when tapping on the search results [anywhere outside of the textfield/keyboard]

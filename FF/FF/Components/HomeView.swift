@@ -58,16 +58,6 @@ struct HomeView: View {
             // Then in main view, we sort the list by timestamp
             print("This is the value of feedlist: \(statusProcess.feedList)")
         }
-//        .background(
-//            ZStack {
-//                LinearGradient(
-//                    gradient: Gradient(colors: [Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)).opacity(0.7), Color(#colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)).opacity(0.7), Color(#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)).opacity(0.7)]),
-//                    startPoint: .topLeading,
-//                    endPoint: .bottomTrailing
-//                )
-//                .edgesIgnoringSafeArea(.all)
-//            }
-//        )
     }
 }
 
@@ -281,7 +271,6 @@ struct StatusUpdateView: View {
             
         }
         .padding()
-//        .background(Color.white)
         .background(
             ZStack {
                 Color.white.opacity(0.2)
