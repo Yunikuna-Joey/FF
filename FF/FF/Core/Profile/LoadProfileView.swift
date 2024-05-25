@@ -173,7 +173,7 @@ struct LoadProfileView: View {
                             }) {
                                 Image(systemName: "person.fill")
                                     .padding()
-                                    .foregroundStyle(Color.blue)
+                                    .foregroundStyle(Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -188,7 +188,7 @@ struct LoadProfileView: View {
                             }) {
                                 Image(systemName: "photo.fill")
                                     .padding()
-                                    .foregroundStyle(Color.blue)
+                                    .foregroundStyle(Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -203,7 +203,7 @@ struct LoadProfileView: View {
                             }) {
                                 Image(systemName: "calendar")
                                     .padding()
-                                    .foregroundStyle(Color.blue)
+                                    .foregroundStyle(Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -268,6 +268,9 @@ struct LoadProfileView: View {
                     .padding(.trailing, screenSize.width * 0.03) // Adjust trailing padding as needed
                     
                 } // end of ZStack
+                .background(
+                    BackgroundView()
+                )
                 .onAppear(perform: {
                     // query initial follow status
                     Task {

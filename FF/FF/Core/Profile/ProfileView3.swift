@@ -23,7 +23,7 @@ struct createButton: View {
                 Text("Create your plan")
                     .font(.system(size: 20))
             }
-            .foregroundStyle(Color.black)
+            .foregroundStyle(Color(#colorLiteral(red: 0, green: 0, blue: 128, alpha: 1)))
             .padding()
             
             Spacer()
@@ -59,7 +59,7 @@ struct displayWorkoutButton: View {
                 Text(selectedPlan.planTitle)
                     .font(.system(size: 20))
             }
-            .foregroundStyle(Color.black)
+            .foregroundStyle(Color(#colorLiteral(red: 0, green: 0, blue: 128, alpha: 1)))
             .padding()
             
             Spacer()
