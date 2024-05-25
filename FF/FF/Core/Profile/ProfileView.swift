@@ -43,7 +43,6 @@ struct ProfileView: View {
     
     // plan object..?
     @State var selectedPlan: Plan = EmptyVariable.EmptyPlan
-//    var currentUserObject: User = User(id: "", username: "", databaseUsername: "", firstName: "", lastName: "", email: "", imageArray: [], profilePicture: "", coverPicture: "")
     
     // iterate through the different tabs
     func currSelection(_ tab:Tab) -> Bool {
@@ -306,7 +305,7 @@ struct ProfileView: View {
                             }) {
                                 Image(systemName: "person.fill")
                                     .padding()
-                                    .foregroundStyle(Color.blue)
+                                    .foregroundStyle(Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -321,7 +320,7 @@ struct ProfileView: View {
                             }) {
                                 Image(systemName: "photo.fill")
                                     .padding()
-                                    .foregroundStyle(Color.blue)
+                                    .foregroundStyle(Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -336,7 +335,7 @@ struct ProfileView: View {
                             }) {
                                 Image(systemName: "calendar")
                                     .padding()
-                                    .foregroundStyle(Color.blue)
+                                    .foregroundStyle(Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -402,6 +401,9 @@ struct ProfileView: View {
                     }
                 }
             } // end of scrollView
+            .background(
+                BackgroundView()
+            )
             .navigationDestination(isPresented: $planScreenFlag) {
                 PlanScreenView(planScreenFlag: $planScreenFlag)
             }
