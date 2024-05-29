@@ -10,6 +10,7 @@ struct displayLoadWorkoutButton: View {
     @Binding var viewPlanFlag: Bool
     var selectedPlan: Plan
     var onTap: () -> Void
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         HStack  {
@@ -26,7 +27,7 @@ struct displayLoadWorkoutButton: View {
                 Text(selectedPlan.planTitle)
                     .font(.system(size: 20))
             }
-            .foregroundStyle(Color.blue)
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.95))
             .padding()
             
             Spacer()
