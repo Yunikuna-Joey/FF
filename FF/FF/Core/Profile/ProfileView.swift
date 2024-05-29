@@ -305,7 +305,7 @@ struct ProfileView: View {
                             }) {
                                 Image(systemName: "person.fill")
                                     .padding()
-                                    .foregroundStyle(Color.black.opacity(0.80))
+                                    .foregroundStyle(current == .status ? Color.white.opacity(0.80) : Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -320,7 +320,7 @@ struct ProfileView: View {
                             }) {
                                 Image(systemName: "photo.fill")
                                     .padding()
-                                    .foregroundStyle(Color.black.opacity(0.80))
+                                    .foregroundStyle(current == .images ? Color.white.opacity(0.80) : Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)
@@ -335,7 +335,7 @@ struct ProfileView: View {
                             }) {
                                 Image(systemName: "calendar")
                                     .padding()
-                                    .foregroundStyle(Color.black.opacity(0.80))
+                                    .foregroundStyle(current == .others ? Color.white.opacity(0.80) : Color.black.opacity(0.80))
                                     .overlay(
                                         Rectangle()
                                             .frame(height: 2)

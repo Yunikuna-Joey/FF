@@ -9,6 +9,7 @@ import SwiftUI
 struct createButton: View {
     var text: String
     @Binding var planScreenFlag: Bool
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         HStack {
@@ -23,7 +24,8 @@ struct createButton: View {
                 Text("Create your plan")
                     .font(.system(size: 20))
             }
-            .foregroundStyle(Color(#colorLiteral(red: 0, green: 0, blue: 128, alpha: 1)))
+//            .foregroundStyle(Color(#colorLiteral(red: 0, green: 0, blue: 128, alpha: 1)).opacity(0.6))
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.95))
             .padding()
             
             Spacer()
@@ -43,6 +45,7 @@ struct displayWorkoutButton: View {
     @Binding var viewPlanFlag: Bool
     var selectedPlan: Plan
     var onTap: () -> Void
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         HStack  {
@@ -59,7 +62,8 @@ struct displayWorkoutButton: View {
                 Text(selectedPlan.planTitle)
                     .font(.system(size: 20))
             }
-            .foregroundStyle(Color(#colorLiteral(red: 0, green: 0, blue: 128, alpha: 1)))
+//            .foregroundStyle(Color(#colorLiteral(red: 0, green: 0, blue: 128, alpha: 1)).opacity(0.6))
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.95))
             .padding()
             
             Spacer()
