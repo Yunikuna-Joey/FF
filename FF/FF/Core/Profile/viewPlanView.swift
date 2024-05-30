@@ -9,79 +9,67 @@ import SwiftUI
 struct viewPlanCell: View {
     var plan: Plan
     
+    // sort the current plan by alphabetically order of workoutNames
+    var orderedWorkouts: [(key: String, value: WorkoutDetail)] {
+        plan.workoutType.sorted { $0.key < $1.key }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             
-            ForEach(Array(plan.workoutType.keys), id: \.self) { workoutName in
-                
-                if let workoutDetail = plan.workoutType[workoutName] {
+            ForEach(orderedWorkouts, id: \.key) { workoutName, workoutDetail in
+                HStack {
+                    // Workout Name
+                    Text(workoutName)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Color.purple)
+                        .padding()
+                    
+                    Spacer()
                     
                     HStack {
-                        //* Workout Name
-                        Text(workoutName)
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(Color.purple)
-                            .padding()
-                        
-                        Spacer()
-                        
-                        HStack {
-                            //* Workout Sets
-                            VStack {
-                                Spacer()
-                                
-                                Text("Sets")
-                                    .font(.system(size: 15, weight: .medium))
-                                
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.purple)
-                                        .frame(width: 35, height: 35)
-                                    
-                                    Text("\(workoutDetail.sets)")
-                                        .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.white)
-                                }
-                                
-                                Spacer()
+                        // Workout Sets
+                        VStack {
+                            Spacer()
+                            Text("Sets")
+                                .font(.system(size: 15, weight: .medium))
+                            ZStack {
+                                Circle()
+                                    .fill(Color.purple)
+                                    .frame(width: 35, height: 35)
+                                Text("\(workoutDetail.sets)")
+                                    .font(.system(size: 20, weight: .medium))
+                                    .foregroundColor(.white)
                             }
-                            
-                            
-                            //* Workout Reps
-                            VStack {
-                                Spacer()
-                                
-                                Text("Reps")
-                                    .font(.system(size: 15, weight: .medium))
-                                
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.purple)
-                                        .frame(width: 35, height: 35)
-                                    
-                                    Text("\(workoutDetail.reps)")
-                                        .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.white)
-                                }
-                                
-                                Spacer()
-                            }
+                            Spacer()
                         }
-                        .padding(.horizontal)
                         
-                    } // end of hstack
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 50)
-                            .stroke(Color.gray, lineWidth: 1)
-                            .padding()
-                    )
-                    
-                    Divider()
-                    
-                } // end of variable unwrapping
-                
-            } // end of for-loop
+                        // Workout Reps
+                        VStack {
+                            Spacer()
+                            Text("Reps")
+                                .font(.system(size: 15, weight: .medium))
+                            ZStack {
+                                Circle()
+                                    .fill(Color.purple)
+                                    .frame(width: 35, height: 35)
+                                Text("\(workoutDetail.reps)")
+                                    .font(.system(size: 20, weight: .medium))
+                                    .foregroundColor(.white)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 50)
+                        .stroke(Color.gray, lineWidth: 1)
+                        .padding()
+                )
+                Divider()
+            }
             
         } // end of vstack
         

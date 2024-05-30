@@ -11,14 +11,14 @@ struct LoadviewPlanView: View {
     var plan: Plan
     
     
-    var formattedWorkoutType: String {
-            var formattedString = ""
-            for (workoutName, workoutDetail) in plan.workoutType {
-//                formattedString += "\(workoutName): Sets - \(workoutDetail.sets), Reps - \(workoutDetail.reps)\n"
-                formattedString += "Sets: \(workoutDetail.sets) Reps: \(workoutDetail.reps) - \(workoutName)\n"
-            }
-            return formattedString
-    }
+//    var formattedWorkoutType: String {
+//            var formattedString = ""
+//            for (workoutName, workoutDetail) in plan.workoutType {
+////                formattedString += "\(workoutName): Sets - \(workoutDetail.sets), Reps - \(workoutDetail.reps)\n"
+//                formattedString += "Sets: \(workoutDetail.sets) Reps: \(workoutDetail.reps) - \(workoutName)\n"
+//            }
+//            return formattedString
+//    }
     
     var body: some View {
 
