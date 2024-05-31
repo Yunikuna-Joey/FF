@@ -18,58 +18,78 @@ struct viewPlanCell: View {
         VStack(alignment: .leading) {
             
             ForEach(orderedWorkouts, id: \.key) { workoutName, workoutDetail in
-                HStack {
-                    // Workout Name
-                    Text(workoutName)
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(Color.purple)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 50)
+                        .fill(Color.clear) // Clear fill so the background can be seen
+                        .background(
+                            ZStack {
+                                Color.white.opacity(0.2)
+                                BlurView(style: .systemMaterial)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 50))
+                        )
                         .padding()
-                    
-                    Spacer()
                     
                     HStack {
-                        // Workout Sets
-                        VStack {
-                            Spacer()
-                            Text("Sets")
-                                .font(.system(size: 15, weight: .medium))
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple)
-                                    .frame(width: 35, height: 35)
-                                Text("\(workoutDetail.sets)")
-                                    .font(.system(size: 20, weight: .medium))
-                                    .foregroundColor(.white)
-                            }
-                            Spacer()
-                        }
+                        // Workout Name
+                        Text(workoutName)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(Color.purple)
+                            .padding()
                         
-                        // Workout Reps
-                        VStack {
-                            Spacer()
-                            Text("Reps")
-                                .font(.system(size: 15, weight: .medium))
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple)
-                                    .frame(width: 35, height: 35)
-                                Text("\(workoutDetail.reps)")
-                                    .font(.system(size: 20, weight: .medium))
-                                    .foregroundColor(.white)
+                        Spacer()
+                        
+                        //*** Holds the sets and reps
+                        HStack {
+                            // Workout Sets
+                            VStack {
+                                Spacer()
+                                Text("Sets")
+                                    .font(.system(size: 15, weight: .medium))
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.purple)
+                                        .frame(width: 35, height: 35)
+                                    Text("\(workoutDetail.sets)")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                                Spacer()
                             }
-                            Spacer()
+                            .padding(.bottom, 10)
+                            .padding(.horizontal, 5)
+                            
+                            // Workout Reps
+                            VStack {
+                                Spacer()
+                                Text("Reps")
+                                    .font(.system(size: 15, weight: .medium))
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.purple)
+                                        .frame(width: 35, height: 35)
+                                    Text("\(workoutDetail.reps)")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                                Spacer()
+                            }
+                            .padding(.bottom, 10)
+                            .padding(.horizontal, 10)
+                            
                         }
-                    }
-                    .padding(.horizontal)
-                }
-                .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 50)
-                        .stroke(Color.gray, lineWidth: 1)
-                        .padding()
-                )
+                        .padding(.horizontal)
+                        
+                        
+                        
+                    } // entire hstack cell holding all information
+                    .padding()
+                    
+                } // end of ZStack
+                
                 Divider()
-            }
+                
+            } // end of for loop
             
         } // end of vstack
         
@@ -83,15 +103,6 @@ struct viewPlanView: View {
     @State private var editNavigationFlag: Bool = false
     @State private var deleteAlertFlag: Bool = false
     var plan: Plan
-    
-//    var formattedWorkoutType: String {
-//            var formattedString = ""
-//            for (workoutName, workoutDetail) in plan.workoutType {
-////                formattedString += "\(workoutName): Sets - \(workoutDetail.sets), Reps - \(workoutDetail.reps)\n"
-//                formattedString += "Sets: \(workoutDetail.sets) Reps: \(workoutDetail.reps) - \(workoutName)\n"
-//            }
-//            return formattedString
-//    }
     
     var body: some View {
         NavigationStack {
@@ -154,6 +165,9 @@ struct viewPlanView: View {
                 
                 
             } // end of vstack
+            .background(
+                BackgroundView()
+            )
             .navigationDestination(isPresented: $deleteNavigationFlag) {
                 ProfileView()
                     .navigationBarBackButtonHidden(true)
