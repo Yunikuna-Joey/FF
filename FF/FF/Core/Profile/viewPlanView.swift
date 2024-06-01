@@ -8,6 +8,7 @@ import SwiftUI
 
 struct viewPlanCell: View {
     var plan: Plan
+    @State private var isMarked: [String: Bool] = [:]
     
     // sort the current plan by alphabetically order of workoutNames
     var orderedWorkouts: [(key: String, value: WorkoutDetail)] {
@@ -18,74 +19,84 @@ struct viewPlanCell: View {
         VStack(alignment: .leading) {
             
             ForEach(orderedWorkouts, id: \.key) { workoutName, workoutDetail in
-                ZStack {
-                    RoundedRectangle(cornerRadius: 50)
-                        .fill(Color.clear) // Clear fill so the background can be seen
-                        .background(
-                            ZStack {
-                                Color.white.opacity(0.2)
-                                BlurView(style: .systemMaterial)
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 50))
-                        )
-                        .padding()
+                HStack {
+                    CheckBox(isMarked: Binding(
+                        get: { isMarked[workoutName] ?? false },
+                        set: { isMarked[workoutName] = $0 }
+                    ))
+                    .padding(.leading, 15)
                     
-                    HStack {
-                        // Workout Name
-                        Text(workoutName)
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(Color.purple)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 50)
+                            .fill(Color.clear) // Clear fill so the background can be seen
+                            .background(
+                                ZStack {
+                                    Color.white.opacity(0.2)
+                                    BlurView(style: .systemMaterial)
+                                }
+                                    .clipShape(RoundedRectangle(cornerRadius: 50))
+                            )
                             .padding()
+                            .shadow(radius: 5)
                         
-                        Spacer()
-                        
-                        //*** Holds the sets and reps
                         HStack {
-                            // Workout Sets
-                            VStack {
-                                Spacer()
-                                Text("Sets")
-                                    .font(.system(size: 15, weight: .medium))
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.purple)
-                                        .frame(width: 35, height: 35)
-                                    Text("\(workoutDetail.sets)")
-                                        .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.white)
-                                }
-                                Spacer()
-                            }
-                            .padding(.bottom, 10)
-                            .padding(.horizontal, 5)
+                            // Workout Name
+                            Text(workoutName)
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(isMarked[workoutName] == true ? Color.gray : Color.purple)
+                                .padding()
                             
-                            // Workout Reps
-                            VStack {
-                                Spacer()
-                                Text("Reps")
-                                    .font(.system(size: 15, weight: .medium))
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.purple)
-                                        .frame(width: 35, height: 35)
-                                    Text("\(workoutDetail.reps)")
-                                        .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.white)
-                                }
-                                Spacer()
-                            }
-                            .padding(.bottom, 10)
-                            .padding(.horizontal, 10)
+                            Spacer()
                             
-                        }
-                        .padding(.horizontal)
+                            //*** Holds the sets and reps
+                            HStack {
+                                // Workout Sets
+                                VStack {
+                                    Spacer()
+                                    Text("Sets")
+                                        .font(.system(size: 15, weight: .medium))
+                                        .foregroundStyle(isMarked[workoutName] == true ? Color.gray : Color.primary)
+                                    ZStack {
+                                        Circle()
+                                            .fill(isMarked[workoutName] == true ? Color.gray : Color.purple)
+                                            .frame(width: 35, height: 35)
+                                        Text("\(workoutDetail.sets)")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.white)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.bottom, 10)
+                                
+                                // Workout Reps
+                                VStack {
+                                    Spacer()
+                                    Text("Reps")
+                                        .font(.system(size: 15, weight: .medium))
+                                        .foregroundStyle(isMarked[workoutName] == true ? Color.gray : Color.primary)
+                                    ZStack {
+                                        Circle()
+                                            .fill(isMarked[workoutName] == true ? Color.gray : Color.purple)
+                                            .frame(width: 35, height: 35)
+                                        Text("\(workoutDetail.reps)")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.white)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.bottom, 10)
+                                .padding(.horizontal, 10)
+                                
+                            }
+                            .padding(.horizontal)
+                            
+                            
+                            
+                        } // entire hstack cell holding all information
+                        .padding()
                         
-                        
-                        
-                    } // entire hstack cell holding all information
-                    .padding()
-                    
-                } // end of ZStack
+                    } // end of ZStack
+                }
                 
                 Divider()
                 
@@ -95,6 +106,21 @@ struct viewPlanCell: View {
         
     }
     
+}
+
+struct CheckBox: View {
+    @Binding var isMarked: Bool
+    
+    var body: some View {
+        Button(action: {
+            isMarked.toggle()
+        }) {
+            Image(systemName: isMarked ? "checkmark.square" : "square")
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundStyle(isMarked ? Color.blue : Color.gray)
+        }
+    }
 }
 
 struct viewPlanView: View {
