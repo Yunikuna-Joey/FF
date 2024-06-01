@@ -59,7 +59,7 @@ struct viewPlanCell: View {
                                     ZStack {
                                         Circle()
                                             .fill(isMarked[workoutName] == true ? Color.gray : Color.purple)
-                                            .frame(width: 35, height: 35)
+                                            .frame(width: 50, height: 75)
                                         Text("\(workoutDetail.sets)")
                                             .font(.system(size: 20, weight: .medium))
                                             .foregroundColor(.white)
@@ -77,7 +77,7 @@ struct viewPlanCell: View {
                                     ZStack {
                                         Circle()
                                             .fill(isMarked[workoutName] == true ? Color.gray : Color.purple)
-                                            .frame(width: 35, height: 35)
+                                            .frame(width: 50, height: 75)
                                         Text("\(workoutDetail.reps)")
                                             .font(.system(size: 20, weight: .medium))
                                             .foregroundColor(.white)
@@ -138,6 +138,7 @@ struct viewPlanView: View {
                     //** Title
                     Text("\(plan.planTitle)")
                         .foregroundStyle(Color.orange)
+                        .font(.headline)
                     
                     //** Edit Button
                     Button(action: {
@@ -145,7 +146,7 @@ struct viewPlanView: View {
                     }) {
                         Image(systemName: "pencil.and.ellipsis.rectangle")
                             .foregroundStyle(Color.blue.opacity(0.8))
-                            .font(.system(size: 25))
+                            .font(.system(size: 20))
                     }
                     
                     //** Delete Button
@@ -154,7 +155,7 @@ struct viewPlanView: View {
                     }) {
                         Image(systemName: "trash")
                             .foregroundStyle(Color.red.opacity(0.70))
-                            .font(.system(size: 25))
+                            .font(.system(size: 20))
                     }
                     .alert(isPresented: $deleteAlertFlag) {
                         Alert(
