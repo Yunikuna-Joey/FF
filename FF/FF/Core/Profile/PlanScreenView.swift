@@ -47,6 +47,7 @@ struct planButton: View {
                 BlurView(style: .systemMaterial)
             }
                 .clipShape(RoundedRectangle(cornerRadius: 50))
+                .shadow(radius: 5)
         )
     }
 }
