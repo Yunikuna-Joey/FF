@@ -59,7 +59,7 @@ struct viewPlanCell: View {
                                     ZStack {
                                         Circle()
                                             .fill(isMarked[workoutName] == true ? Color.gray : Color.purple)
-                                            .frame(width: 50, height: 75)
+                                            .frame(width: 50, height: 50)
                                         Text("\(workoutDetail.sets)")
                                             .font(.system(size: 20, weight: .medium))
                                             .foregroundColor(.white)
@@ -77,7 +77,7 @@ struct viewPlanCell: View {
                                     ZStack {
                                         Circle()
                                             .fill(isMarked[workoutName] == true ? Color.gray : Color.purple)
-                                            .frame(width: 50, height: 75)
+                                            .frame(width: 50, height: 50)
                                         Text("\(workoutDetail.reps)")
                                             .font(.system(size: 20, weight: .medium))
                                             .foregroundColor(.white)

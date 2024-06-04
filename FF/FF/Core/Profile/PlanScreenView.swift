@@ -26,23 +26,34 @@ struct planButton: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 30, height: 30)
+                    .foregroundStyle(Color.blue.opacity(0.85))
                 Text(title)
                     .font(.system(size: 20))
+                    .foregroundStyle(Color.primary)
             }
             .foregroundStyle(Color.blue)
             .padding()
             
+            
             Spacer()
         }
+//        .background(
+//            RoundedRectangle(cornerRadius: 10)
+//                .foregroundStyle(Color.white)
+//        )
         .background(
-            RoundedRectangle(cornerRadius: 10)
-                .foregroundStyle(Color.white)
+            ZStack {
+                Color.white.opacity(0.2)
+                BlurView(style: .systemMaterial)
+            }
+                .clipShape(RoundedRectangle(cornerRadius: 50))
         )
     }
 }
 
 // The different type of workouts
 struct Workout: View {
+    @Environment(\.colorScheme) var colorScheme
     var areaTarget: String
     @Binding var reps: [String: Int]
     @Binding var sets: [String: Int]
@@ -62,8 +73,8 @@ struct Workout: View {
                 HStack {
                     //* Categories
                     Text(workout)
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(Color.purple)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.95))
                         .padding()
                     
                     Spacer()
@@ -87,13 +98,18 @@ struct Workout: View {
                                 ForEach(0...10, id: \.self) { value in
                                     Text("\(value)")
                                         .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.white)
+                                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.95))
                                 }
                             }
                             .pickerStyle(WheelPickerStyle())
                             .frame(width: 50, height: 50)
                             .clipped()
-                            .background(Circle().fill(Color.purple).frame(width: 50, height: 75))
+                            .background(
+                                Circle()
+                                    .frame(width: 50, height: 75)
+                                    // here
+                                    .foregroundStyle(colorScheme == .dark ? Color.gray.opacity(0.90) : Color.black.opacity(0.25))
+                            )
                             
                             Spacer()
                         }
@@ -114,13 +130,17 @@ struct Workout: View {
                                 ForEach(0...50, id: \.self) { value in
                                     Text("\(value)")
                                         .font(.system(size: 20, weight: .medium))
-                                        .foregroundColor(.white)
+                                        .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.95))
                                 }
                             }
                             .pickerStyle(WheelPickerStyle())
                             .frame(width: 50, height: 50)
                             .clipped()
-                            .background(Circle().fill(Color.purple).frame(width: 50, height: 75))
+                            .background(
+                                Circle()
+                                    .frame(width: 50, height: 75)
+                                    .foregroundStyle(colorScheme == .dark ? Color.gray.opacity(0.90) : Color.black.opacity(0.25))
+                            )
                             
                             Spacer()
                         }
@@ -149,6 +169,7 @@ struct PlanScreenView: View {
     @State private var finalPlan: [String: WorkoutDetail] = [:]
     @EnvironmentObject var planManager: PlanManager
     @EnvironmentObject var viewModel: AuthView
+    @Environment(\.colorScheme) var colorScheme
     @Binding var planScreenFlag: Bool
     
     init(planScreenFlag: Binding<Bool>) {
@@ -162,6 +183,7 @@ struct PlanScreenView: View {
                     ForEach(categories.indices, id: \.self) { index in
                         planButton(title: categories[index], selectedCategory: $selectedCategory)
                         
+                        
                         if selectedCategory == categories[index] {
                             Workout(areaTarget: categories[index], reps: $currentReps, sets: $currentSets, finalPlan: $finalPlan)
                         }
@@ -169,7 +191,7 @@ struct PlanScreenView: View {
                     
                     Spacer()
                     
-                } // end of Vstack
+                } // end of VStack
                 .padding()
             }
             
@@ -180,7 +202,7 @@ struct PlanScreenView: View {
                     TextField("Plan Name?", text: $planTitle)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 20)
-                        .background(Color.gray.opacity(0.33))
+                        .background(colorScheme == .dark ? Color.gray.opacity(0.33) : Color.white.opacity(0.90))
                         .cornerRadius(10)
                         .padding(.horizontal)
                         .padding(.bottom)
@@ -208,13 +230,16 @@ struct PlanScreenView: View {
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)
-                    .background(Color.gray.opacity(0.33))
+                    .background(colorScheme == .dark ? Color.gray.opacity(0.33) : Color.white.opacity(0.90))
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .padding(.bottom)
                 }
             }
-        }
+        } // end of zstack
+        .background(
+            BackgroundView()
+        )
     }
 }
 
