@@ -54,7 +54,13 @@ struct editPlanView: View {
                     } // end of LazyVstack
                     .padding()
                     
-                    //** Bottom Title Bar
+                } // end of scroll View
+                
+                //** Bottom Title Bar
+                VStack {
+                    // pushes downward
+                    Spacer()
+                    
                     HStack {
                         TextField("Plan Name?", text: $planTitle)
                             .padding(.vertical, 8)
@@ -93,13 +99,16 @@ struct editPlanView: View {
                         .padding(.horizontal)
                         .padding(.bottom)
                     } // end of Hstack
-                } // end of scroll View
+                } // end of Vstack
                 
             } // end of ZStack
             .navigationDestination(isPresented: $editFlag) {
                 ProfileView()
                     .navigationBarBackButtonHidden(true)
             }
+            .background(
+                BackgroundView()
+            )
             
         } // end of navigationStack
 
