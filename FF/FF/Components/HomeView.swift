@@ -232,7 +232,7 @@ struct StatusUpdateView: View {
                         .foregroundStyle(likeFlag ? Color.red : Color.gray)
                     
                     Text("\(likeCount)")
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.primary)
 //                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
                         
                 }
@@ -244,7 +244,7 @@ struct StatusUpdateView: View {
                 )
                 .background(
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(likeFlag ? Color.blue.opacity(0.80) : Color.clear)
+                        .fill(likeFlag ? Color.blue.opacity(0.75) : Color.clear)
                         .frame(width: 50, height: 30)
                 )
                 
@@ -257,7 +257,7 @@ struct StatusUpdateView: View {
                         .foregroundStyle(Color.gray)
                     
                     Text("\(commentCount)")
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.primary)
                 }
                 .sheet(isPresented: $commentFlag) {
                     CommentView(status: status)

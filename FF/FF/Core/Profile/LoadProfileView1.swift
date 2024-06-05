@@ -190,7 +190,7 @@ struct LoadProfileStatusUpdateView: View {
                 )
                 .background(
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(likeFlag ? Color.blue.opacity(0.80) : Color.clear)
+                        .fill(likeFlag ? Color.blue.opacity(0.75) : Color.clear)
                         .frame(width: 50, height: 30)
                 )
                 

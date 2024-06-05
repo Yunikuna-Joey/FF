@@ -34,6 +34,9 @@ struct Comments: Identifiable, Codable {
     // comment content
     let content: String
     
+    // comment likes
+    var likes: Int
+    
     // timestamp
     let timestamp: Date
 }

@@ -5,9 +5,10 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct CommentView: View {
-    let example: Comments = Comments(id: "imagine", postId: "Test1", userId: "admin", profilePicture: "", username: "Testing Offline User", content: "Amazing Post!", timestamp: Date())
+    let example: Comments = EmptyVariable.EmptyComment
     @EnvironmentObject var statusProcess: StatusProcessView
     @EnvironmentObject var viewModel: AuthView
     
@@ -21,9 +22,14 @@ struct CommentView: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
-                        CommentCell(comment: comment)
+                        CommentCell(status: status, comment: comment)
                             .padding()
-                            .background(Color.white)
+                            .background(
+                                ZStack {
+                                    Color.white.opacity(0.2)
+                                    BlurView(style: .systemMaterial)
+                                }
+                            )
                             .cornerRadius(20)
                             .shadow(radius: 2)
                     }
@@ -98,7 +104,16 @@ struct CommentView: View {
 }
 
 struct CommentCell: View {
+    @EnvironmentObject var statusProcess: StatusProcessView
+    @State private var likeCount: Int = 0
+    @State private var likeFlag: Bool = false
+    
+    @State private var commentCount: Int = 0
+    @State private var commentFlag: Bool = false
+    
+    let status: Status
     let comment: Comments
+    
     
     var body: some View {
         VStack {
@@ -125,7 +140,7 @@ struct CommentCell: View {
             HStack {
                 Text(comment.content)
                     .font(.system(size: 14, weight: .regular, design: .default))
-                    .foregroundStyle(Color.purple)
+                    .foregroundStyle(Color.primary)
                 
                 Spacer()
             }
@@ -135,10 +150,16 @@ struct CommentCell: View {
             HStack(spacing: 20) {
                 //** Like button
                 Button(action: {
-                    print("Like button in Comment View")
+                    Task {
+                        likeCount = try await statusProcess.likeComment(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: comment.id)
+                        likeFlag.toggle()
+                    }
                 }) {
                     Image(systemName: "heart")
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.gray)
+                    
+                    Text("\(likeCount)")
+                        .foregroundStyle(Color.primary)
                 }
                 
                 //** Comment / Reply button
@@ -146,12 +167,25 @@ struct CommentCell: View {
                     print("Comment/reply button in Comment View")
                 }) {
                     Image(systemName: "bubble")
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.gray)
+                    
+                    Text("\(commentCount)")
+                        .foregroundStyle(Color.primary)
                 }
                 
                 Spacer()
             }
             .padding(.top, 10)
+        }
+        .onAppear {
+            Task {
+                // initialize all the like counts for each status
+                likeCount = try await statusProcess.fetchLikeCount(postId: comment.id)
+                likeFlag = try await statusProcess.fetchLikeFlag(postId: comment.id, userId: Auth.auth().currentUser?.uid ?? "")
+                
+                // initialize comment count for each status
+                commentCount = try await statusProcess.fetchCommentCount(postId: comment.id)
+            }
         }
         
     }
