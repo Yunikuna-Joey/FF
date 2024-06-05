@@ -31,16 +31,37 @@ struct CommentView: View {
                                 }
                             )
                             .cornerRadius(20)
-                            .shadow(radius: 2)
+                            .shadow(radius: 5)
+                            .padding(.vertical, 10)
+                        
+                        ReplyCell()
+                            .padding()
+                            .background(
+                                ZStack {
+                                    Color.white.opacity(0.2)
+                                    BlurView(style: .systemMaterial)
+                                }
+                            )
+                            .cornerRadius(20)
+                            .shadow(radius: 3)
+                            .padding(.leading, 50)
+                            .padding(.vertical, 5)
                     }
                     
                 } // end of vstack
                 .padding()
                 
             } // end of scrollView
+            .padding(.bottom, 60)
             
             // Holds the reply|| comment button
             ZStack(alignment: .trailing) {
+                Rectangle()
+                    .fill(Color.black)
+                    .frame(height: 1)
+                    .padding(.vertical, 5)
+                    .padding()
+                
                 TextField("Comment", text: $commentText, axis: .vertical)
                     .padding(12)
                     // this is making room for send button
@@ -83,11 +104,13 @@ struct CommentView: View {
                         .frame(width: 50, height: 35)
                         .padding()
                 )
-                .padding(.trailing, 25)
+                .padding(.trailing, 20)
                 .disabled(commentText.isEmpty)
                 .opacity(commentText.isEmpty ? 0.3 : 1.0)
+                
             } // end of zstack
-            .padding()
+            .padding(.top, 10)
+            .padding(.horizontal)
             
         } // end of zstack
         .onAppear {
@@ -166,7 +189,7 @@ struct CommentCell: View {
                 Button(action: {
                     print("Comment/reply button in Comment View")
                 }) {
-                    Image(systemName: "bubble")
+                    Image(systemName: "arrowshape.turn.up.left")
                         .foregroundStyle(Color.gray)
                     
                     Text("\(commentCount)")
@@ -174,6 +197,14 @@ struct CommentCell: View {
                 }
                 
                 Spacer()
+                    
+                // Drop down Button for displaying other replies to this specific comment
+                Button(action: {
+                    print("This will act as the drop down menu for other replies")
+                }) {
+                    Image(systemName: "chevron.down.circle.fill")
+                        .foregroundStyle(Color.gray)
+                }
             }
             .padding(.top, 10)
         }
@@ -201,6 +232,78 @@ struct CommentCell: View {
         }
         
         return formattedString + " ago"
+    }
+}
+
+// This will be our cell that holds replies
+struct ReplyCell: View {
+    var body: some View {
+        
+        // parent vstack
+        VStack {
+            
+            // This will hold profile picture and username
+            HStack {
+                
+                // pfp of the user who replied
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .foregroundStyle(Color.blue)
+                    .frame(width: 25, height: 25)
+                
+                // username of the user who replied
+                Text("aaaaaaaaaaaaaaaaaaaaa")
+                    .font(.system(size: 15))
+                    
+                Spacer()
+                
+                Text("5 mins ago")
+                    .foregroundStyle(Color.gray)
+                    .font(.caption)
+                    
+            } // end of hstack
+            
+            // act as body
+            HStack {
+                // content of the reply
+                Text("I am a replier!")
+                    .font(.system(size: 13))
+                    .padding(.vertical, 5)
+                
+                Spacer()
+                
+                HStack {
+                    // like button
+                    Button(action: {
+    //                    Task {
+    //                        likeCount = try await statusProcess.likeComment(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: comment.id)
+    //                        likeFlag.toggle()
+    //                    }
+                        print("Like button")
+                    }) {
+                        Image(systemName: "heart")
+                            .foregroundStyle(Color.gray)
+                        
+    //                    Text("\(likeCount)")
+    //                        .foregroundStyle(Color.primary)
+                    }
+                    
+                    //** Comment / Reply button
+                    Button(action: {
+                        print("Comment/reply button in Comment View")
+                    }) {
+                        Image(systemName: "arrowshape.turn.up.left")
+                            .foregroundStyle(Color.gray)
+                        
+    //                    Text("\(commentCount)")
+    //                        .foregroundStyle(Color.primary)
+                    }
+                }
+            }
+            
+            
+        } // end of vstack
+            
     }
 }
 
