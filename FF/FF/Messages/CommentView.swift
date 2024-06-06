@@ -13,7 +13,10 @@ struct CommentView: View {
     @EnvironmentObject var viewModel: AuthView
     
     @State private var commentText: String = ""
+    //** display reply flag
     @State private var showReplyFlag: Bool = false
+    //** variable to track the comment button to toggle between functions [declared on the same line to show they work together]
+    @State private var replyFunctionFlag: Bool = false; @State private var replyCommentId: String? = nil
     
     let status: Status
     
@@ -25,7 +28,7 @@ struct CommentView: View {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
                         
                         // Comment cell
-                        CommentCell(showReplyFlag: $showReplyFlag, status: status, comment: comment)
+                        CommentCell(showReplyFlag: $showReplyFlag, replyFunctionFlag: $replyFunctionFlag, replyCommentId: $replyCommentId, status: status, comment: comment)
                             .padding()
                             .background(
                                 ZStack {
@@ -36,8 +39,10 @@ struct CommentView: View {
                             .cornerRadius(20)
                             .shadow(radius: 5)
                             .padding(.vertical, 10)
+                        // experiment with this line [might be needed later]
+//                            .id(comment.id)
                         
-                        //*** Conditional Reply flag here
+                        //*** Conditional Reply flag here [revisit when we finish reply logic]
                         if showReplyFlag {
                             ReplyCell()
                                 .padding()
@@ -63,35 +68,72 @@ struct CommentView: View {
             
             // Holds the reply|| comment button
             ZStack(alignment: .trailing) {
-                TextField("Comment", text: $commentText, axis: .vertical)
-                    .padding(12)
-                    // this is making room for send button
-                    .padding(.trailing, 48)
-                    .background(Color(.systemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .font(.subheadline)
-                
+                // Container to handle the username overlay and text field
+                HStack {
+                    if replyFunctionFlag {
+                        Button(action: {
+                            replyFunctionFlag = false
+                            replyCommentId = nil
+                           //** might need to add one for dynamic username...
+                        }) {
+                            Image(systemName: "xmark")
+                                .foregroundStyle(Color.gray)
+                                .padding(.leading, 8)
+                                .font(.caption)
+                        }
+                        // Username overlay
+                        //                    Text("@\(replyingToUsername)")
+                        Text("Username")
+                            .foregroundStyle(Color.blue)
+                            .background(Color(.systemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                    }
+                  
+                    
+                    // TextField with padding to account for the username
+                    TextField("Comment", text: $commentText, axis: .vertical)
+                        .padding(12)
+                        .padding(.trailing, 48)  // space for the send button
+//                        .padding(.leading, replyingToUsername != nil ? 8 : 12)  // adjust leading padding based on username presence
+                        .background(Color(.systemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .font(.subheadline)
+                }
+                .background(Color(.systemGroupedBackground))  // to ensure the background color consistency
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+
+                // Send button
                 Button(action: {
                     print("Post comment button")
                     if let currentUserObject = viewModel.currentSession {
                         Task {
                             do {
-                                try await statusProcess.commentStatus(
-                                    postId: status.id,
-                                    userObject: currentUserObject,
-                                    content: commentText,
-                                    timestamp: Date()
-                                )
+                                if replyFunctionFlag, let commentId = replyCommentId {
+                                    try await statusProcess.replyComment(
+                                        postId: status.id,
+                                        userObject: currentUserObject,
+                                        content: commentText,
+                                        commentId: commentId
+                                    )
+                                } else {
+                                    try await statusProcess.commentStatus(
+                                        postId: status.id,
+                                        userObject: currentUserObject,
+                                        content: commentText,
+                                        timestamp: Date()
+                                    )
+                                }
+                                
+                                // Reset the values
                                 commentText = ""
-                            }
-                            
+                                replyFunctionFlag = false
+                                replyCommentId = nil
+                            } 
                             catch {
                                 print("[Front_End_DEBUG]: There was an error posting your comment.")
                             }
                         }
-                        
-                    }
-                    
+                    } 
                     else {
                         print("[DEBUG]: Current session is nil so commenting function does not work.")
                     }
@@ -108,10 +150,9 @@ struct CommentView: View {
                 .padding(.trailing, 20)
                 .disabled(commentText.isEmpty)
                 .opacity(commentText.isEmpty ? 0.3 : 1.0)
-                
-            } // end of zstack
-            .padding(.top, 10)
+            }
             .padding(.horizontal)
+            .padding(.top, 10)
             
         } // end of zstack
         .onAppear {
@@ -136,6 +177,8 @@ struct CommentCell: View {
     @State private var commentFlag: Bool = false
     
     @Binding var showReplyFlag: Bool
+    // This will determine whether or not the reply button was pressed, and which commentId was pressed.
+    @Binding var replyFunctionFlag: Bool; @Binding var replyCommentId: String?
     
     let status: Status
     let comment: Comments
@@ -191,6 +234,8 @@ struct CommentCell: View {
                 //** Comment / Reply button
                 Button(action: {
                     print("Comment/reply button in Comment View")
+                    replyFunctionFlag = true
+                    replyCommentId = comment.id
                 }) {
                     Image(systemName: "arrowshape.turn.up.left")
                         .foregroundStyle(Color.gray)

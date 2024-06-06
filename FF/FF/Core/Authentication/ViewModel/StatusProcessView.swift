@@ -322,7 +322,7 @@ class StatusProcessView: ObservableObject {
             let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, content: content, likes: 0, timestamp: Date())
             
             try commentObjectReplyRef.document(newComment.id).setData(from: newComment)
-        
+            print("Ran reply comment function")
         }
         
         catch {
@@ -463,6 +463,7 @@ class StatusProcessView: ObservableObject {
             
             try commentRef.document(newComment.id).setData(from: newComment)
                 
+            print("Ran commentStatus function")
         }
         
         catch {
