@@ -508,4 +508,23 @@ class StatusProcessView: ObservableObject {
         return snapshot.count
     }
     
+    // fetch replies for a comment [probably want pagination here]
+    func fetchRepliesUnderComment(postId: String, commentId: String, completion: @escaping ([Comments]) -> Void) {
+        let query = dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("replies")
+        
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                if let error = error {
+                    print("[DEBUG]: Error grabbing/finding comment replies \(error.localizedDescription)")
+                }
+                completion([])
+                return
+            }
+        }
+    }
+    
 }

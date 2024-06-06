@@ -16,7 +16,7 @@ struct CommentView: View {
     //** display reply flag
     @State private var showReplyFlag: Bool = false
     //** variable to track the comment button to toggle between functions [declared on the same line to show they work together]
-    @State private var replyFunctionFlag: Bool = false; @State private var replyCommentId: String? = nil
+    @State private var replyFunctionFlag: Bool = false; @State private var replyCommentObject: Comments? = nil
     
     let status: Status
     
@@ -28,7 +28,7 @@ struct CommentView: View {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
                         
                         // Comment cell
-                        CommentCell(showReplyFlag: $showReplyFlag, replyFunctionFlag: $replyFunctionFlag, replyCommentId: $replyCommentId, status: status, comment: comment)
+                        CommentCell(showReplyFlag: $showReplyFlag, replyFunctionFlag: $replyFunctionFlag, replyCommentObject: $replyCommentObject, status: status, comment: comment)
                             .padding()
                             .background(
                                 ZStack {
@@ -70,10 +70,10 @@ struct CommentView: View {
             ZStack(alignment: .trailing) {
                 // Container to handle the username overlay and text field
                 HStack {
-                    if replyFunctionFlag {
+                    if replyFunctionFlag, let commentObject = replyCommentObject {
                         Button(action: {
                             replyFunctionFlag = false
-                            replyCommentId = nil
+                            replyCommentObject = nil
                            //** might need to add one for dynamic username...
                         }) {
                             Image(systemName: "xmark")
@@ -82,8 +82,7 @@ struct CommentView: View {
                                 .font(.caption)
                         }
                         // Username overlay
-                        //                    Text("@\(replyingToUsername)")
-                        Text("Username")
+                        Text("\(commentObject.username)")
                             .foregroundStyle(Color.blue)
                             .background(Color(.systemGroupedBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -108,14 +107,15 @@ struct CommentView: View {
                     if let currentUserObject = viewModel.currentSession {
                         Task {
                             do {
-                                if replyFunctionFlag, let commentId = replyCommentId {
+                                if replyFunctionFlag, let commentObject = replyCommentObject {
                                     try await statusProcess.replyComment(
                                         postId: status.id,
                                         userObject: currentUserObject,
                                         content: commentText,
-                                        commentId: commentId
+                                        commentId: commentObject.id
                                     )
-                                } else {
+                                } 
+                                else {
                                     try await statusProcess.commentStatus(
                                         postId: status.id,
                                         userObject: currentUserObject,
@@ -127,8 +127,8 @@ struct CommentView: View {
                                 // Reset the values
                                 commentText = ""
                                 replyFunctionFlag = false
-                                replyCommentId = nil
-                            } 
+                                replyCommentObject = nil
+                            }
                             catch {
                                 print("[Front_End_DEBUG]: There was an error posting your comment.")
                             }
@@ -178,7 +178,7 @@ struct CommentCell: View {
     
     @Binding var showReplyFlag: Bool
     // This will determine whether or not the reply button was pressed, and which commentId was pressed.
-    @Binding var replyFunctionFlag: Bool; @Binding var replyCommentId: String?
+    @Binding var replyFunctionFlag: Bool; @Binding var replyCommentObject: Comments?; /*@Binding var viewReplyObjects: Comments?*/
     
     let status: Status
     let comment: Comments
@@ -200,7 +200,7 @@ struct CommentCell: View {
                 Spacer()
                 
                 // timestamp
-                Text(formatTimeAgo(from: comment.timestamp))
+                Text(ConstantFunction.formatTimeAgo(from: comment.timestamp))
                     .font(.caption)
                     .foregroundColor(.gray)
             }
@@ -235,7 +235,7 @@ struct CommentCell: View {
                 Button(action: {
                     print("Comment/reply button in Comment View")
                     replyFunctionFlag = true
-                    replyCommentId = comment.id
+                    replyCommentObject = comment
                 }) {
                     Image(systemName: "arrowshape.turn.up.left")
                         .foregroundStyle(Color.gray)
@@ -250,6 +250,12 @@ struct CommentCell: View {
                 Button(action: {
                     print("This will act as the drop down menu for other replies")
                     showReplyFlag.toggle()
+                    // ** populate some kind of list with reply data?
+                    Task {
+                        // placeholder
+                        print("Testing")
+                    }
+                    
                 }) {
                     Image(systemName: "chevron.down.circle.fill")
                         .foregroundStyle(Color.gray)
@@ -268,24 +274,14 @@ struct CommentCell: View {
             }
         }
         
-    }
+    } // end of body
     
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
 }
 
 // This will be our cell that holds replies
 struct ReplyCell: View {
+    let reply: Comments
+    
     var body: some View {
         
         // parent vstack
@@ -301,12 +297,12 @@ struct ReplyCell: View {
                     .frame(width: 25, height: 25)
                 
                 // username of the user who replied
-                Text("aaaaaaaaaaaaaaaaaaaaa")
+                Text("\(reply.username)")
                     .font(.system(size: 15))
                     
                 Spacer()
                 
-                Text("5 mins ago")
+                Text(ConstantFunction.formatTimeAgo(from: reply.timestamp))
                     .foregroundStyle(Color.gray)
                     .font(.caption)
                     

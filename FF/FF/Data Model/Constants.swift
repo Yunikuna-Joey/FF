@@ -15,3 +15,18 @@ struct EmptyVariable {
     
     static let EmptyComment = Comments(id: "imagine", postId: "Test1", userId: "admin", profilePicture: "", username: "Testing Offline User", content: "Amazing Post!", likes: 0, timestamp: Date())
 }
+
+struct ConstantFunction {
+    static func formatTimeAgo(from date: Date) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 1
+        
+        guard let formattedString = formatter.string(from: date, to: Date()) else {
+            return "Unknown"
+        }
+        
+        return formattedString + " ago"
+    }
+}
