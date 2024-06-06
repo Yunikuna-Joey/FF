@@ -305,6 +305,32 @@ class StatusProcessView: ObservableObject {
         }
     }
     
+    // reply to other comments
+    func replyComment(postId: String, userObject: User, content: String, commentId: String) async throws {
+        do {
+            // Represents the path of where the comment object will be stored
+            let commentObjectRef = dbStatus
+                .document(postId)
+                .collection("comments")
+                .document(commentId)
+            
+            // This will create the sub collection for replies for a specific comment
+            let commentObjectReplyRef = commentObjectRef
+                .collection("replies")
+            
+            // Comment object
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, content: content, likes: 0, timestamp: Date())
+            
+            try commentObjectReplyRef.document(newComment.id).setData(from: newComment)
+        
+        }
+        
+        catch {
+            print("[DEBUG]: Error replying to comment \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     // uploads array of images into firebaseStorage [not a database]
     func uploadImages(images: [UIImage]) async throws -> [String] {
         var imageUrls = [String]()
