@@ -13,6 +13,7 @@ struct CommentView: View {
     @EnvironmentObject var viewModel: AuthView
     
     @State private var commentText: String = ""
+    @State private var showReplyFlag: Bool = false
     
     let status: Status
     
@@ -20,9 +21,11 @@ struct CommentView: View {
         ZStack(alignment: .bottom) {
             
             ScrollView(showsIndicators: false) {
-                VStack {
+                LazyVStack {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
-                        CommentCell(status: status, comment: comment)
+                        
+                        // Comment cell
+                        CommentCell(showReplyFlag: $showReplyFlag, status: status, comment: comment)
                             .padding()
                             .background(
                                 ZStack {
@@ -34,19 +37,23 @@ struct CommentView: View {
                             .shadow(radius: 5)
                             .padding(.vertical, 10)
                         
-                        ReplyCell()
-                            .padding()
-                            .background(
-                                ZStack {
-                                    Color.white.opacity(0.2)
-                                    BlurView(style: .systemMaterial)
-                                }
-                            )
-                            .cornerRadius(20)
-                            .shadow(radius: 3)
-                            .padding(.leading, 50)
-                            .padding(.vertical, 5)
-                    }
+                        //*** Conditional Reply flag here
+                        if showReplyFlag {
+                            ReplyCell()
+                                .padding()
+                                .background(
+                                    ZStack {
+                                        Color.white.opacity(0.2)
+                                        BlurView(style: .systemMaterial)
+                                    }
+                                )
+                                .cornerRadius(20)
+                                .shadow(radius: 3)
+                                .padding(.leading, 50)
+                                .padding(.vertical, 5)
+                        }
+                        
+                    } // end for loop
                     
                 } // end of vstack
                 .padding()
@@ -56,12 +63,6 @@ struct CommentView: View {
             
             // Holds the reply|| comment button
             ZStack(alignment: .trailing) {
-                Rectangle()
-                    .fill(Color.black)
-                    .frame(height: 1)
-                    .padding(.vertical, 5)
-                    .padding()
-                
                 TextField("Comment", text: $commentText, axis: .vertical)
                     .padding(12)
                     // this is making room for send button
@@ -134,6 +135,8 @@ struct CommentCell: View {
     @State private var commentCount: Int = 0
     @State private var commentFlag: Bool = false
     
+    @Binding var showReplyFlag: Bool
+    
     let status: Status
     let comment: Comments
     
@@ -201,6 +204,7 @@ struct CommentCell: View {
                 // Drop down Button for displaying other replies to this specific comment
                 Button(action: {
                     print("This will act as the drop down menu for other replies")
+                    showReplyFlag.toggle()
                 }) {
                     Image(systemName: "chevron.down.circle.fill")
                         .foregroundStyle(Color.gray)
