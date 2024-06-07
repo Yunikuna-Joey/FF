@@ -13,8 +13,8 @@ struct CommentView: View {
     @EnvironmentObject var viewModel: AuthView
     
     @State private var commentText: String = ""
-    //** display reply flag
-    @State private var showReplyFlag: Bool = false
+    @State private var replyVisibility: [String: Bool] = [:] // [commentId: True/False]
+    
     //** variable to track the comment button to toggle between functions [declared on the same line to show they work together]
     @State private var replyFunctionFlag: Bool = false; @State private var replyCommentObject: Comments? = nil
     
@@ -22,13 +22,21 @@ struct CommentView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            
             ScrollView(showsIndicators: false) {
-                LazyVStack {
+                VStack {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
                         
                         // Comment cell
-                        CommentCell(showReplyFlag: $showReplyFlag, replyFunctionFlag: $replyFunctionFlag, replyCommentObject: $replyCommentObject, status: status, comment: comment)
+                        CommentCell(
+                            showReplyFlag: Binding(
+                                get: { replyVisibility[comment.id] ?? false },
+                                set: { replyVisibility[comment.id] = $0 }
+                            ),
+                            replyFunctionFlag: $replyFunctionFlag,
+                            replyCommentObject: $replyCommentObject,
+                            status: status,
+                            comment: comment
+                        )
                             .padding()
                             .background(
                                 ZStack {
@@ -43,19 +51,21 @@ struct CommentView: View {
 //                            .id(comment.id)
                         
                         //*** Conditional Reply flag here [revisit when we finish reply logic]
-                        if showReplyFlag {
-                            ReplyCell()
-                                .padding()
-                                .background(
-                                    ZStack {
-                                        Color.white.opacity(0.2)
-                                        BlurView(style: .systemMaterial)
-                                    }
-                                )
-                                .cornerRadius(20)
-                                .shadow(radius: 3)
-                                .padding(.leading, 50)
-                                .padding(.vertical, 5)
+                        if replyVisibility[comment.id] ?? false {
+                            ForEach(statusProcess.replyList.sorted(by: { $0.timestamp > $1.timestamp })) { replyObject in
+                                ReplyCell(reply: replyObject)
+                                    .padding()
+                                    .background(
+                                        ZStack {
+                                            Color.white.opacity(0.2)
+                                            BlurView(style: .systemMaterial)
+                                        }
+                                    )
+                                    .cornerRadius(20)
+                                    .shadow(radius: 3)
+                                    .padding(.leading, 50)
+                                    .padding(.vertical, 5)
+                            }
                         }
                         
                     } // end for loop
@@ -252,8 +262,14 @@ struct CommentCell: View {
                     showReplyFlag.toggle()
                     // ** populate some kind of list with reply data?
                     Task {
-                        // placeholder
-                        print("Testing")
+                        statusProcess.replyList.removeAll()
+                        statusProcess.fetchRepliesUnderComment(postId: status.id, commentId: comment.id) { replyObjects in
+                            for replyObject in replyObjects {
+                                statusProcess.replyList.append(replyObject)
+                                print("This is the value of replyList: \(statusProcess.replyList)")
+                            }
+                            
+                        }
                     }
                     
                 }) {
@@ -311,7 +327,7 @@ struct ReplyCell: View {
             // act as body
             HStack {
                 // content of the reply
-                Text("I am a replier!")
+                Text(reply.content)
                     .font(.system(size: 13))
                     .padding(.vertical, 5)
                 

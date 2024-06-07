@@ -17,10 +17,12 @@ class StatusProcessView: ObservableObject {
     // [Session handling here]
 //    @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
+    
     @Published var statusList: [Status] = []
     @Published var feedList = [Status]()
     @Published var searchFeedList: [Status] = []
     @Published var commentList = [Comments]()
+    @Published var replyList = [Comments]()
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
@@ -524,6 +526,15 @@ class StatusProcessView: ObservableObject {
                 completion([])
                 return
             }
+        }
+        
+        // for real time updates
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added}) else { return }
+            
+            var replies = changes.compactMap({ try? $0.document.data(as: Comments.self )})
+            
+            completion(replies)
         }
     }
     
