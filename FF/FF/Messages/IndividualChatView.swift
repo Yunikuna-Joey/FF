@@ -16,7 +16,7 @@ struct ChatCellView: View {
         if currentUserFlag {
             HStack {
                 // timestamp
-                Text(formatTimeAgo(from: message.timestamp))
+                Text(ConstantFunction.formatTimeAgo(from: message.timestamp))
                     .font(.caption)
                     .foregroundColor(.gray)
                     .padding()
@@ -66,7 +66,7 @@ struct ChatCellView: View {
                 .frame(maxWidth: UIScreen.main.bounds.width / 1.75, alignment: .leading)
                 
                 // timestamp
-                Text(formatTimeAgo(from: message.timestamp))
+                Text(ConstantFunction.formatTimeAgo(from: message.timestamp))
                     .font(.caption)
                     .foregroundColor(.gray)
                     .padding()
@@ -77,20 +77,7 @@ struct ChatCellView: View {
             .padding(.vertical, 5)
         }
     }
-    
-    // helper function to achieve time stamps associated with status's
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
+
 }
 
 struct IndividualChatView: View {
@@ -231,19 +218,6 @@ struct IndividualChatView: View {
         }
     }
     
-    // helper function to achieve time stamps associated with status's
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
 }
 
 //struct IndividualChatView_Previews: PreviewProvider {

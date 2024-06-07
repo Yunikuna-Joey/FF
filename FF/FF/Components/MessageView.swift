@@ -87,7 +87,7 @@ struct InboxCellView: View {
                     Spacer()
                     
                     // timestamp
-                    Text(formatTimeAgo(from: message.timestamp))
+                    Text(ConstantFunction.formatTimeAgo(from: message.timestamp))
                         .font(.caption)
                         .foregroundStyle(Color.gray)
                     
@@ -121,18 +121,6 @@ struct InboxCellView: View {
         }
     }
     
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
 }
 
 struct MessageView: View {

@@ -287,7 +287,7 @@ struct HashtagCell: View {
                 
                 Spacer()
                 
-                Text(formatTimeAgo(from: status.timestamp))
+                Text(ConstantFunction.formatTimeAgo(from: status.timestamp))
                     .font(.caption)
                     .foregroundStyle(Color.gray)
             }
@@ -409,18 +409,6 @@ struct HashtagCell: View {
         }
     }
     
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
 }
 
 #Preview {

@@ -151,7 +151,7 @@ struct StatusUpdateView: View {
                 Spacer()
                 
                 // time that message was 'created'
-                Text(formatTimeAgo(from: timeAgo))
+                Text(ConstantFunction.formatTimeAgo(from: timeAgo))
                     .font(.caption)
                     .foregroundColor(.gray)
             }
@@ -294,19 +294,6 @@ struct StatusUpdateView: View {
         }
     }
     
-    // helper function to achieve time stamps associated with status's
-    func formatTimeAgo(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        return formattedString + " ago"
-    }
 }
 
 
