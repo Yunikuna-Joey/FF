@@ -105,7 +105,6 @@ struct CommentView: View {
                     TextField("Comment", text: $commentText, axis: .vertical)
                         .padding(12)
                         .padding(.trailing, 48)  // space for the send button
-//                        .padding(.leading, replyingToUsername != nil ? 8 : 12)  // adjust leading padding based on username presence
                         .background(Color(.systemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .font(.subheadline)
