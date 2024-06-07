@@ -83,21 +83,27 @@ struct CommentView: View {
                 // Container to handle the username overlay and text field
                 HStack {
                     if replyFunctionFlag, let commentObject = replyCommentObject {
-                        Button(action: {
-                            replyFunctionFlag = false
-                            replyCommentObject = nil
-                           //** might need to add one for dynamic username...
-                        }) {
-                            Image(systemName: "xmark")
-                                .foregroundStyle(Color.gray)
-                                .padding(.leading, 8)
-                                .font(.caption)
+                        HStack(spacing: 10) {
+                            Button(action: {
+                                replyFunctionFlag = false
+                                replyCommentObject = nil
+                            }) {
+                                Image(systemName: "xmark")
+                                    .foregroundStyle(Color.white)
+                                    .padding(.leading, 8)
+                                    .font(.caption)
+                            }
+                            
+                            // Username overlay
+                            Text("\(commentObject.username)")
+                                .foregroundStyle(Color.primary)
                         }
-                        // Username overlay
-                        Text("\(commentObject.username)")
-                            .foregroundStyle(Color.blue)
-                            .background(Color(.systemGroupedBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.trailing, 10)
+                        .padding(.vertical, 5)
+                        .foregroundStyle(Color.primary)
+                        .background(Color.blue.opacity(0.75))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.leading, 5)
                     }
                   
                     
@@ -108,6 +114,7 @@ struct CommentView: View {
                         .background(Color(.systemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .font(.subheadline)
+                        .offset(x: -7)
                 }
                 .background(Color(.systemGroupedBackground))  // to ensure the background color consistency
                 .clipShape(RoundedRectangle(cornerRadius: 20))
