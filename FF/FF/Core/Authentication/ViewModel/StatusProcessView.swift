@@ -537,4 +537,142 @@ class StatusProcessView: ObservableObject {
         }
     }
     
+    // fetch comment count for a commentCell [i.e return the number of replies underneath a CommentCell]
+    func fetchCommentCellCommentCount(postId: String, commentId: String) async throws -> Int {
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("replies")
+            .getDocuments()
+        
+        return snapshot.count
+    }
+    
+    // fetch likeCount for a commentCell 
+    func fetchCommentCellLikeCount(postId: String, commentId: String) async throws -> Int {
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("likes")
+            .whereField("postId", isEqualTo: commentId)
+            .getDocuments()
+        
+        return snapshot.count
+    }
+    
+    // fetch whether or not the current user liked a commentCell
+    func fetchCommentCellLikeFlag(postId: String, userId: String, commentId: String) async throws -> Bool {
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("likes")
+            .whereField("postId", isEqualTo: commentId)
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments()
+        
+        return !snapshot.isEmpty
+    }
+    
+    // like a replyCell 
+    func likeReplyCell(postId: String, userId: String, commentId: String, replyId: String) async throws -> Int {
+        // This holds the comment under which status it is currently under
+        let replyObjectRef = dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("replies")
+            .document(replyId)
+        
+        // This should create a sub-collection within the specific Comment object underneath a comment object
+        let replyObjectLikeRef = replyObjectRef
+            .collection("likes")
+        
+        do {
+            let replyObjectDoc = try await replyObjectRef.getDocument()
+            var reply = try replyObjectDoc.data(as: Comments.self)
+            
+            let likeSnapshot = try await replyObjectLikeRef
+                .whereField("userId", isEqualTo: userId)
+                .getDocuments()
+            
+            var likeCount = 0
+            
+            // ** if there already persists a like object (unlike)
+            if !likeSnapshot.isEmpty {
+                // decrement the like-count
+                reply.likes -= 1
+                
+                // set the data from status after incrementing the like count
+                try replyObjectRef.setData(from: reply)
+                
+                // delete the like object from Firebase
+                try await likeSnapshot.documents.first?.reference.delete()
+                
+                let updatedSnapshot = try await replyObjectLikeRef
+                    .getDocuments()
+                
+                likeCount = updatedSnapshot.count
+            }
+            
+            else {
+                reply.likes += 1
+                
+                try replyObjectRef.setData(from: reply)
+                
+                // Create a new like object
+                let newLike = Likes(id: UUID().uuidString, postId: replyId, userId: userId)
+                
+                // store the like object into firebase
+                try replyObjectLikeRef.document(newLike.id).setData(from: newLike)
+                
+                let updatedSnapshot = try await replyObjectLikeRef
+                    .getDocuments()
+                
+                likeCount = updatedSnapshot.count
+            }
+            
+            print("This is the reply LikeCount variable \(likeCount)")
+            return likeCount
+        }
+        
+        catch {
+            print("[DEBUG]: Error liking comment: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
+    // Determine a boolean value for whether or not a user has liked a specific ReplyCell
+    func fetchReplyCellLikeFlag(postId: String, userId: String, commentId: String, replyId: String) async throws -> Bool {
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("replies")
+            .document(replyId)
+            .collection("likes")
+            .whereField("postId", isEqualTo: commentId)
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments()
+        
+        return !snapshot.isEmpty
+    }
+    
+    // fetch the likeCount for a ReplyCell
+    func fetchReplyCellLikeCount(postId: String, commentId: String, replyId: String) async throws -> Int {
+        let snapshot = try await dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("replies")
+            .document(replyId)
+            .collection("likes")
+            .whereField("postId", isEqualTo: replyId)
+            .getDocuments()
+        
+        print("This is the replyLike snapshot count \(snapshot.count)")
+        return snapshot.count
+    }
 }

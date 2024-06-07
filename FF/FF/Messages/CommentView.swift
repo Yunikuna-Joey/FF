@@ -53,7 +53,7 @@ struct CommentView: View {
                             // replies variable = finished dictionary already containing all of the reply data
                             if let replies = statusProcess.repliesDict[comment.id] {
                                 ForEach(replies.sorted(by: { $0.timestamp < $1.timestamp })) { replyObject in
-                                    ReplyCell(reply: replyObject)
+                                    ReplyCell(parentStatus: status, parentComment: comment, reply: replyObject)
                                         .padding()
                                         .background(
                                             ZStack {
@@ -188,11 +188,11 @@ struct CommentView: View {
 
 struct CommentCell: View {
     @EnvironmentObject var statusProcess: StatusProcessView
-    @State private var likeCount: Int = 0
-    @State private var likeFlag: Bool = false
+    @State private var commentCellLikeCount: Int = 0
+    @State private var commentCellLikeFlag: Bool = false
     
-    @State private var commentCount: Int = 0
-    @State private var commentFlag: Bool = false
+    @State private var commentCellCommentCount: Int = 0
+
     
     @Binding var showReplyFlag: Bool
     // This will determine whether or not the reply button was pressed, and which commentId was pressed.
@@ -239,14 +239,14 @@ struct CommentCell: View {
                 //** Like button
                 Button(action: {
                     Task {
-                        likeCount = try await statusProcess.likeComment(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: comment.id)
-                        likeFlag.toggle()
+                        commentCellLikeCount = try await statusProcess.likeComment(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: comment.id)
+                        commentCellLikeFlag.toggle()
                     }
                 }) {
                     Image(systemName: "heart")
                         .foregroundStyle(Color.gray)
                     
-                    Text("\(likeCount)")
+                    Text("\(commentCellLikeCount)")
                         .foregroundStyle(Color.primary)
                 }
                 
@@ -259,7 +259,7 @@ struct CommentCell: View {
                     Image(systemName: "arrowshape.turn.up.left")
                         .foregroundStyle(Color.gray)
                     
-                    Text("\(commentCount)")
+                    Text("\(commentCellCommentCount)")
                         .foregroundStyle(Color.primary)
                 }
                 
@@ -292,11 +292,11 @@ struct CommentCell: View {
         .onAppear {
             Task {
                 // initialize all the like counts for each status
-                likeCount = try await statusProcess.fetchLikeCount(postId: comment.id)
-                likeFlag = try await statusProcess.fetchLikeFlag(postId: comment.id, userId: Auth.auth().currentUser?.uid ?? "")
+                commentCellLikeCount = try await statusProcess.fetchCommentCellLikeCount(postId: status.id, commentId: comment.id)
+                commentCellLikeFlag = try await statusProcess.fetchCommentCellLikeFlag(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: comment.id)
                 
                 // initialize comment count for each status
-                commentCount = try await statusProcess.fetchCommentCount(postId: comment.id)
+                commentCellCommentCount = try await statusProcess.fetchCommentCellCommentCount(postId: status.id, commentId: comment.id)
             }
         }
         
@@ -306,7 +306,15 @@ struct CommentCell: View {
 
 // This will be our cell that holds replies
 struct ReplyCell: View {
+    @EnvironmentObject var statusProcess: StatusProcessView
+    
+    //** need the parent status that the reply is under
+    let parentStatus: Status
+    let parentComment: Comments
     let reply: Comments
+    
+    @State private var replyCellLikeCount: Int = 0
+    @State private var replyCellLikeFlag: Bool = false
     
     var body: some View {
         
@@ -346,17 +354,17 @@ struct ReplyCell: View {
                 HStack {
                     // like button
                     Button(action: {
-    //                    Task {
-    //                        likeCount = try await statusProcess.likeComment(postId: status.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: comment.id)
-    //                        likeFlag.toggle()
-    //                    }
+                        Task {
+                            replyCellLikeCount = try await statusProcess.likeReplyCell(postId: parentStatus.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: parentComment.id, replyId: reply.id)
+                            replyCellLikeFlag.toggle()
+                        }
                         print("Like button")
                     }) {
                         Image(systemName: "heart")
                             .foregroundStyle(Color.gray)
                         
-    //                    Text("\(likeCount)")
-    //                        .foregroundStyle(Color.primary)
+                        Text("\(replyCellLikeCount)")
+                            .foregroundStyle(Color.primary)
                     }
                     
                     //** Comment / Reply button
@@ -366,14 +374,19 @@ struct ReplyCell: View {
                         Image(systemName: "arrowshape.turn.up.left")
                             .foregroundStyle(Color.gray)
                         
-    //                    Text("\(commentCount)")
-    //                        .foregroundStyle(Color.primary)
                     }
                 }
             }
             
             
         } // end of vstack
+        .onAppear {
+            Task {
+                // initialize all the like counts for each status
+                replyCellLikeCount = try await statusProcess.fetchReplyCellLikeCount(postId: parentStatus.id, commentId: parentComment.id, replyId: reply.id)
+                replyCellLikeFlag = try await statusProcess.fetchReplyCellLikeFlag(postId: parentStatus.id, userId: Auth.auth().currentUser?.uid ?? "", commentId: parentComment.id, replyId: reply.id)
+            }
+        }
             
     }
 }
