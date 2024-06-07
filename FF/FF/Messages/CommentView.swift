@@ -23,7 +23,7 @@ struct CommentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView(showsIndicators: false) {
-                VStack {
+                LazyVStack {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
                         
                         // Comment cell
@@ -47,24 +47,26 @@ struct CommentView: View {
                             .cornerRadius(20)
                             .shadow(radius: 5)
                             .padding(.vertical, 10)
-                        // experiment with this line [might be needed later]
-//                            .id(comment.id)
                         
                         //*** Conditional Reply flag here [revisit when we finish reply logic]
                         if replyVisibility[comment.id] ?? false {
-                            ForEach(statusProcess.replyList.sorted(by: { $0.timestamp > $1.timestamp })) { replyObject in
-                                ReplyCell(reply: replyObject)
-                                    .padding()
-                                    .background(
-                                        ZStack {
-                                            Color.white.opacity(0.2)
-                                            BlurView(style: .systemMaterial)
-                                        }
-                                    )
-                                    .cornerRadius(20)
-                                    .shadow(radius: 3)
-                                    .padding(.leading, 50)
-                                    .padding(.vertical, 5)
+                            // replies variable = finished dictionary already containing all of the reply data
+                            if let replies = statusProcess.repliesDict[comment.id] {
+                                ForEach(replies.sorted(by: { $0.timestamp < $1.timestamp })) { replyObject in
+                                    ReplyCell(reply: replyObject)
+                                        .padding()
+                                        .background(
+                                            ZStack {
+                                                Color.white.opacity(0.2)
+                                                BlurView(style: .systemMaterial)
+                                            }
+                                        )
+                                        .cornerRadius(20)
+                                        .shadow(radius: 3)
+                                        .padding(.leading, 50)
+                                        .padding(.vertical, 5)
+                                    
+                                }
                             }
                         }
                         
@@ -196,6 +198,7 @@ struct CommentCell: View {
     
     var body: some View {
         VStack {
+            // ** holds user information and comment timestamp
             HStack {
                 // pfp
                 Image(systemName: "person.circle.fill")
@@ -260,13 +263,14 @@ struct CommentCell: View {
                 Button(action: {
                     print("This will act as the drop down menu for other replies")
                     showReplyFlag.toggle()
-                    // ** populate some kind of list with reply data?
+                    // ** populate some kind of list with reply data when the button is pressed
                     Task {
-                        statusProcess.replyList.removeAll()
                         statusProcess.fetchRepliesUnderComment(postId: status.id, commentId: comment.id) { replyObjects in
-                            for replyObject in replyObjects {
-                                statusProcess.replyList.append(replyObject)
-                                print("This is the value of replyList: \(statusProcess.replyList)")
+                            statusProcess.fetchRepliesUnderComment(postId: status.id, commentId: comment.id) { replyObjects in
+                                //** Ensures that the execution of adding data into the dictionary happens on the main thread
+                                DispatchQueue.main.async {
+                                    statusProcess.repliesDict[comment.id] = replyObjects
+                                }
                             }
                             
                         }

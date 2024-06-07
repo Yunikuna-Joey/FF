@@ -22,7 +22,9 @@ class StatusProcessView: ObservableObject {
     @Published var feedList = [Status]()
     @Published var searchFeedList: [Status] = []
     @Published var commentList = [Comments]()
-    @Published var replyList = [Comments]()
+    
+//    @Published var replyList = [Comments]()
+    @Published var repliesDict: [String: [Comments]] = [:] // This will hold the [commentId : [list of comment objects which are the replies]]
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
