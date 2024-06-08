@@ -332,6 +332,33 @@ class StatusProcessView: ObservableObject {
         }
     }
     
+    // Reply to a ReplyCell
+    func replyToReplyCell(postId: String, fromUserObject: User, content: String, commentId: String, replyId: String) async throws {
+        do {
+            // Path to where we want to store the replies to ReplyCells
+            let replyObjectRef = dbStatus
+                .document(postId)
+                .collection("comments")
+                .document(commentId)
+                .collection("replies")
+                .document(replyId)
+            
+            // This will create a sub collection of replies to a ReplyCell
+            let replyObjectSubRef = replyObjectRef
+                .collection("replies")
+            
+            let newReply = Comments(id: UUID().uuidString, postId: postId, userId: fromUserObject.id, profilePicture: fromUserObject.profilePicture, username: fromUserObject.username, content: content, likes: 0, timestamp: Date())
+            
+            try replyObjectSubRef.document(newReply.id).setData(from: newReply)
+            print("Ran replyToReplycell function")
+        }
+        
+        catch {
+            print("[DEBUG]: Error replying to replycell \(error.localizedDescription)")
+            throw error 
+        }
+    }
+    
     // uploads array of images into firebaseStorage [not a database]
     func uploadImages(images: [UIImage]) async throws -> [String] {
         var imageUrls = [String]()

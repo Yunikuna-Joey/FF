@@ -17,6 +17,8 @@ struct CommentView: View {
     
     //** variable to track the comment button to toggle between functions [declared on the same line to show they work together]
     @State private var replyFunctionFlag: Bool = false; @State private var replyCommentObject: Comments? = nil
+    @State private var selectedComment: String? = nil
+    @State private var createReplyCell: Bool = false; @State private var createReplyReplyCell: Bool = false
     
     let status: Status
     
@@ -33,7 +35,9 @@ struct CommentView: View {
                                 set: { replyVisibility[comment.id] = $0 }
                             ),
                             replyFunctionFlag: $replyFunctionFlag,
-                            replyCommentObject: $replyCommentObject,
+                            commentCellCommentObject: $replyCommentObject,
+                            selectedComment: $selectedComment,
+                            createReplyCell: $createReplyCell,
                             status: status,
                             comment: comment
                         )
@@ -53,7 +57,7 @@ struct CommentView: View {
                             // replies variable = finished dictionary already containing all of the reply data
                             if let replies = statusProcess.repliesDict[comment.id] {
                                 ForEach(replies.sorted(by: { $0.timestamp < $1.timestamp })) { replyObject in
-                                    ReplyCell(parentStatus: status, parentComment: comment, reply: replyObject)
+                                    ReplyCell(parentStatus: status, parentComment: comment, reply: replyObject, replyFunctionFlag: $replyFunctionFlag, replyCellCommentObject: $replyCommentObject, selectedComment: $selectedComment, createReplyReplyCell: $createReplyReplyCell)
                                         .padding()
                                         .background(
                                             ZStack {
@@ -87,6 +91,7 @@ struct CommentView: View {
                             Button(action: {
                                 replyFunctionFlag = false
                                 replyCommentObject = nil
+                                selectedComment = nil
                             }) {
                                 Image(systemName: "xmark")
                                     .foregroundStyle(Color.white)
@@ -125,7 +130,8 @@ struct CommentView: View {
                     if let currentUserObject = viewModel.currentSession {
                         Task {
                             do {
-                                if replyFunctionFlag, let commentObject = replyCommentObject {
+                                if replyFunctionFlag && createReplyCell, let commentObject = replyCommentObject {
+                                    // Creates a ReplyCell
                                     try await statusProcess.replyComment(
                                         postId: status.id,
                                         userObject: currentUserObject,
@@ -133,7 +139,18 @@ struct CommentView: View {
                                         commentId: commentObject.id
                                     )
                                 } 
+                                else if replyFunctionFlag && createReplyReplyCell, let commentObject = replyCommentObject {
+                                    try await statusProcess.replyToReplyCell(
+                                        postId: status.id,
+                                        fromUserObject: currentUserObject,
+                                        content: commentText,
+                                        commentId: <#T##String#>,
+                                        replyId: commentObject.id
+                                    )
+                                }
+                                
                                 else {
+                                    // Creates a CommentCell
                                     try await statusProcess.commentStatus(
                                         postId: status.id,
                                         userObject: currentUserObject,
@@ -196,7 +213,10 @@ struct CommentCell: View {
     
     @Binding var showReplyFlag: Bool
     // This will determine whether or not the reply button was pressed, and which commentId was pressed.
-    @Binding var replyFunctionFlag: Bool; @Binding var replyCommentObject: Comments?; /*@Binding var viewReplyObjects: Comments?*/
+    @Binding var replyFunctionFlag: Bool; @Binding var commentCellCommentObject: Comments?;
+    @Binding var selectedComment: String?
+    @Binding var createReplyCell: Bool
+    
     
     let status: Status
     let comment: Comments
@@ -253,11 +273,23 @@ struct CommentCell: View {
                 //** Comment / Reply button
                 Button(action: {
                     print("Comment/reply button in Comment View")
-                    replyFunctionFlag = true
-                    replyCommentObject = comment
+                    if selectedComment == comment.id {
+                        selectedComment = nil
+                        replyFunctionFlag = false
+                        commentCellCommentObject = nil
+                        createReplyCell = false
+                    }
+                    
+                    else {
+                        selectedComment = comment.id
+                        replyFunctionFlag = true
+                        commentCellCommentObject = comment
+                        createReplyCell = true
+                    }
+
                 }) {
                     Image(systemName: "arrowshape.turn.up.left")
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(selectedComment == comment.id ? Color.blue : Color.gray)
                     
                     Text("\(commentCellCommentCount)")
                         .foregroundStyle(Color.primary)
@@ -316,6 +348,10 @@ struct ReplyCell: View {
     @State private var replyCellLikeCount: Int = 0
     @State private var replyCellLikeFlag: Bool = false
     
+    @Binding var replyFunctionFlag: Bool; @Binding var replyCellCommentObject: Comments?
+    @Binding var selectedComment: String?
+    @Binding var createReplyReplyCell: Bool
+    
     var body: some View {
         
         // parent vstack
@@ -370,9 +406,23 @@ struct ReplyCell: View {
                     //** Comment / Reply button
                     Button(action: {
                         print("Comment/reply button in Comment View")
+                        if selectedComment == reply.id {
+                            selectedComment = nil
+                            replyFunctionFlag = false
+                            replyCellCommentObject = nil
+                            createReplyReplyCell = false
+                        }
+                        
+                        else {
+                            selectedComment = reply.id
+                            replyFunctionFlag = true
+                            replyCellCommentObject = reply
+                            createReplyReplyCell = true
+                        }
+                        
                     }) {
                         Image(systemName: "arrowshape.turn.up.left")
-                            .foregroundStyle(Color.gray)
+                            .foregroundStyle(selectedComment == reply.id ? Color.blue : Color.gray)
                         
                     }
                 }
