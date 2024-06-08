@@ -54,10 +54,21 @@ struct CommentView: View {
                         
                         //*** Conditional Reply flag here [revisit when we finish reply logic]
                         if replyVisibility[comment.id] ?? false {
-                            // replies variable = finished dictionary already containing all of the reply data
-                            if let replies = statusProcess.repliesDict[comment.id] {
-                                ForEach(replies.sorted(by: { $0.timestamp < $1.timestamp })) { replyObject in
-                                    ReplyCell(parentStatus: status, parentComment: comment, reply: replyObject, replyFunctionFlag: $replyFunctionFlag, replyCellCommentObject: $replyCommentObject, selectedComment: $selectedComment, createReplyReplyCell: $createReplyReplyCell, parentCommentId: $parentCommentId)
+                            if let repliesDict = statusProcess.repliesDict[comment.id] {
+                                // Flatten the nested dictionary structure
+                                let sortedReplies = repliesDict.values.sorted(by: { $0.timestamp < $1.timestamp })
+                                
+                                ForEach(sortedReplies, id: \.id) { replyObject in
+                                    ReplyCell(
+                                        parentStatus: status,
+                                        parentComment: comment,
+                                        reply: replyObject,
+                                        replyFunctionFlag: $replyFunctionFlag,
+                                        replyCellCommentObject: $replyCommentObject,
+                                        selectedComment: $selectedComment,
+                                        createReplyReplyCell: $createReplyReplyCell,
+                                        parentCommentId: $parentCommentId
+                                    )
                                         .padding()
                                         .background(
                                             ZStack {
@@ -70,6 +81,34 @@ struct CommentView: View {
                                         .padding(.leading, 50)
                                         .padding(.vertical, 5)
                                     
+                                    // Fetch and display nested replies
+                                    if let nestedRepliesDict = statusProcess.repliesDict[replyObject.id] {
+                                        let nestedReplies = nestedRepliesDict.values.sorted(by: { $0.timestamp < $1.timestamp })
+                                        
+                                        ForEach(nestedReplies, id: \.id) { nestedReplyObject in
+                                            ReplyCell(
+                                                parentStatus: status,
+                                                parentComment: comment,
+                                                reply: nestedReplyObject,
+                                                replyFunctionFlag: $replyFunctionFlag,
+                                                replyCellCommentObject: $replyCommentObject,
+                                                selectedComment: $selectedComment,
+                                                createReplyReplyCell: $createReplyReplyCell,
+                                                parentCommentId: $parentCommentId
+                                            )
+                                                .padding()
+                                                .background(
+                                                    ZStack {
+                                                        Color.white.opacity(0.2)
+                                                        BlurView(style: .systemMaterial)
+                                                    }
+                                                )
+                                                .cornerRadius(20)
+                                                .shadow(radius: 3)
+                                                .padding(.leading, 50)
+                                                .padding(.vertical, 5)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -304,13 +343,27 @@ struct CommentCell: View {
                     // ** populate some kind of list with reply data when the button is pressed
                     Task {
                         statusProcess.fetchRepliesUnderComment(postId: status.id, commentId: comment.id) { replyObjects in
-                            statusProcess.fetchRepliesUnderComment(postId: status.id, commentId: comment.id) { replyObjects in
-                                //** Ensures that the execution of adding data into the dictionary happens on the main thread
-                                DispatchQueue.main.async {
-                                    statusProcess.repliesDict[comment.id] = replyObjects
-                                }
+                            DispatchQueue.main.async {
+                                for reply in replyObjects {
+                                    let replyId = reply.id
+                                    if statusProcess.repliesDict[comment.id] == nil {
+                                        statusProcess.repliesDict[comment.id] = [:]
+                                    }
+                                    statusProcess.repliesDict[comment.id]?[replyId] = reply
+                                    
+                                    // fetched nested replies for each top-level reply
+                                    statusProcess.fetchReplyReplyCells(postId: status.id, commentId: comment.id, replyId: reply.id) { nestedReplies in
+                                        DispatchQueue.main.async {
+                                            for nestedReply in nestedReplies {
+                                                let nestedReplyId = nestedReply.id
+                                                if statusProcess.repliesDict[comment.id]?[nestedReplyId] == nil {
+                                                    statusProcess.repliesDict[comment.id]?[nestedReplyId] = nestedReply
+                                                }
+                                            }
+                                        }
+                                    }
+                                } // end of for loop
                             }
-                            
                         }
                     }
                     

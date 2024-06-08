@@ -23,7 +23,10 @@ class StatusProcessView: ObservableObject {
     @Published var searchFeedList: [Status] = []
     @Published var commentList = [Comments]()
     
-    @Published var repliesDict: [String: [Comments]] = [:] // This will hold the [commentId : [list of comment objects which are the replies]]
+    // This will hold the [commentId : [list of comment objects which are the replies]]
+//    @Published var repliesDict: [String: [Comments]] = [:]
+    
+    @Published var repliesDict: [String: [String: Comments]] = [:]
     
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
@@ -356,6 +359,36 @@ class StatusProcessView: ObservableObject {
         catch {
             print("[DEBUG]: Error replying to replycell \(error.localizedDescription)")
             throw error 
+        }
+    }
+    
+    // Fetch replyreplycells
+    func fetchReplyReplyCells(postId: String, commentId: String, replyId: String, completion: @escaping ([Comments]) -> Void) {
+        let query = dbStatus
+            .document(postId)
+            .collection("comments")
+            .document(commentId)
+            .collection("replies")
+            .document(replyId)
+            .collection("replies")
+        
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                if let error = error {
+                    print("[DEBUG]: Error grabbing/finding replyReply cells \(error.localizedDescription)")
+                }
+                completion([])
+                return
+            }
+        }
+        
+        // for real time updates
+        query.addSnapshotListener { snapshot, _ in
+            guard let changes = snapshot?.documentChanges.filter({ $0.type == .added}) else { return }
+            
+            var replyReplyCells = changes.compactMap({ try? $0.document.data(as: Comments.self )})
+            
+            completion(replyReplyCells)
         }
     }
     
