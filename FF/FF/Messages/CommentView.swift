@@ -18,7 +18,7 @@ struct CommentView: View {
     //** variable to track the comment button to toggle between functions [declared on the same line to show they work together]
     @State private var replyFunctionFlag: Bool = false; @State private var replyCommentObject: Comments? = nil
     @State private var selectedComment: String? = nil
-    @State private var createReplyCell: Bool = false; @State private var createReplyReplyCell: Bool = false
+    @State private var createReplyCell: Bool = false; @State private var createReplyReplyCell: Bool = false; @State private var parentCommentId: String? = nil
     
     let status: Status
     
@@ -57,7 +57,7 @@ struct CommentView: View {
                             // replies variable = finished dictionary already containing all of the reply data
                             if let replies = statusProcess.repliesDict[comment.id] {
                                 ForEach(replies.sorted(by: { $0.timestamp < $1.timestamp })) { replyObject in
-                                    ReplyCell(parentStatus: status, parentComment: comment, reply: replyObject, replyFunctionFlag: $replyFunctionFlag, replyCellCommentObject: $replyCommentObject, selectedComment: $selectedComment, createReplyReplyCell: $createReplyReplyCell)
+                                    ReplyCell(parentStatus: status, parentComment: comment, reply: replyObject, replyFunctionFlag: $replyFunctionFlag, replyCellCommentObject: $replyCommentObject, selectedComment: $selectedComment, createReplyReplyCell: $createReplyReplyCell, parentCommentId: $parentCommentId)
                                         .padding()
                                         .background(
                                             ZStack {
@@ -139,12 +139,12 @@ struct CommentView: View {
                                         commentId: commentObject.id
                                     )
                                 } 
-                                else if replyFunctionFlag && createReplyReplyCell, let commentObject = replyCommentObject {
+                                else if replyFunctionFlag && createReplyReplyCell, let commentObject = replyCommentObject, let parentCommentId = parentCommentId {
                                     try await statusProcess.replyToReplyCell(
                                         postId: status.id,
                                         fromUserObject: currentUserObject,
                                         content: commentText,
-                                        commentId: <#T##String#>,
+                                        commentId: parentCommentId,
                                         replyId: commentObject.id
                                     )
                                 }
@@ -350,7 +350,7 @@ struct ReplyCell: View {
     
     @Binding var replyFunctionFlag: Bool; @Binding var replyCellCommentObject: Comments?
     @Binding var selectedComment: String?
-    @Binding var createReplyReplyCell: Bool
+    @Binding var createReplyReplyCell: Bool; @Binding var parentCommentId: String?
     
     var body: some View {
         
@@ -411,6 +411,7 @@ struct ReplyCell: View {
                             replyFunctionFlag = false
                             replyCellCommentObject = nil
                             createReplyReplyCell = false
+                            parentCommentId = nil
                         }
                         
                         else {
@@ -418,6 +419,7 @@ struct ReplyCell: View {
                             replyFunctionFlag = true
                             replyCellCommentObject = reply
                             createReplyReplyCell = true
+                            parentCommentId = parentComment.id
                         }
                         
                     }) {
