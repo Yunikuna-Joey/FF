@@ -310,7 +310,7 @@ class StatusProcessView: ObservableObject {
     }
     
     // reply to other comments
-    func replyComment(postId: String, userObject: User, content: String, commentId: String) async throws {
+    func replyComment(postId: String, userObject: User, toUsername: String, content: String, commentId: String) async throws {
         do {
             // Represents the path of where the comment object will be stored
             let commentObjectRef = dbStatus
@@ -323,7 +323,7 @@ class StatusProcessView: ObservableObject {
                 .collection("replies")
             
             // Comment object
-            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, content: content, likes: 0, timestamp: Date())
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, toUsername: toUsername, content: content, likes: 0, timestamp: Date())
             
             try commentObjectReplyRef.document(newComment.id).setData(from: newComment)
             print("Ran reply comment function")
@@ -336,7 +336,7 @@ class StatusProcessView: ObservableObject {
     }
     
     // Reply to a ReplyCell
-    func replyToReplyCell(postId: String, fromUserObject: User, content: String, commentId: String, replyId: String) async throws {
+    func replyToReplyCell(postId: String, fromUserObject: User, toUsername: String, content: String, commentId: String, replyId: String) async throws {
         do {
             // Path to where we want to store the replies to ReplyCells
             let replyObjectRef = dbStatus
@@ -350,7 +350,7 @@ class StatusProcessView: ObservableObject {
             let replyObjectSubRef = replyObjectRef
                 .collection("replies")
             
-            let newReply = Comments(id: UUID().uuidString, postId: postId, userId: fromUserObject.id, profilePicture: fromUserObject.profilePicture, username: fromUserObject.username, content: content, likes: 0, timestamp: Date())
+            let newReply = Comments(id: UUID().uuidString, postId: postId, userId: fromUserObject.id, profilePicture: fromUserObject.profilePicture, username: fromUserObject.username, toUsername: toUsername, content: content, likes: 0, timestamp: Date())
             
             try replyObjectSubRef.document(newReply.id).setData(from: newReply)
             print("Ran replyToReplycell function")
@@ -516,8 +516,8 @@ class StatusProcessView: ObservableObject {
     // add a comment on a post [creates a comment object in firebase]
     func commentStatus(postId: String, userObject: User, content: String, timestamp: Date) async throws {
         do {
-            // Comment object
-            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, content: content, likes: 0, timestamp: timestamp)
+            // Comment object [dont need a toUsername here]
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, toUsername: "", content: content, likes: 0, timestamp: timestamp)
             
             let commentRef = dbStatus.document(postId)
                 .collection("comments")

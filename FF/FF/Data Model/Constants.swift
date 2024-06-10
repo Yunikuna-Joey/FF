@@ -13,7 +13,7 @@ struct EmptyVariable {
     
     static let EmptyPlan = Plan(id: "", userId: "", planTitle: "", workoutType: [:])
     
-    static let EmptyComment = Comments(id: "imagine", postId: "Test1", userId: "admin", profilePicture: "", username: "Testing Offline User", content: "Amazing Post!", likes: 0, timestamp: Date())
+    static let EmptyComment = Comments(id: "imagine", postId: "Test1", userId: "admin", profilePicture: "", username: "Testing Offline User", toUsername: "To Testing Offline User", content: "Amazing Post!", likes: 0, timestamp: Date())
 }
 
 struct ConstantFunction {

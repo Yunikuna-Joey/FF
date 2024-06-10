@@ -31,6 +31,9 @@ struct Comments: Identifiable, Codable {
     // username
     let username: String 
     
+    // toUsername
+    let toUsername: String 
+    
     // comment content
     let content: String
     

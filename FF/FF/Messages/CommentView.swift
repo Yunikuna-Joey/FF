@@ -174,6 +174,7 @@ struct CommentView: View {
                                     try await statusProcess.replyComment(
                                         postId: status.id,
                                         userObject: currentUserObject,
+                                        toUsername: commentObject.username,
                                         content: commentText,
                                         commentId: commentObject.id
                                     )
@@ -182,6 +183,7 @@ struct CommentView: View {
                                     try await statusProcess.replyToReplyCell(
                                         postId: status.id,
                                         fromUserObject: currentUserObject,
+                                        toUsername: commentObject.username,
                                         content: commentText,
                                         commentId: parentCommentId,
                                         replyId: commentObject.id
@@ -433,10 +435,15 @@ struct ReplyCell: View {
             
             // act as body
             HStack {
-                // content of the reply
-                Text(reply.content)
+
+                Text("\(reply.toUsername) ")
+                    .foregroundStyle(Color.blue)
                     .font(.system(size: 13))
-                    .padding(.vertical, 5)
+                
+                // content of the reply
+                + Text("\(reply.content)")
+                    .font(.system(size: 13))
+                    
                 
                 Spacer()
                 
