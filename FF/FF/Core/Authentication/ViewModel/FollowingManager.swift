@@ -174,8 +174,8 @@ class FollowingManager: ObservableObject {
                    let firstName = userData["firstName"] as? String,
                    let lastName = userData["lastName"] as? String,
                    let email = userData["email"] as? String,
-                   let imageArray = userData["imageArray"] as? [String],
-                   let profilePicture = userData["profilePicture"] as? String, 
+                   let imageHashMap = userData["imageHashMap"] as? [Int : [String] ],
+                   let profilePicture = userData["profilePicture"] as? String,
                    let coverPicture = userData["coverPicture"] as? String {
                     let user = User(
                         id: id,
@@ -184,7 +184,7 @@ class FollowingManager: ObservableObject {
                         firstName: firstName,
                         lastName: lastName,
                         email: email,
-                        imageArray: imageArray,
+                        imageHashMap: imageHashMap,
                         profilePicture: profilePicture,
                         coverPicture: coverPicture
                     )

@@ -273,6 +273,10 @@ struct CheckinView: View {
                                         likes: 0,
                                         imageUrls: imageUrls
                                     )
+                                    
+                                    //** we should be saving the images into the user data model imageArray as well if there are pictures present
+                                    
+                                    
                                 }
                                 
                                 // if there are no selected images provided by the user

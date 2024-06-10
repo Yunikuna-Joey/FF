@@ -28,7 +28,8 @@ struct RegisterView: View {
     @State private var registrationError: String?
     
     // blank value
-    @State private var imageArray = [""]
+//    @State private var imageArray = [""]
+    @State private var imageHashMap: [Int: [String]] = [:]
 
     var body: some View {
         NavigationStack {
@@ -113,7 +114,7 @@ struct RegisterView: View {
                     Task {
                         // success of registration
                         do {
-                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username, databaseUsername: username.lowercased(), imageArray: imageArray)
+                            try await viewModel.createUser(withEmail: email, password: password, firstName: firstName, lastName: lastName, username: username, databaseUsername: username.lowercased(), imageHashMap: imageHashMap)
                             success = true
                         }
                         // catch error

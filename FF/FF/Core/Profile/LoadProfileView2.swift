@@ -62,9 +62,9 @@ struct LoadProfileView2: View {
     }
 }
 
-struct LoadProfileView2_Previews: PreviewProvider {
-    static var previews: some View {
-        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "", coverPicture: "")
-        LoadProfileView2(imageArray: [], resultUser: user)
-    }
-}
+//struct LoadProfileView2_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let user = User(id: "testString", username: "TesterE", databaseUsername: "testere", firstName: "Tester", lastName: "E", email: "e@email.com", imageArray: ["Car", "car2", "car3"], profilePicture: "", coverPicture: "")
+//        LoadProfileView2(imageArray: [], resultUser: user)
+//    }
+//}

@@ -65,7 +65,7 @@ class AuthView: ObservableObject {
     }
     
     // the user is being created..
-    func createUser(withEmail email: String, password: String, firstName: String, lastName: String, username: String, databaseUsername: String, imageArray: [String]) async throws {
+    func createUser(withEmail email: String, password: String, firstName: String, lastName: String, username: String, databaseUsername: String, imageHashMap: [Int : [String]]) async throws {
         print("Create-user function")
         do {
             // Firebase registration
@@ -73,7 +73,7 @@ class AuthView: ObservableObject {
             self.userSession = result.user
             
             // Data Model registration
-            let user = User(id: result.user.uid, username: username, databaseUsername: username.lowercased(), firstName: firstName, lastName: lastName, email: email, imageArray: imageArray, profilePicture: "", coverPicture: "")
+            let user = User(id: result.user.uid, username: username, databaseUsername: username.lowercased(), firstName: firstName, lastName: lastName, email: email, imageHashMap: imageHashMap, profilePicture: "", coverPicture: "")
             let encodedUser = try Firestore.Encoder().encode(user)
             
             // upload data to firestore on this line
@@ -231,6 +231,14 @@ class AuthView: ObservableObject {
             }
         }
     }
+    
+    // the parameters for this function are the currentUserId and an array of picture Urls assuming there are multiple pictures within a status post
+//    func pushUpdatesToUserImages(userId: String, pictureUrls: [String]) async throws {
+//        let query = dbUsers
+//            .document(userId)
+//        
+//        query.updateData
+//    }
 }
 
 //#Preview {
