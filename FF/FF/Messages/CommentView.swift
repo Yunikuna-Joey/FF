@@ -25,7 +25,7 @@ struct CommentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView(showsIndicators: false) {
-                LazyVStack {
+                VStack {
                     ForEach(statusProcess.commentList.sorted(by: {$0.timestamp > $1.timestamp})) { comment in
                         
                         // Comment cell
