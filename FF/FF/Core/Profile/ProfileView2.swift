@@ -13,24 +13,25 @@ struct ImageInfo: Identifiable {
 
 // Images view
 struct ProfileView2: View {
+    @EnvironmentObject var viewModel: AuthView
     @State private var currentImage: ImageInfo?
     
     // Determine the current device viewport dimensions
     let screenSize = UIScreen.main.bounds.size
     
     // need to dynamically gather user's photos at some point********
-    let imageArray = [
-        "Car", 
-        "car2",
-        "terrifiednootnoot",
-        "car3",
-        "car4",
-        "car5",
-        "car6",
-        "car7",
-        "car8",
-        "car9"
-    ].map { ImageInfo(imageName: $0) }
+//    let imageArray = [
+//        "Car", 
+//        "car2",
+//        "terrifiednootnoot",
+//        "car3",
+//        "car4",
+//        "car5",
+//        "car6",
+//        "car7",
+//        "car8",
+//        "car9"
+//    ].map { ImageInfo(imageName: $0) }
     
     var body: some View {
         let itemWidth: CGFloat = (screenSize.width) / 3
@@ -42,20 +43,72 @@ struct ProfileView2: View {
                 // grid to hold the pictures
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: itemWidth))]) {
                     // iterate through the image array
-                    ForEach(imageArray) { imageInfo in
-                        Button(action: {
-                            currentImage = imageInfo
-                        }) {
-                            Image(imageInfo.imageName)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: itemWidth + 50, height: itemHeight)
-                                .cornerRadius(5)
-                                .padding()
-                        }
-                    }
-                }
-            }
+//                    ForEach(imageArray) { imageInfo in
+//                        Button(action: {
+//                            currentImage = imageInfo
+//                        }) {
+//                            Image(imageInfo.imageName)
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fill)
+//                                .frame(width: itemWidth + 50, height: itemHeight)
+//                                .cornerRadius(5)
+//                                .padding()
+//                        }
+//                    }
+                    
+                    //*** need to populate the imageHashMap list and iterate through
+                    if let currentUserObject = viewModel.currentSession {
+                        // Sort the keys of the dictionary
+                        let sortedKeys = currentUserObject.imageHashMap.keys.sorted()
+                        
+                        // Iterate through the sorted keys
+                        ForEach(sortedKeys, id: \.self) { key in
+                            if let pictureUrls = currentUserObject.imageHashMap[key] {
+                                ForEach(pictureUrls, id: \.self) { urlString in
+                                    AsyncImage(url: URL(string: urlString)) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView()
+                                                .frame(width: 30, height: 30)
+                                            
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: itemWidth + 50, height: itemHeight)
+                                                .cornerRadius(5)
+                                                .padding()
+                                            
+                                        case .failure:
+                                            HStack {
+                                                Image(systemName: "xmark.circle")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 30, height: 30)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                                
+                                                Spacer()
+                                            }
+                                            .padding()
+                                            
+                                        @unknown default:
+                                            EmptyView()
+                                        } // end of switch statement
+                                            
+                                    
+                                    } // end of async image closure 
+                                    
+                                } // end of inner for-loop
+                            
+                            } // variable unwrap
+                            
+                        } // end of for loop
+                        
+                    } // end of optional variable unwrapping
+                    
+                } // end of LazyVGRid
+                
+            } // end of ZStack
             .fullScreenCover(item: $currentImage) { imageInfo in
                 ImageFullScreenView(imageName: imageInfo.imageName) {
                     currentImage = nil  // dismiss the full screen view

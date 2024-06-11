@@ -233,12 +233,32 @@ class AuthView: ObservableObject {
     }
     
     // the parameters for this function are the currentUserId and an array of picture Urls assuming there are multiple pictures within a status post
-//    func pushUpdatesToUserImages(userId: String, pictureUrls: [String]) async throws {
-//        let query = dbUsers
-//            .document(userId)
-//        
-//        query.updateData
-//    }
+    func pushUpdatesToUserImages(userId: String, pictureUrls: [String]) async throws {
+        let query = dbUsers.document(userId)
+        
+        do {
+            // Grab the current user data/document
+            let currSnapshot = try await query.getDocument()
+            guard var user = try? currSnapshot.data(as: User.self) else {
+                throw NSError(domain: "User data not found", code: 404, userInfo: nil)
+            }
+            
+            // Access the imageHashMap safely
+            var imageHashMap = user.imageHashMap
+            
+            let nextKey = imageHashMap.count
+            imageHashMap[nextKey] = pictureUrls
+            
+            // Update the user with the modified imageHashMap
+            try await query.setData(["imageHashMap": imageHashMap], merge: true)
+            
+            print("[DEBUG]: Ran the pushUpdates to userImages function")
+        }
+        catch {
+            print("There was an error updating the user imageHashmap \(error.localizedDescription)")
+            throw error
+        }
+    }
 }
 
 //#Preview {

@@ -275,7 +275,8 @@ struct CheckinView: View {
                                     )
                                     
                                     //** we should be saving the images into the user data model imageArray as well if there are pictures present
-                                    
+                                    //!** This line is causing issues (i.e crashing the app)
+                                    try await viewModel.pushUpdatesToUserImages(userId: userId ?? "", pictureUrls: imageUrls)
                                     
                                 }
                                 
