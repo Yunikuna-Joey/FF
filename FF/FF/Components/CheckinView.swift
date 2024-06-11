@@ -253,54 +253,64 @@ struct CheckinView: View {
                 VStack {
                     Button(action: {
                         let timestamp = Date()
-                        let userId = viewModel.queryCurrentUserId()
+                        
                         
                         // attempt to post the status into the database [submission]
                         Task {
                             do {
-                                // if there are selected images or user-provided images
-                                if !selectedImages.isEmpty {
-                                    let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+                                if let currentUserId = viewModel.currentSession?.id {
+                                    // if there are selected images or user-provided images
+                                    if !selectedImages.isEmpty {
+                                        let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+                                        
+                                        // send into firebase
+                                        await statusModel.postStatus(
+                                            userId: currentUserId,
+                                            username: viewModel.currentSession?.username ?? "",
+                                            content: statusField,
+                                            bubbleChoice: bubbleChoice,
+                                            timestamp: timestamp,
+                                            location: selectedOption,
+                                            likes: 0,
+                                            imageUrls: imageUrls
+                                        )
+                                        
+                                        //** we should be saving the images into the user data model imageArray as well if there are pictures present
+                                        //!** This line is causing issues (i.e crashing the app)
+                                        //                                    try await viewModel.pushUpdatesToUserImages(
+                                        //                                        userId: userId ?? "",
+                                        //                                        pictureUrls: imageUrls
+                                        //                                    )
+                                        try await viewModel.updateUserImageHashMap(
+                                            userId: currentUserId,
+                                            newImageUrls: imageUrls
+                                        )
+                                        
+                                    }
                                     
-                                    // send into firebase
-                                    await statusModel.postStatus(
-                                        userId: userId ?? " ",
-                                        username: viewModel.currentSession?.username ?? "",
-                                        content: statusField,
-                                        bubbleChoice: bubbleChoice,
-                                        timestamp: timestamp,
-                                        location: selectedOption,
-                                        likes: 0,
-                                        imageUrls: imageUrls
-                                    )
+                                    // if there are no selected images provided by the user
+                                    else {
+                                        await statusModel.postStatus(
+                                            userId: currentUserId,
+                                            username: viewModel.currentSession?.username ?? "",
+                                            content: statusField,
+                                            bubbleChoice: bubbleChoice,
+                                            timestamp: timestamp,
+                                            location: selectedOption,
+                                            likes: 0,
+                                            imageUrls: [""]
+                                        )
+                                    }
                                     
-                                    //** we should be saving the images into the user data model imageArray as well if there are pictures present
-                                    //!** This line is causing issues (i.e crashing the app)
-                                    try await viewModel.pushUpdatesToUserImages(userId: userId ?? "", pictureUrls: imageUrls)
+                                    // move to homeView after
+                                    currentTabIndex = 0
                                     
-                                }
+                                    // reset page values
+                                    resetPageValues()
+                                    
+                                } // variable unwrapping
                                 
-                                // if there are no selected images provided by the user
-                                else {
-                                    await statusModel.postStatus(
-                                        userId: userId ?? "",
-                                        username: viewModel.currentSession?.username ?? "",
-                                        content: statusField,
-                                        bubbleChoice: bubbleChoice,
-                                        timestamp: timestamp,
-                                        location: selectedOption,
-                                        likes: 0,
-                                        imageUrls: [""]
-                                    )
-                                }
-                                
-                                // move to homeView after
-                                currentTabIndex = 0
-                                
-                                // reset page values
-                                resetPageValues()
-                                
-                            }
+                            } // end of do closure
                             
                         } // end of task
                         

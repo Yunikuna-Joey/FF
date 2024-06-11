@@ -233,7 +233,7 @@ class AuthView: ObservableObject {
     }
     
     // the parameters for this function are the currentUserId and an array of picture Urls assuming there are multiple pictures within a status post
-    func pushUpdatesToUserImages(userId: String, pictureUrls: [String]) async throws {
+    func updateUserImageHashMap(userId: String, newImageUrls: [String]) async throws {
         let query = dbUsers.document(userId)
         
         do {
@@ -246,19 +246,23 @@ class AuthView: ObservableObject {
             // Access the imageHashMap safely
             var imageHashMap = user.imageHashMap
             
-            let nextKey = imageHashMap.count
-            imageHashMap[nextKey] = pictureUrls
+            // Find the next available key
+            let nextKey = (imageHashMap.keys.max() ?? -1) + 1
+            
+            // Add the new image URLs to the hashmap
+            imageHashMap[nextKey] = newImageUrls
             
             // Update the user with the modified imageHashMap
-            try await query.setData(["imageHashMap": imageHashMap], merge: true)
+            user.imageHashMap = imageHashMap
+            try query.setData(from: user, merge: true)
             
-            print("[DEBUG]: Ran the pushUpdates to userImages function")
-        }
-        catch {
-            print("There was an error updating the user imageHashmap \(error.localizedDescription)")
+            print("[DEBUG]: Updated user imageHashMap successfully")
+        } catch {
+            print("There was an error updating the user imageHashMap: \(error.localizedDescription)")
             throw error
         }
     }
+    
 }
 
 //#Preview {
