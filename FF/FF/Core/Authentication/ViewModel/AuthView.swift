@@ -263,6 +263,27 @@ class AuthView: ObservableObject {
         }
     }
     
+    //*** attaches an event listener to the user document to determine if any changes were made
+    func listenForUpdates(userObject: User) {
+        dbUsers.document(userObject.id).addSnapshotListener { documentSnapshot, error in
+            // Ensure there is a valid document
+            guard let document = documentSnapshot else {
+                print("[listenForUpdate]: Error fetching document \(error?.localizedDescription ?? "[listenForUpdate]: Unknown Error")")
+                return
+            }
+            
+            do {
+                // Invokes re-rendering of the view because session property is modified
+                self.currentSession = try document.data(as: User.self)
+            }
+            
+            catch {
+                print("[listenForUpdate]: Error decoding user information \(error.localizedDescription)")
+            }
+        }
+        
+        print("[listenForUpdates]: Triggered user listener function")
+    }
 }
 
 //#Preview {

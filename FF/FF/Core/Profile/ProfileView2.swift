@@ -108,7 +108,7 @@ struct ProfileView2: View {
                     
                 } // end of LazyVGRid
                 
-            } // end of ZStack
+            } // end of Scroll View
             .fullScreenCover(item: $currentImage) { imageInfo in
                 ImageFullScreenView(imageName: imageInfo.imageName) {
                     currentImage = nil  // dismiss the full screen view
@@ -123,6 +123,12 @@ struct ProfileView2: View {
 //                Text("Click me for more information")
 //            }
         } // end of ZStack
+        .onAppear {
+            if let currentUserObject = viewModel.currentSession {
+                viewModel.listenForUpdates(userObject: currentUserObject)
+            }
+            
+        }
     }
 }
 
