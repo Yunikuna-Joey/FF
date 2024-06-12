@@ -268,10 +268,44 @@ struct CommentCell: View {
             // ** holds user information and comment timestamp
             HStack {
                 // pfp
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-                    .foregroundStyle(Color.blue)
+                if comment.profilePicture.isEmpty {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundStyle(Color.blue)
+                }
+                
+                else {
+                    AsyncImage(url: URL(string: comment.profilePicture)) { phase in
+                        switch phase {
+                        case.empty:
+                            ProgressView()
+                                .frame(width: 30, height: 30)
+                            
+                        case.success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
+                            
+                        case.failure:
+                            HStack {
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                
+                                Spacer()
+                            }
+                            .padding()
+                            
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                }
                 
                 // username
                 Text(comment.username)
@@ -414,12 +448,45 @@ struct ReplyCell: View {
             
             // This will hold profile picture and username
             HStack {
+                if reply.profilePicture.isEmpty {
+                    // pfp of the user who replied
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundStyle(Color.blue)
+                        .frame(width: 25, height: 25)
+                }
                 
-                // pfp of the user who replied
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .foregroundStyle(Color.blue)
-                    .frame(width: 25, height: 25)
+                else {
+                    AsyncImage(url: URL(string: reply.profilePicture)) { phase in
+                        switch phase {
+                        case.empty:
+                            ProgressView()
+                                .frame(width: 30, height: 30)
+                            
+                        case.success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
+                            
+                        case.failure:
+                            HStack {
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                
+                                Spacer()
+                            }
+                            .padding()
+                            
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                }
                 
                 // username of the user who replied
                 Text("\(reply.username)")
