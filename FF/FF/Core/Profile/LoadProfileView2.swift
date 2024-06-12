@@ -9,15 +9,9 @@ import SwiftUI
 struct LoadProfileView2: View {
     @EnvironmentObject var viewModel: AuthView
     @State private var resultUserCurrentImage: ImageUrlWrapper?
-    @State var imageArray: [ImageUrlWrapper]
     
     let resultUser: User
 
-    init(imageArray: [ImageUrlWrapper] = [], resultUser: User) {
-        self._imageArray = State(initialValue: imageArray)
-        self.resultUser = resultUser
-    }
-    
     var body: some View {
         let screenSize = UIScreen.main.bounds.size
         let itemWidth: CGFloat = (screenSize.width) / 3
@@ -26,19 +20,61 @@ struct LoadProfileView2: View {
         ZStack(alignment: .bottom) {
             ScrollView(showsIndicators: false) {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: itemWidth))]) {
-                    // iterate through the image array
-                    ForEach(imageArray) { imageInfo in
-                        Button(action: {
-                            resultUserCurrentImage = imageInfo
-                        }) {
-                            Image(imageInfo.urlString)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: itemWidth + 50, height: itemHeight)
-                                .cornerRadius(5)
-                                .padding()
-                        }
-                    } // for loop
+                                        
+                    let sortedKeys = resultUser.imageHashMap.keys.sorted().reversed()
+                    ForEach(sortedKeys, id: \.self) { key in
+                        if let pictureUrls = resultUser.imageHashMap[key] {
+                            TabView {
+                                ForEach(pictureUrls, id: \.self) { urlString in
+                                    Button(action: {
+                                        resultUserCurrentImage = ImageUrlWrapper(urlString: urlString)
+                                    }) {
+                                        AsyncImage(url: URL(string: urlString)) { phase in
+                                            switch phase {
+                                            case .empty:
+                                                ProgressView()
+                                                    .frame(width: 30, height: 30)
+                                                
+                                            case .success(let image):
+                                                image
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fill)
+                                                    .frame(width: itemWidth + 50, height: itemHeight)
+                                                    .cornerRadius(5)
+                                                    .padding()
+                                                
+                                            case .failure:
+                                                HStack {
+                                                    Image(systemName: "xmark.circle")
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .frame(width: 30, height: 30)
+                                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                                    Spacer()
+                                                }
+                                                .padding()
+                                            
+                                            @unknown default:
+                                                EmptyView()
+                                                
+                                            } // end of switch case
+                                            
+                                        } // end of AsyncImage closure
+                                        
+                                    } // end of Button
+                                    
+                                } // end of For loop
+                                
+                            } // end of TabView
+                            .frame(width: itemWidth + 50, height: itemHeight)
+                            .tabViewStyle(PageTabViewStyle())
+                            .cornerRadius(5)
+                            .padding()
+                            
+                        } // end of variable unwrapping
+                        
+                    } // ForEach
+                    
                 } // end of vgrid
             } // end of scroll view
             .fullScreenCover(item: $resultUserCurrentImage) { imageInfo in
@@ -47,18 +83,7 @@ struct LoadProfileView2: View {
                 }
             }
         } // end of Vstack
-        .onAppear(perform: {
-            Task {
-                do {
-                    let imageNames = await viewModel.fetchUserImages(userId: resultUser.id)
-                    imageArray = imageNames.map { ImageUrlWrapper(urlString: $0) }
-                }
-                
-//                catch {
-//                    print("[DEBUG]: There was an error fetching images in LPV2 \(error.localizedDescription)")
-//                }
-            }
-        })
+
     }
 }
 
