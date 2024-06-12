@@ -33,7 +33,7 @@ struct HomeView: View {
                     
                     StatusUpdateView(
                         status: status,
-                        username: status.username,
+                        username: status.userObject.username,
                         timeAgo: status.timestamp,
                         colors: colors
                     )

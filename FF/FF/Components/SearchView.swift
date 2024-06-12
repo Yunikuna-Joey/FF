@@ -282,7 +282,7 @@ struct HashtagCell: View {
                     }
                 }
                 
-                Text(status.username)
+                Text(status.userObject.username)
                     .font(.headline)
                 
                 Spacer()

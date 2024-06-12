@@ -21,6 +21,9 @@ class AuthView: ObservableObject {
     @Published var currentSession: User?
     @Published var currentUsername: String?
     
+    // *** This will act as a cache [temporarily...]
+    @Published var userCache: [String: User] = [:]
+    
     // database variable
     private let dbUsers = Firestore.firestore().collection("users")
     private let db = Firestore.firestore()
@@ -39,6 +42,16 @@ class AuthView: ObservableObject {
         Task {
             await fetchUser()
         }
+    }
+    
+    // Fetches the latest UserObject information
+    func getUser(userId: String) -> User? {
+        return userCache[userId]
+    }
+    
+    // Updates the latest UserObject information
+    func updateUserCache(user: User) {
+        userCache[user.id] = user
     }
     
     // sign-in function
@@ -124,8 +137,10 @@ class AuthView: ObservableObject {
         // set the current session to be the signed-in user
         self.currentSession = try? snapshot.data(as: User.self)
         
-        print("[DEBUG]: User session is \(self.userSession)")
-        print("[DEBUG]: Current User is \(self.currentSession)")
+        if let userSessionStatement = self.userSession {
+            print("[DEBUG]: User session is \(self.userSession ?? userSessionStatement)")
+            print("[DEBUG]: Current User is \(self.currentSession ?? EmptyVariable.EmptyUser)")
+        }
     }
     
     // fetch ALL USER data [Data Visualization]
@@ -187,9 +202,6 @@ class AuthView: ObservableObject {
     
     // Updates the profile picture for a given userID [currentUser scenario]
     func updateProfilePicture(userId: String, profilePictureUrl: String) {
-//        print("Beginning of function")
-//        print("Value of userId \(userId)")
-//        print("Value of url \(profilePictureUrl)")
         guard !userId.isEmpty else {
             print("[Error]: userId is empty.")
             return
@@ -256,7 +268,7 @@ class AuthView: ObservableObject {
             user.imageHashMap = imageHashMap
             try query.setData(from: user, merge: true)
             
-            print("[DEBUG]: Updated user imageHashMap successfully")
+            print("[updateUserImageHashMap]: Updated user imageHashMap successfully")
         } catch {
             print("There was an error updating the user imageHashMap: \(error.localizedDescription)")
             throw error
@@ -283,6 +295,14 @@ class AuthView: ObservableObject {
         }
         
         print("[listenForUpdates]: Triggered user listener function")
+    }
+}
+extension AuthView {
+    func updateUserObjectProfilePicture(userId: String, newProfilePictureUrl: String) {
+        if var user = userCache[userId] {
+            user.profilePicture = newProfilePictureUrl
+            updateUserCache(user: user)
+        }
     }
 }
 

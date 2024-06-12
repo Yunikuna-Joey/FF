@@ -22,14 +22,11 @@ struct Comments: Identifiable, Codable {
     // postId
     let postId: String
     
+    // UserObject
+    var userObject: User
+    
     // UserId
     let userId: String
-    
-    // userPicture
-    let profilePicture: String
-    
-    // username
-    let username: String 
     
     // toUsername
     let toUsername: String 

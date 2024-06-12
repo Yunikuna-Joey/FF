@@ -252,50 +252,44 @@ struct CheckinView: View {
                 // Check-in button
                 VStack {
                     Button(action: {
-                        let timestamp = Date()
-                        
                         
                         // attempt to post the status into the database [submission]
                         Task {
                             do {
-                                if let currentUserId = viewModel.currentSession?.id {
+                                if let currentUserObject = viewModel.currentSession, let currentUserId = viewModel.currentSession?.id {
                                     // if there are selected images or user-provided images
                                     if !selectedImages.isEmpty {
                                         let imageUrls = try await statusModel.uploadImages(images: selectedImages)
                                         
+                                        // This will save the pictures from the status object into the User datafield imageHashmap
+                                        try await viewModel.updateUserImageHashMap(
+                                            userId: currentUserId,
+                                            newImageUrls: imageUrls
+                                        )
+                                        
                                         // send into firebase
                                         await statusModel.postStatus(
+                                            currentUserObject: currentUserObject,
                                             userId: currentUserId,
-                                            username: viewModel.currentSession?.username ?? "",
                                             content: statusField,
                                             bubbleChoice: bubbleChoice,
-                                            timestamp: timestamp,
+                                            timestamp: Date(),
                                             location: selectedOption,
                                             likes: 0,
                                             imageUrls: imageUrls
                                         )
                                         
-                                        //** we should be saving the images into the user data model imageArray as well if there are pictures present
-                                        //!** This line is causing issues (i.e crashing the app)
-                                        //                                    try await viewModel.pushUpdatesToUserImages(
-                                        //                                        userId: userId ?? "",
-                                        //                                        pictureUrls: imageUrls
-                                        //                                    )
-                                        try await viewModel.updateUserImageHashMap(
-                                            userId: currentUserId,
-                                            newImageUrls: imageUrls
-                                        )
                                         
                                     }
                                     
                                     // if there are no selected images provided by the user
                                     else {
                                         await statusModel.postStatus(
+                                            currentUserObject: currentUserObject,
                                             userId: currentUserId,
-                                            username: viewModel.currentSession?.username ?? "",
                                             content: statusField,
                                             bubbleChoice: bubbleChoice,
-                                            timestamp: timestamp,
+                                            timestamp: Date(),
                                             location: selectedOption,
                                             likes: 0,
                                             imageUrls: [""]

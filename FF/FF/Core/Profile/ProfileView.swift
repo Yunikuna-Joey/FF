@@ -222,14 +222,17 @@ struct ProfileView: View {
                                             onSave: {
                                                 Task {
                                                     
-                                                    if let selectProfilePicture = selectProfilePicture {
+                                                    if let selectProfilePicture = selectProfilePicture, let currentUserSession = viewModel.currentSession {
                                                         // save the image to Firebase Storage
                                                         let imageUrl = try await statusProcess.uploadImage(image: selectProfilePicture)
                                                         
+                                                        
                                                         // update the User object with profile picture URL
-                                                        viewModel.updateProfilePicture(userId: viewModel.queryCurrentUserId() ?? "", profilePictureUrl: imageUrl)
+                                                        viewModel.updateProfilePicture(userId: currentUserSession.id, profilePictureUrl: imageUrl)
                                                         
-                                                        
+                                                        // update the cache with profilePicture Url
+                                                        viewModel.updateUserObjectProfilePicture(userId: currentUserSession.id, newProfilePictureUrl: imageUrl)
+  
                                                     }
                                                     
                                                     print("Save profile picture button.")
@@ -253,10 +256,11 @@ struct ProfileView: View {
                                             selectedImage: $selectCoverPicture,
                                             onSave: {
                                                 Task {
-                                                    if let selectCoverPicture = selectCoverPicture {
+                                                    if let selectCoverPicture = selectCoverPicture, let currentUserSession = viewModel.currentSession{
                                                         let imageUrl = try await statusProcess.uploadImage(image: selectCoverPicture)
                                                         
-                                                        viewModel.updateCoverPicture(userId: viewModel.queryCurrentUserId() ?? "", coverPictureUrl: imageUrl)
+                                                        
+                                                        viewModel.updateCoverPicture(userId: currentUserSession.id, coverPictureUrl: imageUrl)
                                                     }
                                                     
                                                     print("Save cover picture button")

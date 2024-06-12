@@ -11,11 +11,11 @@ struct Status: Identifiable, Codable {
     // POST ID
     let id: String
     
+    // userObject
+    var userObject: User
+    
     // userId
     let userId: String
-    
-    // username of userId
-    let username: String
     
     // might want a post character limit
     let content: String

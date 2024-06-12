@@ -31,10 +31,10 @@ class StatusProcessView: ObservableObject {
     private let db = Firestore.firestore()
     private let dbStatus = Firestore.firestore().collection("Statuses")
     
-    func postStatus(userId: String, username: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int, imageUrls: [String]) async {
+    func postStatus(currentUserObject: User, userId: String, content: String, bubbleChoice: [String], timestamp: Date, location: String, likes: Int, imageUrls: [String]) async {
         do {
             // handle the new status object
-            let newStatus = Status(id: UUID().uuidString, userId: userId, username: username, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes, imageUrls: imageUrls)
+            let newStatus = Status(id: UUID().uuidString, userObject: currentUserObject, userId: userId, content: content, bubbleChoice: bubbleChoice, timestamp: timestamp, location: location, likes: likes, imageUrls: imageUrls)
             try dbStatus.document(newStatus.id).setData(from: newStatus)
         }
         catch {
@@ -323,7 +323,7 @@ class StatusProcessView: ObservableObject {
                 .collection("replies")
             
             // Comment object
-            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, toUsername: toUsername, content: content, likes: 0, timestamp: Date())
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userObject: userObject, userId: userObject.id, toUsername: toUsername, content: content, likes: 0, timestamp: Date())
             
             try commentObjectReplyRef.document(newComment.id).setData(from: newComment)
             print("Ran reply comment function")
@@ -350,7 +350,7 @@ class StatusProcessView: ObservableObject {
             let replyObjectSubRef = replyObjectRef
                 .collection("replies")
             
-            let newReply = Comments(id: UUID().uuidString, postId: postId, userId: fromUserObject.id, profilePicture: fromUserObject.profilePicture, username: fromUserObject.username, toUsername: toUsername, content: content, likes: 0, timestamp: Date())
+            let newReply = Comments(id: UUID().uuidString, postId: postId, userObject: fromUserObject, userId: fromUserObject.id, toUsername: toUsername, content: content, likes: 0, timestamp: Date())
             
             try replyObjectSubRef.document(newReply.id).setData(from: newReply)
             print("Ran replyToReplycell function")
@@ -517,7 +517,7 @@ class StatusProcessView: ObservableObject {
     func commentStatus(postId: String, userObject: User, content: String, timestamp: Date) async throws {
         do {
             // Comment object [dont need a toUsername here]
-            let newComment = Comments(id: UUID().uuidString, postId: postId, userId: userObject.id, profilePicture: userObject.profilePicture, username: userObject.username, toUsername: "", content: content, likes: 0, timestamp: timestamp)
+            let newComment = Comments(id: UUID().uuidString, postId: postId, userObject: userObject, userId: userObject.id, toUsername: "", content: content, likes: 0, timestamp: timestamp)
             
             let commentRef = dbStatus.document(postId)
                 .collection("comments")

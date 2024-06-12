@@ -18,7 +18,7 @@ struct User: Identifiable, Codable, Hashable {            // codable turns JSON 
 //    let imageArray: [String]
     // make a hashmap so that [Position # : [array of picture urls?]
     var imageHashMap: [Int : [String]]
-    let profilePicture: String
+    var profilePicture: String
     let coverPicture: String
 }
 

@@ -139,7 +139,7 @@ struct CommentView: View {
                             }
                             
                             // Username overlay
-                            Text("\(commentObject.username)")
+                            Text("\(commentObject.userObject.username)")
                                 .foregroundStyle(Color.primary)
                         }
                         .padding(.trailing, 10)
@@ -174,7 +174,7 @@ struct CommentView: View {
                                     try await statusProcess.replyComment(
                                         postId: status.id,
                                         userObject: currentUserObject,
-                                        toUsername: commentObject.username,
+                                        toUsername: commentObject.userObject.username,
                                         content: commentText,
                                         commentId: commentObject.id
                                     )
@@ -183,7 +183,7 @@ struct CommentView: View {
                                     try await statusProcess.replyToReplyCell(
                                         postId: status.id,
                                         fromUserObject: currentUserObject,
-                                        toUsername: commentObject.username,
+                                        toUsername: commentObject.userObject.username,
                                         content: commentText,
                                         commentId: parentCommentId,
                                         replyId: commentObject.id
@@ -268,7 +268,7 @@ struct CommentCell: View {
             // ** holds user information and comment timestamp
             HStack {
                 // pfp
-                if comment.profilePicture.isEmpty {
+                if comment.userObject.profilePicture.isEmpty {
                     Image(systemName: "person.circle.fill")
                         .resizable()
                         .frame(width: 30, height: 30)
@@ -276,7 +276,7 @@ struct CommentCell: View {
                 }
                 
                 else {
-                    AsyncImage(url: URL(string: comment.profilePicture)) { phase in
+                    AsyncImage(url: URL(string: comment.userObject.profilePicture)) { phase in
                         switch phase {
                         case.empty:
                             ProgressView()
@@ -290,16 +290,11 @@ struct CommentCell: View {
                                 .clipShape(Circle())
                             
                         case.failure:
-                            HStack {
-                                Image(systemName: "xmark.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 30, height: 30)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                Spacer()
-                            }
-                            .padding()
+                            Image(systemName: "xmark.circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
                             
                         @unknown default:
                             EmptyView()
@@ -308,7 +303,7 @@ struct CommentCell: View {
                 }
                 
                 // username
-                Text(comment.username)
+                Text(comment.userObject.username)
                     .font(.system(size: 15, weight: .regular, design: .default))
                 
                 Spacer()
@@ -448,7 +443,7 @@ struct ReplyCell: View {
             
             // This will hold profile picture and username
             HStack {
-                if reply.profilePicture.isEmpty {
+                if reply.userObject.profilePicture.isEmpty {
                     // pfp of the user who replied
                     Image(systemName: "person.circle.fill")
                         .resizable()
@@ -457,7 +452,7 @@ struct ReplyCell: View {
                 }
                 
                 else {
-                    AsyncImage(url: URL(string: reply.profilePicture)) { phase in
+                    AsyncImage(url: URL(string: reply.userObject.profilePicture)) { phase in
                         switch phase {
                         case.empty:
                             ProgressView()
@@ -471,16 +466,11 @@ struct ReplyCell: View {
                                 .clipShape(Circle())
                             
                         case.failure:
-                            HStack {
-                                Image(systemName: "xmark.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 30, height: 30)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                Spacer()
-                            }
-                            .padding()
+                            Image(systemName: "xmark.circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
                             
                         @unknown default:
                             EmptyView()
@@ -489,7 +479,7 @@ struct ReplyCell: View {
                 }
                 
                 // username of the user who replied
-                Text("\(reply.username)")
+                Text("\(reply.userObject.username)")
                     .font(.system(size: 15))
                     
                 Spacer()
