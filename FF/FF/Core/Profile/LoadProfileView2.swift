@@ -8,12 +8,12 @@ import SwiftUI
 
 struct LoadProfileView2: View {
     @EnvironmentObject var viewModel: AuthView
-    @State private var resultUserCurrentImage: ImageInfo?
-    @State var imageArray: [ImageInfo]
+    @State private var resultUserCurrentImage: ImageUrlWrapper?
+    @State var imageArray: [ImageUrlWrapper]
     
     let resultUser: User
 
-    init(imageArray: [ImageInfo] = [], resultUser: User) {
+    init(imageArray: [ImageUrlWrapper] = [], resultUser: User) {
         self._imageArray = State(initialValue: imageArray)
         self.resultUser = resultUser
     }
@@ -31,7 +31,7 @@ struct LoadProfileView2: View {
                         Button(action: {
                             resultUserCurrentImage = imageInfo
                         }) {
-                            Image(imageInfo.imageName)
+                            Image(imageInfo.urlString)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: itemWidth + 50, height: itemHeight)
@@ -42,7 +42,7 @@ struct LoadProfileView2: View {
                 } // end of vgrid
             } // end of scroll view
             .fullScreenCover(item: $resultUserCurrentImage) { imageInfo in
-                ImageFullScreenView(imageName: imageInfo.imageName) {
+                ImageFullScreenView(imageUrl: imageInfo.urlString) {
                     resultUserCurrentImage = nil // dismiss full screen view
                 }
             }
@@ -51,7 +51,7 @@ struct LoadProfileView2: View {
             Task {
                 do {
                     let imageNames = await viewModel.fetchUserImages(userId: resultUser.id)
-                    imageArray = imageNames.map { ImageInfo(imageName: $0) }
+                    imageArray = imageNames.map { ImageUrlWrapper(urlString: $0) }
                 }
                 
 //                catch {

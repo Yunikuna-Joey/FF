@@ -6,15 +6,21 @@
 
 import SwiftUI
 
-struct ImageInfo: Identifiable {
+//struct ImageInfo: Identifiable {
+//    let id = UUID()
+//    let imageName: String
+//}
+
+struct ImageUrlWrapper: Identifiable {
     let id = UUID()
-    let imageName: String
+    let urlString: String
 }
 
 // Images view
 struct ProfileView2: View {
     @EnvironmentObject var viewModel: AuthView
-    @State private var currentImage: ImageInfo?
+//    @State private var currentImage: ImageInfo?
+    @State private var currentImageUrl: ImageUrlWrapper?
     
     // Determine the current device viewport dimensions
     let screenSize = UIScreen.main.bounds.size
@@ -43,18 +49,6 @@ struct ProfileView2: View {
                 // grid to hold the pictures
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: itemWidth))]) {
                     // iterate through the image array
-//                    ForEach(imageArray) { imageInfo in
-//                        Button(action: {
-//                            currentImage = imageInfo
-//                        }) {
-//                            Image(imageInfo.imageName)
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fill)
-//                                .frame(width: itemWidth + 50, height: itemHeight)
-//                                .cornerRadius(5)
-//                                .padding()
-//                        }
-//                    }
                     
                     //*** need to populate the imageHashMap list and iterate through
                     if let currentUserObject = viewModel.currentSession {
@@ -62,43 +56,55 @@ struct ProfileView2: View {
                         let sortedKeys = currentUserObject.imageHashMap.keys.sorted()
                         
                         // Iterate through the sorted keys
-                        ForEach(sortedKeys, id: \.self) { key in
+                        ForEach(sortedKeys.reversed(), id: \.self) { key in
                             if let pictureUrls = currentUserObject.imageHashMap[key] {
-                                ForEach(pictureUrls, id: \.self) { urlString in
-                                    AsyncImage(url: URL(string: urlString)) { phase in
-                                        switch phase {
-                                        case .empty:
-                                            ProgressView()
-                                                .frame(width: 30, height: 30)
-                                            
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                                .frame(width: itemWidth + 50, height: itemHeight)
-                                                .cornerRadius(5)
-                                                .padding()
-                                            
-                                        case .failure:
-                                            HStack {
-                                                Image(systemName: "xmark.circle")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 30, height: 30)
-                                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                TabView {
+                                    ForEach(pictureUrls, id: \.self) { urlString in
+                                        Button(action: {
+                                            currentImageUrl = ImageUrlWrapper(urlString: urlString)
+                                        }) {
+                                            AsyncImage(url: URL(string: urlString)) { phase in
+                                                switch phase {
+                                                case .empty:
+                                                    ProgressView()
+                                                        .frame(width: 30, height: 30)
+                                                    
+                                                case .success(let image):
+                                                    image
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fill)
+                                                        .frame(width: itemWidth + 50, height: itemHeight)
+                                                        .cornerRadius(5)
+                                                        .padding()
+                                                    
+                                                case .failure:
+                                                    HStack {
+                                                        Image(systemName: "xmark.circle")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .frame(width: 30, height: 30)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                                        
+                                                        Spacer()
+                                                    }
+                                                    .padding()
+                                                    
+                                                @unknown default:
+                                                    EmptyView()
+                                                } // end of switch statement
                                                 
-                                                Spacer()
-                                            }
-                                            .padding()
+                                                
+                                            } // end of async image closure
                                             
-                                        @unknown default:
-                                            EmptyView()
-                                        } // end of switch statement
-                                            
+                                        } // button
+                                        
+                                    } // end of inner for-loop
                                     
-                                    } // end of async image closure 
-                                    
-                                } // end of inner for-loop
+                                } // Tab View
+                                .frame(width: itemWidth + 50, height: itemHeight)
+                                .tabViewStyle(PageTabViewStyle())
+                                .cornerRadius(5)
+                                .padding()
                             
                             } // variable unwrap
                             
@@ -109,9 +115,9 @@ struct ProfileView2: View {
                 } // end of LazyVGRid
                 
             } // end of Scroll View
-            .fullScreenCover(item: $currentImage) { imageInfo in
-                ImageFullScreenView(imageName: imageInfo.imageName) {
-                    currentImage = nil  // dismiss the full screen view
+            .fullScreenCover(item: $currentImageUrl) { imageWrapper in
+                ImageFullScreenView(imageUrl: imageWrapper.urlString) {
+                    currentImageUrl = nil  // dismiss the full screen view
                 }
             }
             
@@ -133,7 +139,7 @@ struct ProfileView2: View {
 }
 
 struct ImageFullScreenView: View {
-    let imageName: String
+    let imageUrl: String
     let dismiss: () -> Void
     
     @State private var imageObject: UIImage?
@@ -145,10 +151,23 @@ struct ImageFullScreenView: View {
     @GestureState private var offsetState: CGSize = .zero
     
     // initialer for UIimage
-    init(imageName: String, dismiss: @escaping () -> Void) {
-        self.imageName = imageName
+    init(imageUrl: String, dismiss: @escaping () -> Void) {
+        self.imageUrl = imageUrl
         self.dismiss = dismiss
-        self._imageObject = State(initialValue: UIImage(named: imageName))
+        self._imageObject = State(initialValue: UIImage(named: imageUrl))
+        loadImageFromUrl(imageUrl)
+    }
+    
+    // function to grab image from a url
+    private func loadImageFromUrl(_ url: String) {
+        guard let imageUrl = URL(string: url) else { return }
+        let task = URLSession.shared.dataTask(with: imageUrl) { data, response, error in
+            guard let data = data, error == nil else { return }
+            DispatchQueue.main.async {
+                self.imageObject = UIImage(data: data)
+            }
+        }
+        task.resume()
     }
     
     // zooming in / out
@@ -207,19 +226,29 @@ struct ImageFullScreenView: View {
             // black background to set up the full screen image
             Color.black
                 .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-            // determines the left and right bounds of a zoomed state,,, need a height at another time
-            let maxWidth = ((imageObject?.size.width ?? 0) / 10) * scale    // left and right bound calc,, could be refined
             
-            // Display the image that was clicked
-            Image(uiImage: imageObject!)
-                .resizable()
-                .scaledToFit()
-                .scaleEffect(self.scale * scaleState)
-//                .offset(x: offset.width + offsetState.width, y: offset.height + offsetState.height)
+            if let imageObject = imageObject {
+                // determines the left and right bounds of a zoomed state,,, need a height at another time
+                let maxWidth = ((imageObject.size.width) / 10) * scale    // left and right bound calc,, could be refined
+                
+                // Display the image that was clicked
+                Image(uiImage: imageObject)
+                    .resizable()
+                    .scaledToFit()
+                    .scaleEffect(self.scale * scaleState)
+                //                .offset(x: offset.width + offsetState.width, y: offset.height + offsetState.height)
                 // this creates the clamp for the max and min
-                .offset(x: min(max(offset.width + offsetState.width, -maxWidth), maxWidth),
-                        y: offset.height + offsetState.height)
-                .gesture(SimultaneousGesture(zoom, drag))
+                    .offset(x: min(max(offset.width + offsetState.width, -maxWidth), maxWidth),
+                            y: offset.height + offsetState.height)
+                    .gesture(SimultaneousGesture(zoom, drag))
+            }
+            
+            else {
+                ProgressView()
+                    .onAppear {
+                        loadImageFromUrl(imageUrl)
+                    }
+            }
             
             // close button to exit the full screen view
             VStack {
