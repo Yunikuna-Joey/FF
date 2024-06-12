@@ -18,7 +18,7 @@ struct ProfileView: View {
     @State private var current: Tab = .status
     
     // User information
-    @State private var currentUserObject: User = EmptyVariable.EmptyUser
+//    @State private var currentUserObject: User = EmptyVariable.EmptyUser
     @State private var followerCount: Int = 0
     @State private var followingCount: Int = 0
 
@@ -65,94 +65,96 @@ struct ProfileView: View {
                 ZStack(alignment: .topTrailing) {
                     VStack {
                         // Cover Photo case 
-                        if currentUserObject.coverPicture.isEmpty {
-                            Image("Car")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: screenSize.height * 0.30)
-                                .clipped()
-                        }
-                        
-                        else {
-                            AsyncImage(url: URL(string: currentUserObject.coverPicture)) { phase in
-                                switch phase {
-                                case.empty:
-                                    ProgressView()
-                                        .frame(height: screenSize.height * 0.4)
-                                    
-                                case.success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: screenSize.height * 0.30)
-                                        .clipped()
-                                    
-                                case.failure:
-                                    HStack {
+                        if let currentUserObject = viewModel.currentSession {
+                            if currentUserObject.coverPicture.isEmpty {
+                                Image("Car")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: screenSize.height * 0.30)
+                                    .clipped()
+                            }
+                            
+                            else {
+                                AsyncImage(url: URL(string: currentUserObject.coverPicture)) { phase in
+                                    switch phase {
+                                    case.empty:
+                                        ProgressView()
+                                            .frame(height: screenSize.height * 0.4)
+                                        
+                                    case.success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: screenSize.height * 0.30)
+                                            .clipped()
+                                        
+                                    case.failure:
+                                        HStack {
+                                            Image(systemName: "xmark.circle")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 100, height: 200)
+                                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            
+                                            Spacer()
+                                            
+                                            Text("Could not load cover photo at this moment.")
+                                                .foregroundStyle(Color.red.opacity(0.6))
+                                                .padding()
+                                            
+                                            Spacer()
+                                        }
+                                        .padding()
+                                        
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            }
+                            
+                            //** profile picture section
+                            if currentUserObject.profilePicture.isEmpty {
+                                Image("car2")
+                                    .resizable()
+                                    .frame(width: 200, height: 150)
+                                    .clipShape(Circle())
+                                // [play with this offset value]
+                                    .offset(y: -100)
+                            }
+                            
+                            else {
+                                AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
+                                    switch phase {
+                                        // Different cases the request might encounter: loading | success | None
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(height: screenSize.height * 0.40)
+                                        
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .frame(width: 200, height: 150)
+                                            .clipShape(Circle())
+                                        // [play with this offset value]
+                                            .offset(y: -100)
+                                        
+                                    case .failure:
                                         Image(systemName: "xmark.circle")
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: 100, height: 200)
                                             .clipShape(RoundedRectangle(cornerRadius: 10))
                                         
-                                        Spacer()
-                                        
-                                        Text("Could not load cover photo at this moment.")
-                                            .foregroundStyle(Color.red.opacity(0.6))
-                                            .padding()
-                                        
-                                        Spacer()
-                                    }
-                                    .padding()
+                                    @unknown default:
+                                        EmptyView()
+                                    } // end of switch
                                     
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
-                        }
-                        
-                        //** profile picture section
-                        if currentUserObject.profilePicture.isEmpty {
-                            Image("car2")
-                                .resizable()
-                                .frame(width: 200, height: 150)
-                                .clipShape(Circle())
-                                // [play with this offset value]
-                                .offset(y: -100)
-                        }
-                        
-                        else {
-                            AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
-                                switch phase {
-                                // Different cases the request might encounter: loading | success | None
-                                case .empty:
-                                    ProgressView()
-                                        .frame(height: screenSize.height * 0.40)
-                                    
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .frame(width: 200, height: 150)
-                                        .clipShape(Circle())
-                                        // [play with this offset value]
-                                        .offset(y: -100)
-                                    
-                                case .failure:
-                                    Image(systemName: "xmark.circle")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100, height: 200)
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    
-                                @unknown default:
-                                    EmptyView()
-                                } // end of switch
+                                } // end of async image
                                 
-                            } // end of async image
-                            
-                        }
+                            }
+                        } // variable unwrapping for currentUserobject
                             
                         
                         // pushes the cover photo AND profile picture
@@ -400,7 +402,7 @@ struct ProfileView: View {
                     Task {
                         followerCount =  await followManager.queryFollowersCount(userId: viewModel.queryCurrentUserId() ?? "")
                         followingCount =  await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
-                        currentUserObject = try await followManager.getUserById(userId: viewModel.queryCurrentUserId() ?? "") ?? EmptyVariable.EmptyUser
+//                        currentUserObject = try await followManager.getUserById(userId: viewModel.queryCurrentUserId() ?? "") ?? EmptyVariable.EmptyUser
 //                        print("This is the value of currentUserObject \(currentUserObject)")
                     }
                 }
