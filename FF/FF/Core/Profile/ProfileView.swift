@@ -231,9 +231,6 @@ struct ProfileView: View {
                                                         
                                                         // update the User object with profile picture URL
                                                         viewModel.updateProfilePicture(userId: currentUserSession.id, profilePictureUrl: imageUrl)
-                                                        
-                                                        // update the cache with profilePicture Url
-                                                        viewModel.updateUserObjectProfilePicture(userId: currentUserSession.id, newProfilePictureUrl: imageUrl)
   
                                                     }
                                                     

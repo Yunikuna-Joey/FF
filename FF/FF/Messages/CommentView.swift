@@ -245,11 +245,13 @@ struct CommentView: View {
 }
 
 struct CommentCell: View {
+    @EnvironmentObject var viewModel: AuthView
     @EnvironmentObject var statusProcess: StatusProcessView
     @State private var commentCellLikeCount: Int = 0
     @State private var commentCellLikeFlag: Bool = false
     
     @State private var commentCellCommentCount: Int = 0
+    @State private var userObject: User?
 
     
     @Binding var showReplyFlag: Bool
@@ -268,38 +270,53 @@ struct CommentCell: View {
             // ** holds user information and comment timestamp
             HStack {
                 // pfp
-                if comment.userObject.profilePicture.isEmpty {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundStyle(Color.blue)
+                if let userObject = userObject {
+                    if userObject.profilePicture.isEmpty {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(Color.blue)
+                    }
+                    
+                    else {
+                        AsyncImage(url: URL(string: userObject.profilePicture)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 30, height: 30)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                            case .failure:
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    }
+
                 }
                 
                 else {
-                    AsyncImage(url: URL(string: comment.userObject.profilePicture)) { phase in
-                        switch phase {
-                        case.empty:
-                            ProgressView()
-                                .frame(width: 30, height: 30)
-                            
-                        case.success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
-                            
-                        case.failure:
-                            Image(systemName: "xmark.circle")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
-                            
-                        @unknown default:
-                            EmptyView()
+                    ProgressView()
+                        .frame(width: 30, height: 30)
+                        .onAppear {
+                            Task {
+                                do {
+                                    userObject = try await viewModel.convertUserIdToObject(comment.userId)
+                                }
+                                catch {
+                                    print("Failed to fetch user: \(error)")
+                                }
+                            }
                         }
-                    }
                 }
                 
                 // username

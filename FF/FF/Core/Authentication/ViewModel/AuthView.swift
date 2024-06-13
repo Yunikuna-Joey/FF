@@ -45,13 +45,33 @@ class AuthView: ObservableObject {
     }
     
     // Fetches the latest UserObject information
-    func getUser(userId: String) -> User? {
+    func getUserFromCache(userId: String) -> User? {
         return userCache[userId]
     }
     
     // Updates the latest UserObject information
     func updateUserCache(user: User) {
         userCache[user.id] = user
+    }
+    
+    // Return a User Object given an id
+    func convertUserIdToObject(_ userId: String) async throws -> User? {
+        let userRef = dbUsers.document(userId)
+        
+        do {
+            let document = try await userRef.getDocument()
+            if let user = try document.data(as: User?.self) {
+                return user
+            }
+            else {
+                return nil
+            }
+        }
+        
+        catch {
+            print("[convertUserIdToObject]: Error fetching a user: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // sign-in function
@@ -295,14 +315,6 @@ class AuthView: ObservableObject {
         }
         
         print("[listenForUpdates]: Triggered user listener function")
-    }
-}
-extension AuthView {
-    func updateUserObjectProfilePicture(userId: String, newProfilePictureUrl: String) {
-        if var user = userCache[userId] {
-            user.profilePicture = newProfilePictureUrl
-            updateUserCache(user: user)
-        }
     }
 }
 
