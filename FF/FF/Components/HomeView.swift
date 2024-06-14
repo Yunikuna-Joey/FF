@@ -199,10 +199,10 @@ struct StatusUpdateView: View {
                             case .success(let image):
                                 image
                                     .resizable()
-//                                    .aspectRatio(contentMode: .fit)
-                                    .scaledToFit()
-                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.30)
-                                    .background(Color.gray.opacity(0.1))  // Background color to fill extra space
+                                    .aspectRatio(contentMode: .fit)
+//                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.40)
+                                    /*.background(Color.gray.opacity(0.1)) */ // Background color to fill extra space
                                     .cornerRadius(5)
                                     .clipped()
                                 
@@ -223,7 +223,7 @@ struct StatusUpdateView: View {
                     
                 } // end of TabView
                 .tabViewStyle(PageTabViewStyle())
-                .frame(height: screenSize.height * 0.25)
+                .frame(height: screenSize.height * 0.40)
                 .cornerRadius(5)
             }
             
