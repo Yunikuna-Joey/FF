@@ -194,14 +194,16 @@ struct StatusUpdateView: View {
                             switch phase {
                             case .empty:
                                 ProgressView()
-                                    .frame(height: screenSize.height * 0.40)
+                                    .frame(height: screenSize.height * 0.50)
                                 
                             case .success(let image):
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: screenSize.height * 0.40)
+//                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.50)
+                                    .background(Color.gray.opacity(0.1))  // Background color to fill extra space
+                                    .cornerRadius(5)
+                                    .clipped()
                                 
                             case .failure:
                                 Image(systemName: "xmark.circle")
@@ -220,7 +222,7 @@ struct StatusUpdateView: View {
                     
                 } // end of TabView
                 .tabViewStyle(PageTabViewStyle())
-                .frame(height: screenSize.height * 0.40)
+                .frame(height: screenSize.height * 0.50)
             }
             
             //*** bottom border

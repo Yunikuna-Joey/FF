@@ -15,7 +15,7 @@ struct LoadProfileView2: View {
     var body: some View {
         let screenSize = UIScreen.main.bounds.size
         let itemWidth: CGFloat = (screenSize.width) / 3
-        let itemHeight: CGFloat = (screenSize.height) * 0.10
+        let itemHeight: CGFloat = (screenSize.height) * 0.20
     
         ZStack(alignment: .bottom) {
             ScrollView(showsIndicators: false) {
@@ -44,15 +44,14 @@ struct LoadProfileView2: View {
                                                     .padding()
                                                 
                                             case .failure:
-                                                HStack {
-                                                    Image(systemName: "xmark.circle")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .frame(width: 30, height: 30)
-                                                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                                                    Spacer()
-                                                }
-                                                .padding()
+                                                Image(systemName: "xmark.circle")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 30, height: 30)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                                    .foregroundStyle(Color.red)
+                                               
+                                               
                                             
                                             @unknown default:
                                                 EmptyView()
