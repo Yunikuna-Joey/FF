@@ -15,7 +15,7 @@ protocol StatusFormProtocol {
 
 class StatusProcessView: ObservableObject {
     // [Session handling here]
-//    @Published var userSession: FirebaseAuth.User?
+    //    @Published var userSession: FirebaseAuth.User?
     @Published var currentSession: User?
     
     @Published var statusList: [Status] = []
@@ -24,7 +24,7 @@ class StatusProcessView: ObservableObject {
     @Published var commentList = [Comments]()
     
     // This will hold the [commentId : [list of comment objects which are the replies]]
-//    @Published var repliesDict: [String: [Comments]] = [:]
+    //    @Published var repliesDict: [String: [Comments]] = [:]
     
     @Published var repliesDict: [String: [String: Comments]] = [:]
     
@@ -100,7 +100,7 @@ class StatusProcessView: ObservableObject {
                 completion([])
                 return
             }
-        
+            
             
             // This will contain all of the friendId's that our current user is following
             let followingList = snapshot.documents.compactMap { $0.data()["friendId"] as? String }
@@ -108,7 +108,7 @@ class StatusProcessView: ObservableObject {
             
             // iterate through the list
             for friend in followingList {
-               
+                
                 let query2 = self.dbStatus
                     .whereField("userId", isEqualTo: friend)
                 
@@ -129,7 +129,7 @@ class StatusProcessView: ObservableObject {
                     completion(statuses)
                 }
                 
-
+                
             } // end of forloop
             
         } // end of query.getDocuments
@@ -214,7 +214,7 @@ class StatusProcessView: ObservableObject {
             
             return likeCount
             
-        } 
+        }
         catch {
             print("[DEBUG]: Error liking status: \(error.localizedDescription)")
             throw error
@@ -358,7 +358,7 @@ class StatusProcessView: ObservableObject {
         
         catch {
             print("[DEBUG]: Error replying to replycell \(error.localizedDescription)")
-            throw error 
+            throw error
         }
     }
     
@@ -392,16 +392,89 @@ class StatusProcessView: ObservableObject {
         }
     }
     
+    // function responsible for re-scaling images
+    func resizeImage(image: UIImage) -> UIImage? {
+        // Original image dimensions / aspect ratio
+        let originalImageSize = image.size
+        let aspectRatio = originalImageSize.width / originalImageSize.height
+        
+        // Allowed dimensions before being uploaded into storage
+        let allowedMinWidth: CGFloat = 320
+        let allowedMaxWidth: CGFloat = 1080
+        
+        let allowedMinHeight: CGFloat = 566
+        let allowedMaxHeight: CGFloat = 1350
+        
+        let supportedMinAspectRatio: CGFloat = 1.91
+        let supportedMaxAspectRatio: CGFloat = 4.0 / 5.0
+        
+        var targetSize: CGSize
+        
+        // *** First case, if it is already within dimensions, keep the original image size
+        if originalImageSize.width >= allowedMinWidth && originalImageSize.width <= allowedMaxWidth && aspectRatio >= supportedMinAspectRatio && aspectRatio <= supportedMaxAspectRatio {
+            targetSize = originalImageSize
+        }
+        
+        //**** If the image width is less than the minimum width, enlarge it to 320 pixels width
+        else if originalImageSize.width < allowedMinWidth {
+            let targetHeight = allowedMinWidth / aspectRatio
+            targetSize = CGSize(width: allowedMinWidth, height: targetHeight)
+        }
+        
+        //*** Downsize if the imageWidth is more than 1080 pixels
+        else if originalImageSize.width > allowedMaxWidth {
+            let targetHeight = allowedMaxWidth / aspectRatio
+            targetSize = CGSize(width: allowedMaxWidth, height: targetHeight)
+        }
+        
+        else {
+            // For unsupported aspect ratios, crop to fit the closest supported ratio
+            if aspectRatio < supportedMinAspectRatio {
+                // Crop width to fit 1.91:1 aspect ratio
+                let targetHeight = originalImageSize.width / supportedMinAspectRatio
+                let cropRect = CGRect(x: 0, y: (originalImageSize.height - targetHeight) / 2, width: originalImageSize.width, height: targetHeight)
+                if let croppedImage = image.cgImage?.cropping(to: cropRect) {
+                    return UIImage(cgImage: croppedImage)
+                } 
+                
+                else {
+                    return nil
+                }
+            }
+            
+            else {
+                // Crop height to fit 4:5 aspect ratio
+                let targetWidth = originalImageSize.height * supportedMaxAspectRatio
+                let cropRect = CGRect(x: (originalImageSize.width - targetWidth) / 2, y: 0, width: targetWidth, height: originalImageSize.height)
+                if let croppedImage = image.cgImage?.cropping(to: cropRect) {
+                    return UIImage(cgImage: croppedImage)
+                }
+                
+                else {
+                    return nil
+                }
+            }
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(targetSize, false, 0.0)
+        image.draw(in: CGRect(origin: .zero, size: targetSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        print("[resizeImage]: Ran function to the end.")
+        return resizedImage
+    }
+    
     // uploads array of images into firebaseStorage [not a database]
     func uploadImages(images: [UIImage]) async throws -> [String] {
         var imageUrls = [String]()
         let storageRef = Storage.storage().reference()
         
         for image in images {
-            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-                continue
-            }
+            guard let resizedImage = resizeImage(image: image) else { continue }
             
+            guard let imageData = resizedImage.jpegData(compressionQuality: 0.8) else { continue }
+                
             let imageId = UUID().uuidString
             let imageRef = storageRef.child("images/\(imageId).jpg")
             
@@ -418,7 +491,8 @@ class StatusProcessView: ObservableObject {
                     imageRef.downloadURL { url, error in
                         if let error = error {
                             continuation.resume(throwing: error)
-                        } else if let downloadURL = url {
+                        } 
+                        else if let downloadURL = url {
                             continuation.resume(returning: downloadURL.absoluteString)
                         }
                     }
@@ -427,7 +501,6 @@ class StatusProcessView: ObservableObject {
             
             imageUrls.append(downloadURL)
         }
-        
         return imageUrls
     }
     

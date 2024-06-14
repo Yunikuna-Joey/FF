@@ -200,7 +200,8 @@ struct StatusUpdateView: View {
                                 image
                                     .resizable()
 //                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.50)
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.30)
                                     .background(Color.gray.opacity(0.1))  // Background color to fill extra space
                                     .cornerRadius(5)
                                     .clipped()
@@ -222,7 +223,8 @@ struct StatusUpdateView: View {
                     
                 } // end of TabView
                 .tabViewStyle(PageTabViewStyle())
-                .frame(height: screenSize.height * 0.50)
+                .frame(height: screenSize.height * 0.25)
+                .cornerRadius(5)
             }
             
             //*** bottom border
