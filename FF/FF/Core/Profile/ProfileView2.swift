@@ -41,7 +41,7 @@ struct ProfileView2: View {
     
     var body: some View {
         let itemWidth: CGFloat = (screenSize.width) / 3
-        let itemHeight: CGFloat = (screenSize.height) * 0.10
+        let itemHeight: CGFloat = (screenSize.height) * 0.20
         
         ZStack(alignment: .bottom) {
             // enable scrolling behavior
