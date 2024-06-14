@@ -158,23 +158,19 @@ struct listUserProfiles: View {
                         case.success(let image):
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .aspectRatio(contentMode: .fill)
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
                                 .padding(.leading, 20)
                             
                         case.failure:
-                            HStack {
-                                Image(systemName: "xmark.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                    .padding(.leading, 20)
-                                
-                                Spacer()
-                            }
-                            .padding()
+                            Image(systemName: "xmark.circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                                .padding(.leading, 20)
+                                .foregroundStyle(Color.red)
                             
                         @unknown default:
                             EmptyView()
@@ -260,8 +256,8 @@ struct HashtagCell: View {
                         case.success(let image):
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 40, height: 40)
                                 .clipShape(Circle())
                             
                         case.failure:

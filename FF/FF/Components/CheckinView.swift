@@ -84,8 +84,8 @@ struct CheckinView: View {
                                         case.success(let image):
                                             image
                                                 .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 30, height: 30)
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 40, height: 40)
                                                 .clipShape(Circle())
                                                
                                             
