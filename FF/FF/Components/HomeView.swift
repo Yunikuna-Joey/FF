@@ -74,7 +74,7 @@ struct BlurView: UIViewRepresentable {
 // status update structure,,, what each update will follow in terms of pieces
 struct StatusUpdateView: View {
     @EnvironmentObject var statusProcess: StatusProcessView
-    @EnvironmentObject var followManager: FollowingManager
+    @EnvironmentObject var viewModel: AuthView
     
     // listens for like count changes
     @State private var likeCount: Int = 0
@@ -83,7 +83,7 @@ struct StatusUpdateView: View {
     @State private var commentCount: Int = 0
     @State private var commentFlag: Bool = false
     
-    @State private var statusUserObject: User = EmptyVariable.EmptyUser
+    @State private var statusUserObject: User?
     
     // status object
     let status: Status
@@ -104,43 +104,53 @@ struct StatusUpdateView: View {
             HStack(spacing: 10) {
                 
                 // profile image on the left
-                if statusUserObject.profilePicture.isEmpty {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(.blue)
+                if let statusUserObject = statusUserObject {
+                    if statusUserObject.profilePicture.isEmpty {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(Color.blue)
+                    }
+                    
+                    else {
+                        AsyncImage(url: URL(string: statusUserObject.profilePicture)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 30, height: 30)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                            case .failure:
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    }
+
                 }
                 
                 else {
-                    AsyncImage(url: URL(string: statusUserObject.profilePicture)) { phase in
-                        switch phase {
-                        case.empty:
-                            ProgressView()
-                                .frame(width: 30, height: 30)
-                            
-                        case.success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
-                            
-                        case.failure:
-                            HStack {
-                                Image(systemName: "xmark.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 30, height: 30)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                
-                                Spacer()
+                    ProgressView()
+                        .frame(width: 30, height: 30)
+                        .onAppear {
+                            Task {
+                                do {
+                                    statusUserObject = try await viewModel.convertUserIdToObject(status.userId)
+                                }
+                                catch {
+                                    print("Failed to fetch user: \(error)")
+                                }
                             }
-                            .padding()
-                            
-                        @unknown default:
-                            EmptyView()
                         }
-                    }
                 }
                 
                 // username text next to image
@@ -287,9 +297,6 @@ struct StatusUpdateView: View {
                 
                 // initialize comment count for each status
                 commentCount = try await statusProcess.fetchCommentCount(postId: status.id)
-                
-                // initialize the userObject
-                statusUserObject = try await followManager.getUserById(userId: status.userId) ?? EmptyVariable.EmptyUser
             }
         }
     }

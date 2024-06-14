@@ -439,6 +439,7 @@ struct CommentCell: View {
 
 // This will be our cell that holds replies
 struct ReplyCell: View {
+    @EnvironmentObject var viewModel: AuthView
     @EnvironmentObject var statusProcess: StatusProcessView
     
     //** need the parent status that the reply is under
@@ -448,6 +449,7 @@ struct ReplyCell: View {
     
     @State private var replyCellLikeCount: Int = 0
     @State private var replyCellLikeFlag: Bool = false
+    @State private var userObject: User?
     
     @Binding var replyFunctionFlag: Bool; @Binding var replyCellCommentObject: Comments?
     @Binding var selectedComment: String?
@@ -460,39 +462,53 @@ struct ReplyCell: View {
             
             // This will hold profile picture and username
             HStack {
-                if reply.userObject.profilePicture.isEmpty {
-                    // pfp of the user who replied
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .foregroundStyle(Color.blue)
-                        .frame(width: 25, height: 25)
+                if let userObject = userObject {
+                    if userObject.profilePicture.isEmpty {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(Color.blue)
+                    }
+                    
+                    else {
+                        AsyncImage(url: URL(string: userObject.profilePicture)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 30, height: 30)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                            case .failure:
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                    }
+
                 }
                 
                 else {
-                    AsyncImage(url: URL(string: reply.userObject.profilePicture)) { phase in
-                        switch phase {
-                        case.empty:
-                            ProgressView()
-                                .frame(width: 30, height: 30)
-                            
-                        case.success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
-                            
-                        case.failure:
-                            Image(systemName: "xmark.circle")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
-                            
-                        @unknown default:
-                            EmptyView()
+                    ProgressView()
+                        .frame(width: 30, height: 30)
+                        .onAppear {
+                            Task {
+                                do {
+                                    userObject = try await viewModel.convertUserIdToObject(reply.userId)
+                                }
+                                catch {
+                                    print("Failed to fetch user: \(error)")
+                                }
+                            }
                         }
-                    }
                 }
                 
                 // username of the user who replied

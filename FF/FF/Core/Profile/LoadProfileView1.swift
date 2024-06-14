@@ -100,7 +100,7 @@ struct LoadProfileStatusUpdateView: View {
                 
                 Spacer()
                 
-                Text(formatTime(from: status.timestamp))
+                Text(ConstantFunction.formatTimeAgo(from: status.timestamp))
                     .font(.caption)
                     .foregroundStyle(.gray)
             } // end of HStack
@@ -220,21 +220,6 @@ struct LoadProfileStatusUpdateView: View {
         .shadow(radius: 2)
     } // end of body
     
-    // helper function to achieve time stamps associated with statuses
-    func formatTime(from date: Date) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
-        formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 1
-        
-        guard let formattedString = formatter.string(from: date, to: Date()) else {
-            return "Unknown"
-        }
-        
-        // Debugging statement
-        print("\(formattedString) + ago")
-        return formattedString + " ago"
-    }
 }
 //
 //#Preview {

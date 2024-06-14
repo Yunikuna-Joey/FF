@@ -399,8 +399,6 @@ struct ProfileView: View {
                     Task {
                         followerCount =  await followManager.queryFollowersCount(userId: viewModel.queryCurrentUserId() ?? "")
                         followingCount =  await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
-//                        currentUserObject = try await followManager.getUserById(userId: viewModel.queryCurrentUserId() ?? "") ?? EmptyVariable.EmptyUser
-//                        print("This is the value of currentUserObject \(currentUserObject)")
                     }
                 }
             } // end of scrollView
