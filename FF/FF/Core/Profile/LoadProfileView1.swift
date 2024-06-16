@@ -122,6 +122,7 @@ struct LoadProfileStatusUpdateView: View {
             
             Text(status.content)
                 .font(.body)
+                .padding(.bottom, 5)
             
             if !status.imageUrls.isEmpty {
                 TabView {
@@ -135,9 +136,10 @@ struct LoadProfileStatusUpdateView: View {
                             case .success(let image):
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: screenSize.height * 0.40)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.50)
+                                    .cornerRadius(5)
+                                    .clipped()
                                 
                             case .failure:
                                 Image(systemName: "xmark.circle")
@@ -156,7 +158,8 @@ struct LoadProfileStatusUpdateView: View {
                     
                 } // end of TabView
                 .tabViewStyle(PageTabViewStyle())
-                .frame(height: screenSize.height * 0.40)
+                .frame(height: screenSize.height * 0.50)
+                .cornerRadius(5)
             }
             
             //*** bottom border
@@ -215,7 +218,12 @@ struct LoadProfileStatusUpdateView: View {
             .padding(.top, 10)
         } // end of VStack
         .padding()
-        .background(Color.white)
+        .background(
+            ZStack {
+                Color.white.opacity(0.2)
+                BlurView(style: .systemMaterial)
+            }
+        )
         .cornerRadius(10)
         .shadow(radius: 2)
     } // end of body

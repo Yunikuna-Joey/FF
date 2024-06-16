@@ -185,7 +185,7 @@ struct StatusUpdateView: View {
             // below the left => right will be the actual status
             Text(status.content)
                 .font(.body)
-                .padding(.bottom)
+                .padding(.bottom, 5)
             
             if !status.imageUrls.isEmpty {
                 TabView {
@@ -199,10 +199,8 @@ struct StatusUpdateView: View {
                             case .success(let image):
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
-//                                    .scaledToFit()
-                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.40)
-                                    /*.background(Color.gray.opacity(0.1)) */ // Background color to fill extra space
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.50)
                                     .cornerRadius(5)
                                     .clipped()
                                 
@@ -223,7 +221,7 @@ struct StatusUpdateView: View {
                     
                 } // end of TabView
                 .tabViewStyle(PageTabViewStyle())
-                .frame(height: screenSize.height * 0.40)
+                .frame(height: screenSize.height * 0.50)
                 .cornerRadius(5)
             }
             
