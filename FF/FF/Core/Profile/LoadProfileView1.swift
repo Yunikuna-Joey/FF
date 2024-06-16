@@ -182,7 +182,6 @@ struct LoadProfileStatusUpdateView: View {
                     
                     Text("\(likeCount)")
                         .foregroundStyle(Color.black)
-//                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
                         
                 }
                 .foregroundStyle(Color.gray)
