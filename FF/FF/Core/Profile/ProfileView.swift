@@ -69,10 +69,10 @@ struct ProfileView: View {
                             if currentUserObject.coverPicture.isEmpty {
                                 Image("Car")
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .aspectRatio(contentMode: .fill)
                                     .frame(maxWidth: .infinity)
                                     .frame(height: screenSize.height * 0.30)
-                                    .clipped()
+//                                    .clipped()
                             }
                             
                             else {
@@ -130,7 +130,8 @@ struct ProfileView: View {
                                         // Different cases the request might encounter: loading | success | None
                                     case .empty:
                                         ProgressView()
-                                            .frame(height: screenSize.height * 0.40)
+                                            .frame(width: 200, height: 150)
+                                            .offset(y: -100)
                                         
                                     case .success(let image):
                                         image
@@ -144,8 +145,9 @@ struct ProfileView: View {
                                         Image(systemName: "xmark.circle")
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(width: 100, height: 200)
-                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .frame(width: 200, height: 150)
+                                            .clipShape(Circle())
+                                            .offset(y: -100)
                                         
                                     @unknown default:
                                         EmptyView()
@@ -194,6 +196,7 @@ struct ProfileView: View {
                                         }
                                         .padding()
                                         
+                                        
                                         Divider()
                                         
                                         //*** Changing the cover picture case
@@ -216,7 +219,7 @@ struct ProfileView: View {
                                         .padding()
                                         
                                     } // end of vstack
-                                    //.presentationDetents([.fraction(0.3), .medium, .large])
+                                    
                                     .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
                                     .navigationDestination(isPresented: $previewProfileFlag) {
                                         PreviewProfilePicture(
@@ -276,12 +279,14 @@ struct ProfileView: View {
                                     }
                                     
                                 } // end of navigation stack
+                                .presentationDetents([.fraction(0.25)])
                                 
                             } // end of sheet closure
 
                             
                         } // end of parent hstack
                         .offset(y: -screenSize.height * 0.12)
+                        .padding(.leading, 15)
                                                 
                         // HStack for user statistics
                         HStack(spacing: screenSize.width * 0.15) {
