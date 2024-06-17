@@ -252,6 +252,7 @@ struct StatusUpdateView: View {
                     
                     Text("\(likeCount)")
                         .foregroundStyle(Color.primary)
+                        .monospacedDigit()
 //                        .foregroundStyle(likeFlag ? Color.red : Color.gray)
                         
                 }
@@ -277,6 +278,7 @@ struct StatusUpdateView: View {
                     
                     Text("\(commentCount)")
                         .foregroundStyle(Color.primary)
+                        .monospacedDigit()
                 }
                 .sheet(isPresented: $commentFlag) {
                     CommentView(status: status)

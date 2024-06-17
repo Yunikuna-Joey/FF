@@ -181,7 +181,8 @@ struct LoadProfileStatusUpdateView: View {
                         .foregroundStyle(likeFlag ? Color.red : Color.gray)
                     
                     Text("\(likeCount)")
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.primary)
+                        .monospacedDigit()
                         
                 }
                 .foregroundStyle(Color.gray)
@@ -205,7 +206,8 @@ struct LoadProfileStatusUpdateView: View {
                         .foregroundStyle(Color.gray)
                     
                     Text("\(commentCount)")
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.primary)
+                        .monospacedDigit()
                 }
                 .sheet(isPresented: $commentFlag) {
                     CommentView(status: status)
