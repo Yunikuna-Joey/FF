@@ -36,9 +36,7 @@ struct NavigatorView: View {
                     Text("Home")
                 }
                 .tag(0)
-                .background(
-                    BackgroundView()
-                )
+               
             
             SearchView()
                 .tabItem {

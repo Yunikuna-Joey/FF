@@ -40,9 +40,13 @@ struct HomeView: View {
                     
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             // create some extra spacing
             .padding()
         }
+        .background(
+            BackgroundView()
+        )
         .onAppear {
             statusProcess.feedList.removeAll()
                         

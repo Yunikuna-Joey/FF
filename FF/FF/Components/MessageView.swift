@@ -141,6 +141,8 @@ struct MessageView: View {
         let screenSize = UIScreen.main.bounds.size
         NavigationStack {
             ZStack {
+                BackgroundView()
+                
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         //*** query the messages associated with the current user here
@@ -174,9 +176,9 @@ struct MessageView: View {
                 )
                 
             } // end of ZStack
-            .background(
-                BackgroundView()
-            )
+//            .background(
+//                BackgroundView()
+//            )
             .navigationDestination(isPresented: $chatFlag) {
                 //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
                 IndividualChatView(chatPartner: $chatPartner)
