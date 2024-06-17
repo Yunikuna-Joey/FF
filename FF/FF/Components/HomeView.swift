@@ -87,6 +87,8 @@ struct StatusUpdateView: View {
     @State private var commentCount: Int = 0
     @State private var commentFlag: Bool = false
     
+    @State private var deleteFlag: Bool = false
+    
     @State private var statusUserObject: User?
     
     // status object
@@ -170,6 +172,7 @@ struct StatusUpdateView: View {
                     .foregroundColor(.gray)
             }
             
+            // Bubble choices associated with a status
             HStack {
                 ForEach(status.bubbleChoice, id: \.self) { bubble in
                     let color = colors[bubble] ?? .gray
@@ -235,7 +238,7 @@ struct StatusUpdateView: View {
                 .frame(height: 1)
                 .padding(.vertical, 5)
 
-            
+            // Button HStack
             HStack(spacing: 20) {
                 //** Like button
                 Button(action: {
@@ -281,6 +284,20 @@ struct StatusUpdateView: View {
                 
                 // push to the left so its aligned-left
                 Spacer()
+                
+                //** Delete button if currentUser is the owner of the StatusUpdateView
+                if let statusUserObject = statusUserObject {
+                    if statusUserObject == viewModel.currentSession {
+                        
+                        Button(action: {
+                            print("Act as the delete button")
+                            deleteFlag.toggle()
+                        }) {
+                            Image(systemName: "trash")
+                                .foregroundStyle(Color.red)
+                        }
+                    } // end of condition
+                } // variable unwrap
             }
             .padding(.top, 10)
 
@@ -304,6 +321,44 @@ struct StatusUpdateView: View {
                 // initialize comment count for each status
                 commentCount = try await statusProcess.fetchCommentCount(postId: status.id)
             }
+        }
+        .sheet(isPresented: $deleteFlag) {
+            VStack {
+                Text("Are you sure you want to delete this post?")
+                    .padding()
+                
+                HStack {
+                    Button(action: {
+                        print("Act as the no button")
+                        deleteFlag.toggle()
+                    }) {
+                        Text("No")
+                    }
+                    .padding(.horizontal)
+                    
+                    Button(action: {
+                        print("Act as the yes button")
+                        Task {
+                            try await statusProcess.deleteStatus(postId: status.id)
+                            //** Removes itself from the HomeView
+                            if let index = statusProcess.feedList.firstIndex(where: { $0.id == status.id }) {
+                                statusProcess.feedList.remove(at: index)
+                            }
+                            //** Removes itself from the PFV1
+                            if let index = statusProcess.statusList.firstIndex(where: { $0.id == status.id }) {
+                                statusProcess.feedList.remove(at: index)
+                            }
+                            deleteFlag.toggle()
+                        }
+                    }) {
+                        Text("Yes")
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+            }
+            .presentationDetents([.fraction(0.15)])
         }
     }
     
