@@ -51,7 +51,7 @@ struct HomeView: View {
             statusProcess.feedList.removeAll()
                         
             // query statuses for following based on current string user id else { blank }
-            statusProcess.fetchFeed(userId: viewModel.queryCurrentUserId() ?? "") { statuses in
+            statusProcess.fetchFeed(userId: Auth.auth().currentUser?.uid ?? "") { statuses in
                 for status in statuses {
                     statusProcess.feedList.append(status)
 //                    print("This is the value of status \(status)")
@@ -61,6 +61,17 @@ struct HomeView: View {
            
             // Then in main view, we sort the list by timestamp
             print("This is the value of feedlist: \(statusProcess.feedList)")
+        }
+        .refreshable {
+            statusProcess.feedList.removeAll()
+                        
+            // query statuses for following based on current string user id else { blank }
+            statusProcess.fetchFeed(userId: Auth.auth().currentUser?.uid ?? "") { statuses in
+                for status in statuses {
+                    statusProcess.feedList.append(status)
+//                    print("This is the value of status \(status)")
+                }
+            }
         }
     }
 }
