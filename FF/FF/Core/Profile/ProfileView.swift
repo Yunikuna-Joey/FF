@@ -35,10 +35,13 @@ struct ProfileView: View {
     // Cover || Profile Picture
     @State private var selectProfilePicture: UIImage?
     @State private var selectCoverPicture: UIImage?
+    @State private var activeSheet: ActiveSheet?
+    
     @State private var profilePictureFlag: Bool = false
     @State private var coverPictureFlag: Bool = false
     @State private var previewProfileFlag: Bool = false
     @State private var previewCoverFlag: Bool = false
+    @State private var cropImageFlag: Bool = false
     
     
     // plan object..?
@@ -54,6 +57,17 @@ struct ProfileView: View {
         case status
         case images
         case others
+    }
+    
+    // sheet handling for picture storyline [not-sure to implement yet]
+    enum ActiveSheet: Identifiable {
+        case profilePicture
+        case coverPicture
+        case imageCrop
+        
+        var id: Int {
+            hashValue
+        }
     }
     
     let screenSize = UIScreen.main.bounds.size
@@ -179,7 +193,6 @@ struct ProfileView: View {
                                     VStack {
                                         //*** Changing the user Profile picture case
                                         HStack {
-                                            
                                             Button(action: {
                                                 print("This will act as the profile picture change button")
                                                 profilePictureFlag.toggle()
@@ -188,13 +201,20 @@ struct ProfileView: View {
                                             }
                                             .sheet(isPresented: $profilePictureFlag) {
                                                 ImagePicker(selectedImage: $selectProfilePicture) {
-                                                    previewProfileFlag = true
+                                                    cropImageFlag = true
+//                                                    previewProfileFlag = true
                                                 }
                                             }
                                             
                                             Spacer()
                                         }
                                         .padding()
+                                        .sheet(isPresented: $cropImageFlag) {
+                                            ImageCrop(image: $selectProfilePicture) { croppedImage in
+                                                selectProfilePicture = croppedImage
+                                                previewProfileFlag = true
+                                            } onCancel: { cropImageFlag = false }
+                                        }
                                         
                                         
                                         Divider()
@@ -219,7 +239,6 @@ struct ProfileView: View {
                                         .padding()
                                         
                                     } // end of vstack
-                                    
                                     .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
                                     .navigationDestination(isPresented: $previewProfileFlag) {
                                         PreviewProfilePicture(
@@ -260,7 +279,6 @@ struct ProfileView: View {
                                                 Task {
                                                     if let selectCoverPicture = selectCoverPicture, let currentUserSession = viewModel.currentSession{
                                                         let imageUrl = try await statusProcess.uploadImage(image: selectCoverPicture)
-                                                        
                                                         
                                                         viewModel.updateCoverPicture(userId: currentUserSession.id, coverPictureUrl: imageUrl)
                                                     }
@@ -352,7 +370,6 @@ struct ProfileView: View {
                                     )
                             }
                         }
-//                        .foregroundStyle(Color.blue)
                         .overlay(
                             Rectangle()
                                 .frame(height: 0.25)
