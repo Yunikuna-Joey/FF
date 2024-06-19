@@ -210,10 +210,16 @@ struct ProfileView: View {
                                         }
                                         .padding()
                                         .sheet(isPresented: $cropImageFlag) {
-                                            ImageCrop(image: $selectProfilePicture) { croppedImage in
-                                                selectProfilePicture = croppedImage
-                                                previewProfileFlag = true
-                                            } onCancel: { cropImageFlag = false }
+                                            // Use ImageCrop wrapper here
+                                            ImageCrop(image: $selectProfilePicture,
+                                                      visible: $cropImageFlag,
+                                                      onCropFinished: { croppedImage in
+                                                          selectProfilePicture = croppedImage
+                                                          previewProfileFlag = true
+                                                      },
+                                                      onCancel: {
+                                                          cropImageFlag = false
+                                                      })
                                         }
                                         
                                         
@@ -239,7 +245,7 @@ struct ProfileView: View {
                                         .padding()
                                         
                                     } // end of vstack
-                                    .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
+//                                    .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
                                     .navigationDestination(isPresented: $previewProfileFlag) {
                                         PreviewProfilePicture(
                                             selectedImage: $selectProfilePicture,
@@ -297,7 +303,7 @@ struct ProfileView: View {
                                     }
                                     
                                 } // end of navigation stack
-                                .presentationDetents([.fraction(0.25)])
+                                .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
                                 
                             } // end of sheet closure
 

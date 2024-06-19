@@ -10,6 +10,7 @@ import MapKit
 import FirebaseAuth
 import FirebaseStorage
 import PhotosUI
+import CropViewController
 
 struct CheckinView: View {
     // env variable to access status functionality
@@ -495,118 +496,158 @@ struct MultiImagePicker: UIViewControllerRepresentable {
 }
 
 //*** Image Cropper
-struct ImageCrop: View {
-    @Binding var image: UIImage?
-    @State private var cropRect: CGRect = .zero
-    @State private var dragOffset = CGSize.zero
-    @State private var lastOffset = CGSize.zero
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
+//struct ImageCrop: View {
+//    @Binding var image: UIImage?
+//    @State private var cropRect: CGRect = .zero
+//    @State private var dragOffset = CGSize.zero
+//    @State private var lastOffset = CGSize.zero
+//    @State private var scale: CGFloat = 1.0
+//    @State private var lastScale: CGFloat = 1.0
+//
+//    var onSave: (UIImage) -> Void
+//    var onCancel: () -> Void
+//
+//    var body: some View {
+//        VStack {
+//            GeometryReader { geometry in
+//                ZStack {
+//                    if let image = image {
+//                        Image(uiImage: image)
+//                            .resizable()
+//                            .scaledToFit()
+//                            .scaleEffect(scale)
+//                            .offset(x: dragOffset.width, y: dragOffset.height)
+//                            .gesture(DragGesture()
+//                                .onChanged { value in
+//                                    self.dragOffset = CGSize(width: value.translation.width + self.lastOffset.width,
+//                                                             height: value.translation.height + self.lastOffset.height)
+//                                }
+//                                .onEnded { value in
+//                                    self.lastOffset = self.dragOffset
+//                                }
+//                            )
+//                            .gesture(MagnificationGesture()
+//                                .onChanged { value in
+//                                    self.scale = self.lastScale * value
+//                                }
+//                                .onEnded { value in
+//                                    self.lastScale = self.scale
+//                                }
+//                            )
+//
+//                        Rectangle()
+//                            .stroke(Color.white, lineWidth: 2)
+//                            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
+//                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+//                    } 
+//                    else {
+//                        Text("No image selected")
+//                    }
+//                }
+//                .clipped()
+//            }
+//            
+//            // Static buttons
+//            HStack {
+//                Button("Cancel") {
+//                    onCancel()
+//                }
+//                .padding()
+//                
+//                Spacer()
+//                
+//                Button("Save") {
+//                    if let croppedImage = self.cropImage() {
+//                        onSave(croppedImage)
+//                    }
+//                }
+//                .padding()
+//            }
+//            .padding(.horizontal)
+//            .frame(height: 50)
+//            .background(Color.white.opacity(0.8))
+//            .cornerRadius(10)
+//            .padding()
+//        }
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//    }
+//
+//    func cropImage() -> UIImage? {
+//        guard let image = image else { return nil }
+//        
+//        // Calculate visible rect within the image view
+//        let visibleRect = CGRect(x: max(0, -dragOffset.width / scale),
+//                                 y: max(0, -dragOffset.height / scale),
+//                                 width: image.size.width / scale,
+//                                 height: image.size.height / scale)
+//        
+//        // Calculate the actual crop rect within the image coordinates
+//        let cropRectInImage = CGRect(x: cropRect.origin.x / scale,
+//                                     y: cropRect.origin.y / scale,
+//                                     width: cropRect.size.width / scale,
+//                                     height: cropRect.size.height / scale)
+//        
+//        // Intersect the visible rect with the crop rect
+//        let intersectionRect = visibleRect.intersection(cropRectInImage)
+//        
+//        // Calculate the scale-adjusted crop size
+//        let cropSize = CGSize(width: intersectionRect.size.width * scale,
+//                              height: intersectionRect.size.height * scale)
+//        
+//        // Calculate the scale-adjusted crop origin
+//        let cropOrigin = CGPoint(x: max(0, intersectionRect.origin.x * scale + dragOffset.width),
+//                                 y: max(0, intersectionRect.origin.y * scale + dragOffset.height))
+//        
+//        // Use UIGraphicsImageRenderer to create the cropped image
+//        let renderer = UIGraphicsImageRenderer(size: cropSize)
+//        let croppedImage = renderer.image { rendererContext in
+//            image.draw(at: CGPoint(x: -cropOrigin.x, y: -cropOrigin.y))
+//        }
+//        
+//        return croppedImage
+//    }
+//}
 
-    var onSave: (UIImage) -> Void
+struct ImageCrop: UIViewControllerRepresentable{
+    @Binding var image: UIImage?
+    @Binding var visible: Bool
+    var onCropFinished: (UIImage) -> Void
     var onCancel: () -> Void
 
-    var body: some View {
-        VStack {
-            GeometryReader { geometry in
-                ZStack {
-                    if let image = image {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .scaleEffect(scale)
-                            .offset(x: dragOffset.width, y: dragOffset.height)
-                            .gesture(DragGesture()
-                                .onChanged { value in
-                                    self.dragOffset = CGSize(width: value.translation.width + self.lastOffset.width,
-                                                             height: value.translation.height + self.lastOffset.height)
-                                }
-                                .onEnded { value in
-                                    self.lastOffset = self.dragOffset
-                                }
-                            )
-                            .gesture(MagnificationGesture()
-                                .onChanged { value in
-                                    self.scale = self.lastScale * value
-                                }
-                                .onEnded { value in
-                                    self.lastScale = self.scale
-                                }
-                            )
+    class Coordinator: NSObject, CropViewControllerDelegate{
+        let parent: ImageCrop
 
-                        Rectangle()
-                            .stroke(Color.white, lineWidth: 2)
-                            .frame(width: geometry.size.width * 0.8, height: geometry.size.width * 0.8)
-                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                    } 
-                    else {
-                        Text("No image selected")
-                    }
-                }
-                .clipped()
-            }
-            
-            // Static buttons
-            HStack {
-                Button("Cancel") {
-                    onCancel()
-                }
-                .padding()
-                
-                Spacer()
-                
-                Button("Save") {
-                    if let croppedImage = self.cropImage() {
-                        onSave(croppedImage)
-                    }
-                }
-                .padding()
-            }
-            .padding(.horizontal)
-            .frame(height: 50)
-            .background(Color.white.opacity(0.8))
-            .cornerRadius(10)
-            .padding()
+        init(_ parent: ImageCrop){
+            self.parent = parent
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+            withAnimation {
+                parent.visible = false
+            }
+            parent.onCropFinished(image)
+        }
+
+        func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+            withAnimation{
+                parent.visible = false
+            }
+        }
     }
 
-    func cropImage() -> UIImage? {
-        guard let image = image else { return nil }
-        
-        // Calculate visible rect within the image view
-        let visibleRect = CGRect(x: max(0, -dragOffset.width / scale),
-                                 y: max(0, -dragOffset.height / scale),
-                                 width: image.size.width / scale,
-                                 height: image.size.height / scale)
-        
-        // Calculate the actual crop rect within the image coordinates
-        let cropRectInImage = CGRect(x: cropRect.origin.x / scale,
-                                     y: cropRect.origin.y / scale,
-                                     width: cropRect.size.width / scale,
-                                     height: cropRect.size.height / scale)
-        
-        // Intersect the visible rect with the crop rect
-        let intersectionRect = visibleRect.intersection(cropRectInImage)
-        
-        // Calculate the scale-adjusted crop size
-        let cropSize = CGSize(width: intersectionRect.size.width * scale,
-                              height: intersectionRect.size.height * scale)
-        
-        // Calculate the scale-adjusted crop origin
-        let cropOrigin = CGPoint(x: max(0, intersectionRect.origin.x * scale + dragOffset.width),
-                                 y: max(0, intersectionRect.origin.y * scale + dragOffset.height))
-        
-        // Use UIGraphicsImageRenderer to create the cropped image
-        let renderer = UIGraphicsImageRenderer(size: cropSize)
-        let croppedImage = renderer.image { rendererContext in
-            image.draw(at: CGPoint(x: -cropOrigin.x, y: -cropOrigin.y))
-        }
-        
-        return croppedImage
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(self)
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+
+    func makeUIViewController(context: Context) -> some UIViewController {
+        let img = self.image ?? UIImage()
+        let cropViewController = CropViewController(image: img)
+        cropViewController.delegate = context.coordinator
+        return cropViewController
     }
 }
-
 
 
 struct CheckinView_Preview: PreviewProvider {

@@ -48,6 +48,8 @@
 		D418F7652BC5D10500ACDE99 /* LoadProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D418F7642BC5D10500ACDE99 /* LoadProfileView.swift */; };
 		D430FC102BED66D500914CB8 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D430FC0F2BED66D500914CB8 /* TestView.swift */; };
 		D430FC122BEEDB3300914CB8 /* ScrollManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D430FC112BEEDB3300914CB8 /* ScrollManager.swift */; };
+		D44358AB2C23974400533F09 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = D44358AA2C23974400533F09 /* CropViewController */; };
+		D44358AD2C23974400533F09 /* TOCropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = D44358AC2C23974400533F09 /* TOCropViewController */; };
 		D46878902BF43A7F00AA7A5E /* Likes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D468788F2BF43A7F00AA7A5E /* Likes.swift */; };
 		D46B7E092BFBDD65005CA754 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46B7E082BFBDD64005CA754 /* Constants.swift */; };
 		D4843F302BC8E967003A20C3 /* LoadProfileView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4843F2F2BC8E967003A20C3 /* LoadProfileView1.swift */; };
@@ -151,7 +153,9 @@
 				D4092E092BA4255600C42840 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				D4092E0F2BA4255600C42840 /* FirebaseAuth in Frameworks */,
 				D4092E132BA4255600C42840 /* FirebaseCrashlytics in Frameworks */,
+				D44358AD2C23974400533F09 /* TOCropViewController in Frameworks */,
 				D4092E332BA4255600C42840 /* FirebaseRemoteConfigSwift in Frameworks */,
+				D44358AB2C23974400533F09 /* CropViewController in Frameworks */,
 				D4092E252BA4255600C42840 /* FirebaseInAppMessaging-Beta in Frameworks */,
 				D4092E172BA4255600C42840 /* FirebaseDatabaseSwift in Frameworks */,
 				D4092E212BA4255600C42840 /* FirebaseFunctions in Frameworks */,
@@ -374,6 +378,8 @@
 				D4092E322BA4255600C42840 /* FirebaseRemoteConfigSwift */,
 				D4092E342BA4255600C42840 /* FirebaseStorage */,
 				D4092E362BA4255600C42840 /* FirebaseStorageCombine-Community */,
+				D44358AA2C23974400533F09 /* CropViewController */,
+				D44358AC2C23974400533F09 /* TOCropViewController */,
 			);
 			productName = FF;
 			productReference = D4E4FAB82B99C19600F5C202 /* FF.app */;
@@ -405,6 +411,7 @@
 			mainGroup = D4E4FAAF2B99C19600F5C202;
 			packageReferences = (
 				D4092E012BA4255600C42840 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D44358A92C23974400533F09 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 			);
 			productRefGroup = D4E4FAB92B99C19600F5C202 /* Products */;
 			projectDirPath = "";
@@ -696,6 +703,14 @@
 				minimumVersion = 10.22.1;
 			};
 		};
+		D44358A92C23974400533F09 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TimOliver/TOCropViewController";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -833,6 +848,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D4092E012BA4255600C42840 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		D44358AA2C23974400533F09 /* CropViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D44358A92C23974400533F09 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			productName = CropViewController;
+		};
+		D44358AC2C23974400533F09 /* TOCropViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D44358A92C23974400533F09 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			productName = TOCropViewController;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
