@@ -211,15 +211,16 @@ struct ProfileView: View {
                                         .padding()
                                         .sheet(isPresented: $cropImageFlag) {
                                             // Use ImageCrop wrapper here
-                                            ImageCrop(image: $selectProfilePicture,
-                                                      visible: $cropImageFlag,
-                                                      onCropFinished: { croppedImage in
-                                                          selectProfilePicture = croppedImage
-                                                          previewProfileFlag = true
-                                                      },
-                                                      onCancel: {
-                                                          cropImageFlag = false
-                                                      })
+                                            ImageCrop(
+                                                image: $selectProfilePicture,
+                                                visible: $cropImageFlag,
+                                                  onCropFinished: { croppedImage in
+                                                      selectProfilePicture = croppedImage
+                                                      previewProfileFlag = true
+                                                  },
+                                                  onCancel: {
+                                                      cropImageFlag = false
+                                                  })
                                         }
                                         
                                         

@@ -51,8 +51,11 @@ struct CheckinView: View {
     
     // image picker
     @State private var imagePickerFlag: Bool = false
-//    @State private var selectedImage: UIImage?
+    @State private var cropImageFlag: Bool = false
+
     @State private var selectedImages: [UIImage] = []
+    @State private var currentImageIndex = 0
+    @State private var currentImage: UIImage?
     
     // screen size
     let screenSize = UIScreen.main.bounds.size
@@ -119,11 +122,38 @@ struct CheckinView: View {
                                 Image(systemName: "photo.on.rectangle.fill")
                                     .font(.title)
                             }
-                            .sheet(isPresented: $imagePickerFlag) {
+                            .sheet(isPresented: $imagePickerFlag, onDismiss: {
+                                if !selectedImages.isEmpty {
+                                    currentImageIndex = 0
+                                    currentImage = selectedImages[currentImageIndex]
+                                    cropImageFlag = true
+                                }
+                            }) {
                                 MultiImagePicker(selectedImages: $selectedImages)
                             }
                             
                         } // end of HStack
+//                        .sheet(isPresented: $cropImageFlag) {
+//                            if let currentImage = currentImage {
+//                                ImageCrop(
+//                                    image: $currentImage,
+//                                    visible: $cropImageFlag,
+//                                    onCropFinished: { croppedImage in
+//                                        // Update the selected image with the cropped version
+//                                        selectedImages[currentImageIndex] = croppedImage
+//                                        
+//                                        // Move to the next image or finish
+//                                        currentImageIndex += 1
+//                                        if currentImageIndex < selectedImages.count {
+//                                            self.currentImage = selectedImages[currentImageIndex]
+//                                            self.cropImageFlag = true
+//                                        }
+//                                    },
+//                                    onCancel: { cropImageFlag = false }
+//                                    
+//                                )}
+//                            }
+                        }
                         
                         // bubbles for the status
                         HStack {
