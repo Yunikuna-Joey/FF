@@ -246,7 +246,6 @@ struct ProfileView: View {
                                         .padding()
                                         
                                     } // end of vstack
-//                                    .presentationDetents([.fraction(0.25), .fraction(0.50), .large])
                                     .navigationDestination(isPresented: $previewProfileFlag) {
                                         PreviewProfilePicture(
                                             selectedImage: $selectProfilePicture,

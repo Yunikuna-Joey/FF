@@ -54,6 +54,7 @@ struct CheckinView: View {
     @State private var cropImageFlag: Bool = false
 
     @State private var selectedImages: [UIImage] = []
+    @State private var croppedImageList: [UIImage] = []
     @State private var currentImageIndex = 0
     @State private var currentImage: UIImage?
     
@@ -127,32 +128,44 @@ struct CheckinView: View {
                                     currentImageIndex = 0
                                     currentImage = selectedImages[currentImageIndex]
                                     cropImageFlag = true
+                                    print("Selected images count: \(selectedImages.count)")
+                                    print("Starting to crop image at index: \(currentImageIndex)")
                                 }
                             }) {
                                 MultiImagePicker(selectedImages: $selectedImages)
                             }
                             
                         } // end of HStack
-//                        .sheet(isPresented: $cropImageFlag) {
-//                            if let currentImage = currentImage {
-//                                ImageCrop(
-//                                    image: $currentImage,
-//                                    visible: $cropImageFlag,
-//                                    onCropFinished: { croppedImage in
-//                                        // Update the selected image with the cropped version
-//                                        selectedImages[currentImageIndex] = croppedImage
-//                                        
-//                                        // Move to the next image or finish
-//                                        currentImageIndex += 1
-//                                        if currentImageIndex < selectedImages.count {
-//                                            self.currentImage = selectedImages[currentImageIndex]
-//                                            self.cropImageFlag = true
-//                                        }
-//                                    },
-//                                    onCancel: { cropImageFlag = false }
-//                                    
-//                                )}
-//                            }
+                        .sheet(isPresented: $cropImageFlag) {
+                            
+                            ImageCrop(
+                                image: $currentImage,
+                                visible: $cropImageFlag,
+                                onCropFinished: { croppedImage in
+                                    DispatchQueue.main.async {
+                                        croppedImageList.append(croppedImage)
+                                        currentImageIndex += 1
+                                        if currentImageIndex < selectedImages.count {
+                                            
+                                            self.currentImage = selectedImages[currentImageIndex]
+                                            self.cropImageFlag = true
+                                            print("Cropping next image at index: \(currentImageIndex)")
+                                            
+                                        }
+                                        else {
+                                            
+                                            self.cropImageFlag = false
+                                            selectedImages.removeAll()
+                                            print("Finished cropping all images.")
+                                            
+                                        }
+                                    }
+                                },
+                                onCancel: {
+                                    cropImageFlag = false
+                                }
+                            )
+                            
                         }
                         
                         // bubbles for the status
@@ -186,11 +199,11 @@ struct CheckinView: View {
                             .lineLimit(1...5)
                         
                         // Area for holding images that user wants to attach to a post
-                        if !selectedImages.isEmpty {
+                        if !croppedImageList.isEmpty {
                             TabView {
-                                ForEach(selectedImages.indices, id: \.self) { index in
+                                ForEach(croppedImageList.indices, id: \.self) { index in
                                     ZStack(alignment: .topTrailing) {
-                                        Image(uiImage: selectedImages[index])
+                                        Image(uiImage: croppedImageList[index])
                                             .resizable()
                                             .aspectRatio(contentMode: .fill)
                                             .frame(maxWidth: .infinity, maxHeight: screenSize.height * 0.20)
@@ -441,7 +454,7 @@ struct CheckinView: View {
     }
     
     private func removeImage(at index: Int) {
-        selectedImages.remove(at: index)
+        croppedImageList.remove(at: index)
     }
     
 } // end of structure declaration
