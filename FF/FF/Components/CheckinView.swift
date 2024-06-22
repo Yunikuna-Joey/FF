@@ -195,7 +195,7 @@ struct CheckinView: View {
                         // User enters their status
                         TextField("What are you up to today", text: $statusField, axis: .vertical)
                             .padding(.top)
-                            .padding(.bottom, 25)
+                            .padding(.bottom, 15)
                             .lineLimit(1...5)
                         
                         // Area for holding images that user wants to attach to a post
@@ -225,23 +225,26 @@ struct CheckinView: View {
                             .tabViewStyle(PageTabViewStyle())
                             .frame(height: screenSize.height * 0.20)
                             .cornerRadius(5)
-                            .padding()
+                            
                         }
                         
-                        
                         // Checkin Field option.... need to determine what UI element to use [recent]
-                        HStack {
-                            Text("Select your location")
-                            Spacer()
-                            Picker(selection: $selectedOption, label: Text("Choose your option")) {
+                        Menu {
+                            Picker(selection: $selectedOption, label: EmptyView()) {
                                 ForEach(nearby, id: \.self) { option in
                                     Text(option)
-                                        .tag(option) // Tag the Text view with the option
+                                        .tag(option)
                                 }
                             }
-                            .pickerStyle(MenuPickerStyle())
-                            
-                        } // end of hstack
+                        } label: {
+                            HStack {
+                                Text(selectedOption.isEmpty ? "Select location" : selectedOption)
+                                    .foregroundStyle(selectedOption.isEmpty ? Color.gray.opacity(0.75) : Color.primary)
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(Color.blue)
+                            }
+                        }
+                        .padding(.top, 5)
                         .onTapGesture {
                             // this should prompt the user location when this portion is gestured
                             LocationManager.shared.requestLocation()
@@ -445,7 +448,7 @@ struct CheckinView: View {
             nearby = response.mapItems.compactMap { mapItem in
                 if let name = mapItem.name, let location = mapItem.placemark.location {
                     let distance = location.distance(from: currLocation) / 1609.34
-                    return "\(name) - \(String(format: "%.2f", distance)) miles away"
+                    return "\(name) - \(String(format: "%.1f", distance)) miles away"
                 }
                 return nil
             }
@@ -545,7 +548,7 @@ struct MultiImagePicker: UIViewControllerRepresentable {
         var config = PHPickerConfiguration()
         config.filter = .images
         // max amount of pictures
-        config.selectionLimit = 7 // 0 means no limit on pictures [change as needed]
+        config.selectionLimit = 10 // 0 means no limit on pictures [change as needed]
         
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator

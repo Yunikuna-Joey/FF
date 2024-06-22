@@ -176,9 +176,6 @@ struct MessageView: View {
                 )
                 
             } // end of ZStack
-//            .background(
-//                BackgroundView()
-//            )
             .navigationDestination(isPresented: $chatFlag) {
                 //** using optional unwrapping is not displaying the hardcoded messages that I have set up in IndividualChatView
                 IndividualChatView(chatPartner: $chatPartner)
@@ -202,6 +199,23 @@ struct MessageView: View {
                 } // end of if statement
                 
             } // end of onAppear closure
+            .refreshable {
+                if messageManager.inboxList.isEmpty {
+                    messageManager.queryInboxList() { message in
+                        // this is going in one by one
+                        for element in message {
+                            if let index = messageManager.inboxList.firstIndex(where: { $0.fromUser == element.fromUser }) {
+                                messageManager.inboxList[index] = element
+                            }
+                            else {
+                                messageManager.inboxList.append(element)
+                            }
+                        } // end of for loop
+                    
+                    } // end of variable unwrapping
+                    
+                } // end of if statement
+            }
             
         } // end of NavigationStack
     }
