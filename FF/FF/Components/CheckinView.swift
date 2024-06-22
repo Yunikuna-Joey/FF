@@ -24,7 +24,7 @@ struct CheckinView: View {
     @State private var bubbleChoice: [String] = []
     
     // Available options to choose from [needed state to bind objects to view... to mutate them from off the bottom => top and <=>]
-    @State private var bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower", "Back"]
+    @State private var bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower", "Back", "Arms", "Chest"]
     
     // Hashmap to map the caption to its color
     @State private var colors: [String: Color] = [
@@ -33,7 +33,9 @@ struct CheckinView: View {
         "Pull": .yellow,
         "Upper": .green,
         "Lower": .blue,
-        "Back": .purple
+        "Back": .purple,
+        "Arms": .indigo,
+        "Chest": .cyan
     ]
     
     // Checkin menu option here [recent]
@@ -61,8 +63,13 @@ struct CheckinView: View {
     // screen size
     let screenSize = UIScreen.main.bounds.size
     
+    // # of columns for the bubble choices
+    private let numberOfColumns = 4
+    
     var body: some View {
         NavigationStack {
+            let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: numberOfColumns)
+            
             ZStack {
                 
                 VStack {
@@ -263,7 +270,39 @@ struct CheckinView: View {
                     .shadow(radius: 5)
                     
                     // bubbles at the bottom row
-                    HStack {
+                    //** Previous iteration
+//                    HStack {
+//                        ForEach(bubbles, id: \.self) { bubble in
+//                            Button(action: {
+//                                if bubbleChoice.contains(bubble) {
+//                                    // Remove the bubble from the bubbleChoice array
+//                                    if let indexToRemove = bubbleChoice.firstIndex(of: bubble) {
+//                                        bubbleChoice.remove(at: indexToRemove)
+//                                        bubbles.append(bubble)
+//                                    }
+//                                }
+//                                else {
+//                                    // Append the bubble to the bubbleChoice array
+//                                    bubbleChoice.append(bubble)
+//                                    if let indexToRemove = bubbles.firstIndex(of: bubble) {
+//                                        bubbles.remove(at: indexToRemove)
+//                                    }
+//                                }
+//                            }) {
+//                                Text(bubble)
+//                                    .foregroundColor(.white)
+//                                    .padding(.horizontal, 8)
+//                                    .padding(.vertical, 5)
+//                                    .background(
+//                                        RoundedRectangle(cornerRadius: 20)
+//                                            .foregroundColor(colors[bubble] ?? .gray)
+//                                    )
+//                                    .font(.callout)
+//                            }
+//                        }
+//                    } // end of HStack
+//                    .padding(.vertical, 5)
+                    LazyVGrid(columns: columns, spacing: 10) {
                         ForEach(bubbles, id: \.self) { bubble in
                             Button(action: {
                                 if bubbleChoice.contains(bubble) {
@@ -272,7 +311,7 @@ struct CheckinView: View {
                                         bubbleChoice.remove(at: indexToRemove)
                                         bubbles.append(bubble)
                                     }
-                                }
+                                } 
                                 else {
                                     // Append the bubble to the bubbleChoice array
                                     bubbleChoice.append(bubble)
@@ -289,11 +328,15 @@ struct CheckinView: View {
                                         RoundedRectangle(cornerRadius: 20)
                                             .foregroundColor(colors[bubble] ?? .gray)
                                     )
+//                                    .font(.system(.callout, design: .monospaced))
                                     .font(.callout)
+                                    .frame(maxWidth: .infinity)
                             }
                         }
-                    } // end of HStack
+                    }
                     .padding(.vertical, 5)
+                    .padding(.horizontal, 5)
+                    
                     Spacer()
                     
                 } // outer Vstack
