@@ -99,10 +99,10 @@ struct ProfileView: View {
                                     case.success(let image):
                                         image
                                             .resizable()
-                                            .aspectRatio(contentMode: .fit)
+                                            .aspectRatio(contentMode: .fill)
                                             .frame(maxWidth: .infinity)
                                             .frame(height: screenSize.height * 0.30)
-                                            .clipped()
+//                                            .clipped()
                                         
                                     case.failure:
                                         HStack {
@@ -429,7 +429,10 @@ struct ProfileView: View {
                         followingCount =  await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
                     }
                 }
+                
+                
             } // end of scrollView
+            .edgesIgnoringSafeArea(.all)
             .background(
                 BackgroundView()
             )

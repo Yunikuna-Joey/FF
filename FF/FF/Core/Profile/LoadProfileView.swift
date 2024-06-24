@@ -48,10 +48,10 @@ struct LoadProfileView: View {
                         if resultUser.coverPicture.isEmpty {
                             Image("Car")
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .aspectRatio(contentMode: .fill)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: screenSize.height * 0.30)
-                                .clipped()
+//                                .clipped()
                         }
                         
                         else {
@@ -65,10 +65,10 @@ struct LoadProfileView: View {
                                 case.success(let image):
                                     image
                                         .resizable()
-                                        .aspectRatio(contentMode: .fit)
+                                        .aspectRatio(contentMode: .fill)
                                         .frame(maxWidth: .infinity)
                                         .frame(height: screenSize.height * 0.30)
-                                        .clipped()
+//                                        .clipped()
                                     
                                 case.failure:
                                     HStack {
@@ -288,6 +288,7 @@ struct LoadProfileView: View {
 //                }
 
             } // end of scrollView
+            .edgesIgnoringSafeArea(.all)
             
             
         } // end of navigationStack
