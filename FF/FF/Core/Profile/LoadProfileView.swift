@@ -126,8 +126,9 @@ struct LoadProfileView: View {
                                     Image(systemName: "xmark.circle")
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(width: 100, height: 200)
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                        .frame(width: 200, height: 150)
+                                        .clipShape(Circle())
+                                        .offset(y: -100)
                                     
                                 @unknown default:
                                     EmptyView()
