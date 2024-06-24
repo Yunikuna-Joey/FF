@@ -140,6 +140,7 @@ struct CheckinView: View {
                                 }
                             }) {
                                 MultiImagePicker(selectedImages: $selectedImages)
+                                    .edgesIgnoringSafeArea(.all)
                             }
                             
                         } // end of HStack
@@ -169,9 +170,13 @@ struct CheckinView: View {
                                     }
                                 },
                                 onCancel: {
+                                    selectedImages.removeAll()
+                                    croppedImageList.removeAll()
+                                    currentImage = nil
                                     cropImageFlag = false
                                 }
                             )
+                            .edgesIgnoringSafeArea(.all)
                             
                         }
                         
@@ -627,6 +632,7 @@ struct ImageCrop: UIViewControllerRepresentable{
             withAnimation{
                 parent.visible = false
             }
+            parent.onCancel()
         }
     }
 
@@ -643,7 +649,6 @@ struct ImageCrop: UIViewControllerRepresentable{
         return cropViewController
     }
 }
-
 
 struct CheckinView_Preview: PreviewProvider {
     static var previews: some View {
