@@ -178,7 +178,7 @@ struct ProfileView: View {
                         
                         // Stack for username
                         HStack {
-                            Text(viewModel.currentSession?.username ?? "")
+                            Text(viewModel.currentSession?.username ?? "User")
                                 .font(.headline)
                             
                             // Change photo menu button (down arrow)
