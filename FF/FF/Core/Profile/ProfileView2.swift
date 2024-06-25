@@ -133,7 +133,6 @@ struct ProfileView2: View {
             if let currentUserObject = viewModel.currentSession {
                 viewModel.listenForUpdates(userObject: currentUserObject)
             }
-            
         }
     }
 }

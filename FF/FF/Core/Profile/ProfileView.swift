@@ -204,6 +204,7 @@ struct ProfileView: View {
                                                     cropImageFlag = true
 //                                                    previewProfileFlag = true
                                                 }
+                                                .edgesIgnoringSafeArea(.all)
                                             }
                                             
                                             Spacer()
@@ -221,6 +222,7 @@ struct ProfileView: View {
                                                   onCancel: {
                                                       cropImageFlag = false
                                                   })
+                                            .edgesIgnoringSafeArea(.all)
                                         }
                                         
                                         
@@ -239,6 +241,7 @@ struct ProfileView: View {
                                                 ImagePicker(selectedImage: $selectCoverPicture) {
                                                     previewCoverFlag = true
                                                 }
+                                                .edgesIgnoringSafeArea(.all)
                                             }
                                             
                                             Spacer()
@@ -427,6 +430,9 @@ struct ProfileView: View {
                     Task {
                         followerCount =  await followManager.queryFollowersCount(userId: viewModel.queryCurrentUserId() ?? "")
                         followingCount =  await followManager.queryFollowingCount(userId: viewModel.queryCurrentUserId() ?? "")
+                    }
+                    if let currentUserObject = viewModel.currentSession {
+                        viewModel.listenForUpdates(userObject: currentUserObject)
                     }
                 }
                 
