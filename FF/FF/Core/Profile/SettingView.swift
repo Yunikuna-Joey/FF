@@ -16,18 +16,54 @@ struct SettingView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 100, height: 100)
-                    .padding(.top, 40)
+                if let currentUserObject = viewModel.currentSession {
+                    if currentUserObject.profilePicture.isEmpty {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 200, height: 150)
+                            .padding(.top, 40)
+                    }
+                    else {
+                        AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
+                            switch phase {
+                                // Different cases the request might encounter: loading | success | None
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 200, height: 150)
+                                    .padding(.top, 40)
+                                
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .frame(width: 200, height: 150)
+                                    .clipShape(Circle())
+                                    .padding(.top, 40)
+                                
+                                
+                            case .failure:
+                                Image(systemName: "xmark.circle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 200, height: 150)
+                                    .clipShape(Circle())
+                                    .padding(.top, 40)
+                                
+                            @unknown default:
+                                EmptyView()
+                            } // end of switch
+                            
+                        } // end of async image
+                        
+                    }
+                    
+                    // Test this portion in prod
+                    Text(viewModel.currentSession?.username ?? "User")
+                        .font(.headline)
+                }
                 
-                // Test this portion in prod
-                //            Text(viewModel.currentSession?.username ?? "User")
-                //                .font(.headline)
-                
-                Text("Username")
-                    .font(.title)
+//                Text("Username")
+//                    .font(.title)
                 
                 List {
                     Section {
