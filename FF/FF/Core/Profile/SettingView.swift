@@ -75,10 +75,21 @@ struct SettingView: View {
                                 .padding(.trailing, 10)
                                 .foregroundStyle(Color.blue.opacity(0.80))
                             
-                            Text("Email Content")
+                            Text("Email: ")
                                 .foregroundStyle(Color.primary)
+                            
+                            if let currentUserObject = viewModel.currentSession {
+                                //                                Text("Email Content")
+                                //                                    .foregroundStyle(Color.primary)
+                                
+                                
+                                Text(currentUserObject.email)
+                                    .foregroundStyle(Color.gray)
+                            }
                         }
-                        
+                    }
+                    
+                    Section {
                         Button(action: {
                             print("Act as the change password button")
                         }) {

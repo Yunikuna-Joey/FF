@@ -14,11 +14,13 @@ struct ProfileView: View {
     @EnvironmentObject var statusProcess: StatusProcessView
     @EnvironmentObject var followManager: FollowingManager
     
+    // Keep track of the current display mode [light/dark mode]
+    @Environment(\.colorScheme) var colorScheme
+    
     // Keep track of which tab we are on
     @State private var current: Tab = .status
     
     // User information
-//    @State private var currentUserObject: User = EmptyVariable.EmptyUser
     @State private var followerCount: Int = 0
     @State private var followingCount: Int = 0
 
@@ -187,6 +189,7 @@ struct ProfileView: View {
                                 pictureFlag.toggle()
                             }) {
                                 Image(systemName: "chevron.down.circle.fill")
+                                    .foregroundStyle(colorScheme == .dark ? Color.black.opacity(0.80) : Color.white.opacity(0.90))
                             }
                             .sheet(isPresented: $pictureFlag) {
                                 NavigationStack {
@@ -414,7 +417,7 @@ struct ProfileView: View {
                         }) {
                             Image(systemName: "gearshape.fill")
                                 .padding()
-                                .foregroundStyle(Color.blue)
+                                .foregroundStyle(colorScheme == .dark ? Color.black.opacity(0.80) : Color.white.opacity(0.90))
                         }
                     }
                     .padding(.top, screenSize.height * 0.30) // Adjust top padding as needed
