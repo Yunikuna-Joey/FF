@@ -61,6 +61,7 @@
 		D4846F0A2BFFF52C0068D507 /* BackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4846F092BFFF52C0068D507 /* BackgroundView.swift */; };
 		D49376572BF9383800C2D653 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49376562BF9383700C2D653 /* CommentView.swift */; };
 		D494E4A22BBE91FA00283497 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D494E4A12BBE91FA00283497 /* SettingView.swift */; };
+		D49E11222C2B87CA00F6C139 /* PasswordChangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49E11212C2B87CA00F6C139 /* PasswordChangeView.swift */; };
 		D4BB30EF2BB25C66009CE546 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BB30EE2BB25C66009CE546 /* LocationManager.swift */; };
 		D4C702442BABF38D0091F1B8 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C702432BABF38D0091F1B8 /* Location.swift */; };
 		D4E4FABC2B99C19600F5C202 /* FFApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4FABB2B99C19600F5C202 /* FFApp.swift */; };
@@ -111,6 +112,7 @@
 		D4846F092BFFF52C0068D507 /* BackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundView.swift; sourceTree = "<group>"; };
 		D49376562BF9383700C2D653 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
 		D494E4A12BBE91FA00283497 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		D49E11212C2B87CA00F6C139 /* PasswordChangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeView.swift; sourceTree = "<group>"; };
 		D4BB30EE2BB25C66009CE546 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		D4C702432BABF38D0091F1B8 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		D4E4FAB82B99C19600F5C202 /* FF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FF.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -222,6 +224,7 @@
 				D4E4FAC92B99C1AD00F5C202 /* LoginView.swift */,
 				D4E4FACB2B9A7BF700F5C202 /* RegisterView.swift */,
 				D4E4FAD72B9A9FC200F5C202 /* RegisterView2.swift */,
+				D49E11212C2B87CA00F6C139 /* PasswordChangeView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -466,6 +469,7 @@
 				D4E4FAD42B9A8E8B00F5C202 /* MessageView.swift in Sources */,
 				D4843F362BCB0617003A20C3 /* Plan.swift in Sources */,
 				D418F75C2BC1E19700ACDE99 /* Chat.swift in Sources */,
+				D49E11222C2B87CA00F6C139 /* PasswordChangeView.swift in Sources */,
 				D4BB30EF2BB25C66009CE546 /* LocationManager.swift in Sources */,
 				D4092E532BA90DB500C42840 /* StatusProcessView.swift in Sources */,
 				D430FC102BED66D500914CB8 /* TestView.swift in Sources */,
