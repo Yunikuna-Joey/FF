@@ -15,6 +15,11 @@ struct PasswordChangeView: View {
     @State private var errorMsg: String? = ""
     @State private var isLoading: Bool = false
     
+    //*** Different focus variables tracker
+    @State private var toggleFocus1: Bool = false
+    @State private var toggleFocus2: Bool = false
+    @State private var toggleFocus3: Bool = false
+    
     
     var body: some View {
         VStack(spacing: 20) {
@@ -26,17 +31,22 @@ struct PasswordChangeView: View {
                     .padding(.vertical, 5)
                 
                 ZStack {
-                    if currentPw.isEmpty {
+                    if !toggleFocus1 && currentPw.isEmpty {
                         Text("Current Password")
-//                            .foregroundStyle(Color(red: 198/255, green: 198/255, blue: 200/255))
                             .padding(.trailing, 200)
                     }
                     
                     SecureField("", text: $currentPw)
+                        .padding(.leading, 15)
                         .padding(.vertical, 10)
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .onTapGesture {
+                            toggleFocus1 = true
+                            toggleFocus2 = false
+                            toggleFocus3 = false
+                        }
                 }
             }
             .padding(.horizontal)
@@ -49,16 +59,22 @@ struct PasswordChangeView: View {
                     .padding(.vertical, 5)
                 
                 ZStack {
-                    if newPw.isEmpty {
+                    if !toggleFocus2 && newPw.isEmpty {
                         Text("New Password")
                             .padding(.trailing, 225)
                     }
                     
                     SecureField("", text: $newPw)
+                        .padding(.leading, 15)
                         .padding(.vertical, 10)
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .onTapGesture {
+                            toggleFocus1 = false
+                            toggleFocus2 = true
+                            toggleFocus3 = false
+                        }
                 }
             }
             .padding(.horizontal)
@@ -71,16 +87,22 @@ struct PasswordChangeView: View {
                     .padding(.vertical, 5)
                 
                 ZStack {
-                    if confirmPw.isEmpty {
+                    if !toggleFocus3 && confirmPw.isEmpty {
                         Text("Verify Password")
                             .padding(.trailing, 218)
                     }
                     
                     SecureField("", text: $confirmPw)
+                        .padding(.leading, 15)
                         .padding(.vertical, 10)
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .onTapGesture {
+                            toggleFocus1 = false
+                            toggleFocus2 = false
+                            toggleFocus3 = true
+                        }
                 }
             }
             .padding(.horizontal)
@@ -96,18 +118,30 @@ struct PasswordChangeView: View {
                     .padding()
             }
             
-            HStack(spacing: 150) {
+            // ** button stack
+            HStack(spacing: 75) {
                 Button(action: {
                     print("This will act as the cancel button")
                 }) {
                     Text("Cancel")
+                        .frame(width: 100, height: 40)
+                        .fontWeight(.bold)
                 }
+                .background(Color.gray.opacity(0.25))
+                .cornerRadius(20)
                 
                 Button(action: {
                     print("This will act as the save/continue button")
                 }) {
                     Text("Save Changes")
+                        .frame(width: 150, height: 40)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
                 }
+                .background(Color.blue)
+                .cornerRadius(20)
+                .opacity(validForm ? 1.0 : 0.5)
+                .disabled(!validForm)
             }
             
         } // end of VStack
@@ -116,6 +150,15 @@ struct PasswordChangeView: View {
         
     } // end of body
 } // end of struct
+
+extension PasswordChangeView: StatusFormProtocol {
+    var validForm: Bool {
+        // Ensure that all text fields are NOT empty
+        return !currentPw.isEmpty &&
+            !newPw.isEmpty &&
+            !confirmPw.isEmpty
+    }
+}
 
 
 
