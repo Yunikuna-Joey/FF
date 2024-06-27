@@ -16,10 +16,13 @@ struct PasswordChangeView: View {
     @State private var errorMsg: String? = ""
     @State private var isLoading: Bool = false
     
-    //*** Different focus variables tracker
-    @State private var toggleFocus1: Bool = false
-    @State private var toggleFocus2: Bool = false
-    @State private var toggleFocus3: Bool = false
+    
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case currField, newField, confirmField
+    }
+
     
     
     var body: some View {
@@ -31,10 +34,11 @@ struct PasswordChangeView: View {
                     .padding(.leading, 5)
                     .padding(.vertical, 5)
                 
-                ZStack {
-                    if !toggleFocus1 && currentPw.isEmpty {
+                ZStack(alignment: .leading) {
+                    if currentPw.isEmpty && focusedField != .currField {
                         Text("Current Password")
-                            .padding(.trailing, 200)
+//                            .padding(.trailing, 200)
+                            .padding(.leading, 10)
                     }
                     
                     SecureField("", text: $currentPw)
@@ -43,11 +47,11 @@ struct PasswordChangeView: View {
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .focused($focusedField, equals: .currField)
                         .onTapGesture {
-                            toggleFocus1 = true
-                            toggleFocus2 = false
-                            toggleFocus3 = false
+                            focusedField = .currField
                         }
+
                 }
             }
             .padding(.horizontal)
@@ -59,10 +63,11 @@ struct PasswordChangeView: View {
                     .padding(.leading, 5)
                     .padding(.vertical, 5)
                 
-                ZStack {
-                    if !toggleFocus2 && newPw.isEmpty {
+                ZStack(alignment: .leading) {
+                    if newPw.isEmpty && focusedField != .newField {
                         Text("New Password")
-                            .padding(.trailing, 225)
+//                            .padding(.trailing, 225)
+                            .padding(.leading, 10)
                     }
                     
                     SecureField("", text: $newPw)
@@ -71,10 +76,9 @@ struct PasswordChangeView: View {
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .focused($focusedField, equals: .newField)
                         .onTapGesture {
-                            toggleFocus1 = false
-                            toggleFocus2 = true
-                            toggleFocus3 = false
+                            focusedField = .newField
                         }
                 }
             }
@@ -87,10 +91,11 @@ struct PasswordChangeView: View {
                     .padding(.leading, 5)
                     .padding(.vertical, 5)
                 
-                ZStack {
-                    if !toggleFocus3 && confirmPw.isEmpty {
+                ZStack(alignment: .leading) {
+                    if confirmPw.isEmpty && focusedField != .confirmField {
                         Text("Verify Password")
-                            .padding(.trailing, 218)
+//                            .padding(.trailing, 218)
+                            .padding(.leading, 10)
                     }
                     
                     SecureField("", text: $confirmPw)
@@ -99,10 +104,9 @@ struct PasswordChangeView: View {
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .focused($focusedField, equals: .confirmField)
                         .onTapGesture {
-                            toggleFocus1 = false
-                            toggleFocus2 = false
-                            toggleFocus3 = true
+                            focusedField = .confirmField
                         }
                 }
             }
@@ -148,6 +152,9 @@ struct PasswordChangeView: View {
         } // end of VStack
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemGroupedBackground))
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
         
     } // end of body
 } // end of struct
@@ -161,7 +168,6 @@ extension PasswordChangeView: StatusFormProtocol {
             !confirmPw.isEmpty
     }
 }
-
 
 
 #Preview {
