@@ -22,36 +22,66 @@ struct PasswordChangeView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("Enter your current password:")
                     .font(.system(size: 20, weight: .regular))
+                    .padding(.leading, 5)
+                    .padding(.vertical, 5)
                 
-                SecureField("Current Password", text: $currentPw)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.80))
-                    .cornerRadius(20)
-                    .frame(maxWidth: 500)
+                ZStack {
+                    if currentPw.isEmpty {
+                        Text("Current Password")
+//                            .foregroundStyle(Color(red: 198/255, green: 198/255, blue: 200/255))
+                            .padding(.trailing, 200)
+                    }
+                    
+                    SecureField("", text: $currentPw)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.80))
+                        .cornerRadius(20)
+                        .frame(maxWidth: 500)
+                }
             }
             .padding(.horizontal)
             
             //** New password field
             VStack(alignment: .leading, spacing: 5) {
-                Text("New Password")
+                Text("Enter your new password:")
+                    .font(.system(size: 20, weight: .regular))
+                    .padding(.leading, 5)
+                    .padding(.vertical, 5)
                 
-                SecureField("New Password", text: $newPw)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.80))
-                    .cornerRadius(20)
-                    .frame(maxWidth: 500)
+                ZStack {
+                    if newPw.isEmpty {
+                        Text("New Password")
+                            .padding(.trailing, 225)
+                    }
+                    
+                    SecureField("", text: $newPw)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.80))
+                        .cornerRadius(20)
+                        .frame(maxWidth: 500)
+                }
             }
             .padding(.horizontal)
             
             //** Confirm password field
             VStack(alignment: .leading, spacing: 5) {
-                Text("Verify Password")
+                Text("Confirm your password:")
+                    .font(.system(size: 20, weight: .regular))
+                    .padding(.leading, 5)
+                    .padding(.vertical, 5)
                 
-                SecureField("Verify Password", text: $confirmPw)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.80))
-                    .cornerRadius(20)
-                    .frame(maxWidth: 500)
+                ZStack {
+                    if confirmPw.isEmpty {
+                        Text("Verify Password")
+                            .padding(.trailing, 218)
+                    }
+                    
+                    SecureField("", text: $confirmPw)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.80))
+                        .cornerRadius(20)
+                        .frame(maxWidth: 500)
+                }
             }
             .padding(.horizontal)
             
@@ -86,6 +116,8 @@ struct PasswordChangeView: View {
         
     } // end of body
 } // end of struct
+
+
 
 #Preview {
     PasswordChangeView()
