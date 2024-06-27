@@ -8,6 +8,7 @@ import SwiftUI
 
 struct SettingView: View {
     @EnvironmentObject var viewModel: AuthView
+    @State private var passwordFlag: Bool = false
     
     init() {
         UITableView.appearance().backgroundColor = .clear
@@ -79,8 +80,8 @@ struct SettingView: View {
                                 .foregroundStyle(Color.primary)
                             
                             if let currentUserObject = viewModel.currentSession {
-                                //                                Text("Email Content")
-                                //                                    .foregroundStyle(Color.primary)
+//                                Text("Email Content")
+//                                    .foregroundStyle(Color.primary)
                                 
                                 
                                 Text(currentUserObject.email)
@@ -92,6 +93,7 @@ struct SettingView: View {
                     Section {
                         Button(action: {
                             print("Act as the change password button")
+                            passwordFlag.toggle()
                         }) {
                             HStack {
                                 Image(systemName: "lock.square")
@@ -139,6 +141,9 @@ struct SettingView: View {
                         }
                         
                     } // end of section 1
+                    .navigationDestination(isPresented: $passwordFlag) {
+                        PasswordChangeView()  
+                    }
                     
                     Section {
                         Button(action: {

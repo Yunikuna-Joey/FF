@@ -10,6 +10,7 @@ struct PasswordChangeView: View {
     @State private var currentPw: String = ""
     @State private var newPw: String = ""
     @State private var confirmPw: String = ""
+    
     //** Test with Preview
 //    @State private var errorMsg: String = "Wrong"
     @State private var errorMsg: String? = ""
@@ -152,6 +153,7 @@ struct PasswordChangeView: View {
 } // end of struct
 
 extension PasswordChangeView: StatusFormProtocol {
+    //** Fill in the requirements for a password here before executing back-end functionality
     var validForm: Bool {
         // Ensure that all text fields are NOT empty
         return !currentPw.isEmpty &&
