@@ -108,9 +108,6 @@ struct RegisterView: View {
 
                 
                 Button(action: {
-                    print("Triggered register button")
-                    print(password == confirmation)
-                    
                     Task {
                         // success of registration
                         do {

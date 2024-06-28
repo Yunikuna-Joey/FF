@@ -13,7 +13,9 @@ struct PasswordChangeView: View {
     
     //** Test with Preview
 //    @State private var errorMsg: String = "Wrong"
-    @State private var errorMsg: String? = ""
+    @State private var currMsg: String? = ""
+    @State private var passwordMsg: String? = ""
+    @State private var confirmationMsg: String? = ""
     @State private var isLoading: Bool = false
     
     
@@ -37,7 +39,6 @@ struct PasswordChangeView: View {
                 ZStack(alignment: .leading) {
                     if currentPw.isEmpty && focusedField != .currField {
                         Text("Current Password")
-//                            .padding(.trailing, 200)
                             .padding(.leading, 10)
                     }
                     
@@ -66,7 +67,6 @@ struct PasswordChangeView: View {
                 ZStack(alignment: .leading) {
                     if newPw.isEmpty && focusedField != .newField {
                         Text("New Password")
-//                            .padding(.trailing, 225)
                             .padding(.leading, 10)
                     }
                     
@@ -76,6 +76,9 @@ struct PasswordChangeView: View {
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .onChange(of: newPw) { _, newChar in
+                            passwordMsg = ConstantFunction.validatePassword(newChar)
+                        }
                         .focused($focusedField, equals: .newField)
                         .onTapGesture {
                             focusedField = .newField
@@ -94,7 +97,6 @@ struct PasswordChangeView: View {
                 ZStack(alignment: .leading) {
                     if confirmPw.isEmpty && focusedField != .confirmField {
                         Text("Verify Password")
-//                            .padding(.trailing, 218)
                             .padding(.leading, 10)
                     }
                     
@@ -104,6 +106,9 @@ struct PasswordChangeView: View {
                         .background(Color.white.opacity(0.80))
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
+                        .onChange(of: confirmPw) { _, newChar in
+                            confirmationMsg = ConstantFunction.validateConfirmation(newChar)
+                        }
                         .focused($focusedField, equals: .confirmField)
                         .onTapGesture {
                             focusedField = .confirmField
@@ -117,8 +122,21 @@ struct PasswordChangeView: View {
 //                .foregroundStyle(Color.red.opacity(0.80))
 //                .padding()
             
-            if let displayErrorMsg = errorMsg {
-                Text(displayErrorMsg)
+            //*** Error Area
+            if let errorMsg = passwordMsg {
+                Text(errorMsg)
+                    .foregroundStyle(Color.red)
+                    .padding()
+            }
+            
+            if let errorMsg = confirmationMsg {
+                Text(errorMsg)
+                    .foregroundStyle(Color.red)
+                    .padding()
+            }
+            
+            if let errorMsg = currMsg {
+                Text(errorMsg)
                     .foregroundStyle(Color.red)
                     .padding()
             }

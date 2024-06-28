@@ -29,4 +29,38 @@ struct ConstantFunction {
         
         return formattedString + " ago"
     }
+    
+    static func validatePassword(_ password: String) -> String? {
+        // Uppercase functionality
+        if !password.contains(where: { $0.isUppercase }) {
+            return "Password must contain at least one uppercase letter!"
+        }
+        
+        // Symbol functionality
+        let symbols = "!@#$%^&*()_+\\-=[]{};':\"|,.<>/?"
+        if !password.contains(where: { symbols.contains($0) }) {
+            return "Password must contain at least one symbol!"
+        }
+        
+        // password length validate
+        if password.count < 8 {
+            return "Password must be at least 8 characters long!"
+        }
+        
+        // digit validation
+        if !password.contains(where: {$0.isNumber }) {
+            return "Password must contain at least one digit!"
+        }
+    
+        return nil
+    }
+    
+    static func validateConfirmation(_ confirmation: String) -> String? {
+        if confirmation != password && !confirmation.isEmpty {
+            return "Passwords do not match"
+        }
+        else {
+            return nil
+        }
+    }
 }
