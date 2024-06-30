@@ -54,13 +54,4 @@ struct ConstantFunction {
     
         return nil
     }
-    
-    static func validateConfirmation(_ confirmation: String) -> String? {
-        if confirmation != password && !confirmation.isEmpty {
-            return "Passwords do not match"
-        }
-        else {
-            return nil
-        }
-    }
 }

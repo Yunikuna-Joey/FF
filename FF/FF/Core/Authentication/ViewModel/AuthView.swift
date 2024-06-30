@@ -316,6 +316,36 @@ class AuthView: ObservableObject {
         
         print("[listenForUpdates]: Triggered user listener function")
     }
+    
+    //*** Test out authenticating current user object for password changing storyboard
+    func authenticateUser(currPassword: String, completion: @escaping (Bool, String?) -> Void) {
+        guard let userObject = Auth.auth().currentUser else {
+            completion(false, "No user is currently logged in")
+            return
+        }
+        
+        let credential = EmailAuthProvider.credential(withEmail: userObject.email!, password: currPassword)
+        
+        userObject.reauthenticate(with: credential) { result, error in
+            if let error = error {
+                completion(false, error.localizedDescription)
+            }
+            else {
+                completion(true, nil)
+            }
+        }
+    }
+    
+    func changeUserPassword(newPassword: String, completion: @escaping (Bool, String?) -> Void) {
+        Auth.auth().currentUser?.updatePassword(to: newPassword) { error in
+            if let error = error {
+                completion(false, error.localizedDescription)
+            }
+            else {
+                completion(true, nil)
+            }
+        }
+    }
 }
 
 //#Preview {

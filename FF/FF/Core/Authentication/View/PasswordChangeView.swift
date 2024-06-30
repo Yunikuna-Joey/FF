@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct PasswordChangeView: View {
+    @EnvironmentObject var viewModel: AuthView
+    
     @State private var currentPw: String = ""
     @State private var newPw: String = ""
     @State private var confirmPw: String = ""
@@ -107,7 +109,7 @@ struct PasswordChangeView: View {
                         .cornerRadius(20)
                         .frame(maxWidth: 500)
                         .onChange(of: confirmPw) { _, newChar in
-                            confirmationMsg = ConstantFunction.validateConfirmation(newChar)
+                            confirmationMsg = validateConfirmation(newChar)
                         }
                         .focused($focusedField, equals: .confirmField)
                         .onTapGesture {
@@ -155,6 +157,7 @@ struct PasswordChangeView: View {
                 
                 Button(action: {
                     print("This will act as the save/continue button")
+                    
                 }) {
                     Text("Save Changes")
                         .frame(width: 150, height: 40)
@@ -175,6 +178,37 @@ struct PasswordChangeView: View {
         }
         
     } // end of body
+    
+    // ** Helper function
+    private func validateConfirmation(_ confirmation: String) -> String? {
+        if confirmation != newPw && !confirmation.isEmpty {
+            return "Passwords do not match."
+        }
+        else {
+            return nil
+        }
+    }
+    
+    private func invokePasswordChange() {
+        viewModel.authenticateUser(currPassword: currentPw) { success, error in
+            //* catch error
+            if let error = error {
+                self.currMsg = "Eneter the correct current password"
+            }
+            //* Proceed as normal
+            else {
+                viewModel.changeUserPassword(newPassword: newPw) { success, error in
+                    if let error = error {
+                        print("[InvokePasswordChange]: what")
+                    }
+                    else {
+                        print("[InvokePasswordChange]: It worked?")
+                    }
+                }
+            }
+        }
+    }
+    
 } // end of struct
 
 extension PasswordChangeView: StatusFormProtocol {
