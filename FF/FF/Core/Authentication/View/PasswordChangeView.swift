@@ -8,6 +8,7 @@ import SwiftUI
 
 struct PasswordChangeView: View {
     @EnvironmentObject var viewModel: AuthView
+    @Binding var pageFlag: Bool 
     
     @State private var currentPw: String = ""
     @State private var newPw: String = ""
@@ -147,6 +148,7 @@ struct PasswordChangeView: View {
             HStack(spacing: 75) {
                 Button(action: {
                     print("This will act as the cancel button")
+                    pageFlag = false
                 }) {
                     Text("Cancel")
                         .frame(width: 100, height: 40)
@@ -157,7 +159,7 @@ struct PasswordChangeView: View {
                 
                 Button(action: {
                     print("This will act as the save/continue button")
-                    
+                    invokePasswordChange()
                 }) {
                     Text("Save Changes")
                         .frame(width: 150, height: 40)
@@ -190,19 +192,29 @@ struct PasswordChangeView: View {
     }
     
     private func invokePasswordChange() {
+        guard newPw != currentPw else {
+            self.currMsg = "New password must be different from previous password."
+            return
+        }
+        
         viewModel.authenticateUser(currPassword: currentPw) { success, error in
             //* catch error
             if let error = error {
-                self.currMsg = "Eneter the correct current password"
+                self.currMsg = "Enter the correct current password"
             }
             //* Proceed as normal
             else {
                 viewModel.changeUserPassword(newPassword: newPw) { success, error in
                     if let error = error {
-                        print("[InvokePasswordChange]: what")
+                        print("[InvokePasswordChange]: \(error)")
                     }
                     else {
-                        print("[InvokePasswordChange]: It worked?")
+                        print("[InvokePasswordChange]: It worked!")
+                        //* On a successful change, reset all page values
+                        self.currentPw = ""
+                        self.newPw = ""
+                        self.confirmPw = ""
+                        pageFlag = false
                     }
                 }
             }
@@ -222,6 +234,6 @@ extension PasswordChangeView: StatusFormProtocol {
 }
 
 
-#Preview {
-    PasswordChangeView()
-}
+//#Preview {
+//    PasswordChangeView()
+//}

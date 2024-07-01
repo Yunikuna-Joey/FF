@@ -142,7 +142,7 @@ struct SettingView: View {
                         
                     } // end of section 1
                     .navigationDestination(isPresented: $passwordFlag) {
-                        PasswordChangeView()  
+                        PasswordChangeView(pageFlag: $passwordFlag)  
                     }
                     
                     Section {
