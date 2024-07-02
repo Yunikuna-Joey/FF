@@ -5,11 +5,15 @@
 //
 
 import SwiftUI
+import MessageUI
 
 struct ReportProblemView: View {
+    @Binding var pageFlag: Bool
     @State private var subjectText: String = ""
     @State private var bodyText: String = ""
     
+    @State private var showMailView: Bool = false
+    @State private var result: Result<MFMailComposeResult, Error>? = nil
     
     var body: some View {
         VStack(spacing: 20) {
@@ -48,6 +52,7 @@ struct ReportProblemView: View {
             
             Button(action: {
                 print("Act as the submit feedback button")
+                showMailView = true
             }) {
                 Text("Submit Feedback")
                     .frame(width: 150, height: 40)
@@ -66,6 +71,9 @@ struct ReportProblemView: View {
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+        .sheet(isPresented: $showMailView) {
+            MailView(isShowing: $showMailView, result: $result, subject: subjectText, body: bodyText)
+        }
     }
 }
 extension ReportProblemView: StatusFormProtocol {
@@ -76,6 +84,55 @@ extension ReportProblemView: StatusFormProtocol {
     }
 }
 
-#Preview {
-    ReportProblemView()
+struct MailView: UIViewControllerRepresentable {
+    @Binding var isShowing: Bool
+    @Binding var result: Result<MFMailComposeResult, Error>?
+    
+    var subject: String
+    var body: String
+    
+    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        @Binding var isShowing: Bool
+        @Binding var result: Result<MFMailComposeResult, Error>?
+        
+        init(isShowing: Binding<Bool>, result: Binding<Result<MFMailComposeResult, Error>?>) {
+            _isShowing = isShowing
+            _result = result
+        }
+        
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            defer {
+                isShowing = false
+            }
+            if let error = error {
+                self.result = .failure(error)
+            }
+            else {
+                self.result = .success(result)
+            }
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(isShowing: $isShowing, result: $result)
+    }
+    
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.setSubject(subject)
+        vc.setMessageBody(body, isHTML: false)
+        //** Set the recipient email here and test with a valid email tester account 
+        vc.setToRecipients([""])
+        vc.mailComposeDelegate = context.coordinator
+        return vc
+    }
+    
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+    
 }
+
+
+
+//#Preview {
+//    ReportProblemView()
+//}

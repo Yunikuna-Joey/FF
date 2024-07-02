@@ -9,6 +9,7 @@ import SwiftUI
 struct SettingView: View {
     @EnvironmentObject var viewModel: AuthView
     @State private var passwordFlag: Bool = false
+    @State private var problemFlag: Bool = false
     
     init() {
         UITableView.appearance().backgroundColor = .clear
@@ -110,6 +111,7 @@ struct SettingView: View {
                         
                         Button(action: {
                             print("Act as the report a problem button")
+                            problemFlag = true
                         }) {
                             HStack {
                                 Image(systemName: "exclamationmark.bubble")
@@ -143,6 +145,9 @@ struct SettingView: View {
                     } // end of section 1
                     .navigationDestination(isPresented: $passwordFlag) {
                         PasswordChangeView(pageFlag: $passwordFlag)  
+                    }
+                    .navigationDestination(isPresented: $problemFlag) {
+                        ReportProblemView(pageFlag: $problemFlag)
                     }
                     
                     Section {
