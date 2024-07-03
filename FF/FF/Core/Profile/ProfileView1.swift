@@ -12,11 +12,13 @@ struct ProfileView1: View {
     @EnvironmentObject var statusProcess: StatusProcessView
     
     @State private var colors: [String: Color] = [
-        "🦵Legs": .red,
-        "🫸Push": .orange,
-        "Pull": .yellow,
-        "Upper": .green,
-        "Lower": .blue
+        "Abs": .red,
+        "Arms": .orange,
+        "Back": .yellow,
+        "Chest": .green,
+        "Legs": .blue,
+        "Push": .purple,
+        "Pull": .cyan
     ]
     
     var body: some View {

@@ -481,25 +481,31 @@ class StatusProcessView: ObservableObject {
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
             
-            let downloadURL = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-                imageRef.putData(imageData, metadata: metadata) { _, error in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                        return
-                    }
-                    
-                    imageRef.downloadURL { url, error in
+            do {
+                let downloadURL = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+                    imageRef.putData(imageData, metadata: metadata) { _, error in
                         if let error = error {
                             continuation.resume(throwing: error)
-                        } 
-                        else if let downloadURL = url {
-                            continuation.resume(returning: downloadURL.absoluteString)
+                            return
+                        }
+                        
+                        imageRef.downloadURL { url, error in
+                            if let error = error {
+                                continuation.resume(throwing: error)
+                            }
+                            else if let downloadURL = url {
+                                continuation.resume(returning: downloadURL.absoluteString)
+                            }
                         }
                     }
                 }
+                
+                imageUrls.append(downloadURL)
+                print("[uploadImages]: Images were uploaded successfully.")
             }
-            
-            imageUrls.append(downloadURL)
+            catch {
+                print("[uploadImages]: Images were not uploaded due to \(error.localizedDescription)")
+            }
         }
         return imageUrls
     }

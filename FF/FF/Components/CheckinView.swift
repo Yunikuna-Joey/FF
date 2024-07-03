@@ -24,18 +24,17 @@ struct CheckinView: View {
     @State private var bubbleChoice: [String] = []
     
     // Available options to choose from [needed state to bind objects to view... to mutate them from off the bottom => top and <=>]
-    @State private var bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower", "Back", "Arms", "Chest"]
+    @State private var bubbles = ["Abs", "Arms", "Back", "Chest", "Legs", "Push", "Pull"]
     
     // Hashmap to map the caption to its color
     @State private var colors: [String: Color] = [
-        "🦵Legs": .red,
-        "🫸Push": .orange,
-        "Pull": .yellow,
-        "Upper": .green,
-        "Lower": .blue,
-        "Back": .purple,
-        "Arms": .indigo,
-        "Chest": .cyan
+        "Abs": .red,
+        "Arms": .orange,
+        "Back": .yellow,
+        "Chest": .green,
+        "Legs": .blue,
+        "Push": .purple,
+        "Pull": .cyan
     ]
     
     // Checkin menu option here [recent]
@@ -163,7 +162,7 @@ struct CheckinView: View {
                                         else {
                                             
                                             self.cropImageFlag = false
-                                            selectedImages.removeAll()
+//                                            selectedImages.removeAll()
                                             print("Finished cropping all images.")
                                             
                                         }
@@ -274,39 +273,6 @@ struct CheckinView: View {
                     .cornerRadius(10)
                     .shadow(radius: 5)
                     
-                    // bubbles at the bottom row
-                    //** Previous iteration
-//                    HStack {
-//                        ForEach(bubbles, id: \.self) { bubble in
-//                            Button(action: {
-//                                if bubbleChoice.contains(bubble) {
-//                                    // Remove the bubble from the bubbleChoice array
-//                                    if let indexToRemove = bubbleChoice.firstIndex(of: bubble) {
-//                                        bubbleChoice.remove(at: indexToRemove)
-//                                        bubbles.append(bubble)
-//                                    }
-//                                }
-//                                else {
-//                                    // Append the bubble to the bubbleChoice array
-//                                    bubbleChoice.append(bubble)
-//                                    if let indexToRemove = bubbles.firstIndex(of: bubble) {
-//                                        bubbles.remove(at: indexToRemove)
-//                                    }
-//                                }
-//                            }) {
-//                                Text(bubble)
-//                                    .foregroundColor(.white)
-//                                    .padding(.horizontal, 8)
-//                                    .padding(.vertical, 5)
-//                                    .background(
-//                                        RoundedRectangle(cornerRadius: 20)
-//                                            .foregroundColor(colors[bubble] ?? .gray)
-//                                    )
-//                                    .font(.callout)
-//                            }
-//                        }
-//                    } // end of HStack
-//                    .padding(.vertical, 5)
                     LazyVGrid(columns: columns, spacing: 10) {
                         ForEach(bubbles, id: \.self) { bubble in
                             Button(action: {
@@ -446,8 +412,9 @@ struct CheckinView: View {
         bubbleChoice = []
         selectedOption = ""
         isStatusPosted = false
-        bubbles = ["🦵Legs", "🫸Push", "Pull", "Upper", "Lower"]
+        bubbles = ["Abs", "Arms", "Back", "Chest", "Legs", "Push", "Pull"]
         selectedImages = []
+        croppedImageList = []
     }
     
     func printDimensions() {
