@@ -30,6 +30,12 @@ struct RegisterView: View {
     // blank value
 //    @State private var imageArray = [""]
     @State private var imageHashMap: [Int: [String]] = [:]
+    
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case field1, field2, field3, field4, field5, field6
+    }
 
     var body: some View {
         NavigationStack {
@@ -39,6 +45,10 @@ struct RegisterView: View {
                     .background(Color.gray.opacity(0.33))
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
+                    .focused($focusedField, equals: .field1)
+                    .onTapGesture {
+                        focusedField = .field1
+                    }
                 
                 TextField("Last Name", text: $lastName)
                     .padding()
@@ -46,6 +56,10 @@ struct RegisterView: View {
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
                     .padding(.top, 10)
+                    .focused($focusedField, equals: .field2)
+                    .onTapGesture {
+                        focusedField = .field2
+                    }
                 
                 TextField("Username", text: $username)
                     .padding()
@@ -53,6 +67,10 @@ struct RegisterView: View {
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
                     .padding(.top, 10)
+                    .focused($focusedField, equals: .field3)
+                    .onTapGesture {
+                        focusedField = .field3
+                    }
                 
                 TextField("Email", text: $email)
                     .padding()
@@ -63,6 +81,10 @@ struct RegisterView: View {
                     // test this two parameter style...
                     .onChange(of: email) {_, newChar in
                         emailError = validateEmail(newChar)
+                    }
+                    .focused($focusedField, equals: .field4)
+                    .onTapGesture {
+                        focusedField = .field4
                     }
                 
                 // error field for the email field
@@ -81,6 +103,10 @@ struct RegisterView: View {
                     .onChange(of: password) { _, newChar in
                         passwordError = validatePassword(newChar)
                     }
+                    .focused($focusedField, equals: .field5)
+                    .onTapGesture {
+                        focusedField = .field5
+                    }
                 
                 // Error field for the password field
                 if let passwordError = passwordError {
@@ -97,6 +123,10 @@ struct RegisterView: View {
                     .padding(.top, 10)
                     .onChange(of: confirmation) { _, newChar in
                         confirmationError = validateConfirmation(newChar)
+                    }
+                    .focused($focusedField, equals: .field6)
+                    .onTapGesture {
+                        focusedField = .field6
                     }
                 
                 // Error field for the confirmation field
@@ -144,6 +174,9 @@ struct RegisterView: View {
                         .padding()
                 }
 
+            }
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
     }

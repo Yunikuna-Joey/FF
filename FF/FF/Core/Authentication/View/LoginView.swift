@@ -21,6 +21,12 @@ struct LoginView: View {
     @State private var redirect: Bool = false
     @State private var errorFlag: Bool = false
     
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case emailField, passwordField
+    }
+    
     var body: some View {
         // Navigation Stack provides a storyline within our elements.. indicating that another screen will be loaded
         NavigationStack {
@@ -33,12 +39,20 @@ struct LoginView: View {
                     .cornerRadius(10)
                     // apply horizontal padding of 50 points
                     .padding(.horizontal, 50)
+                    .focused($focusedField, equals: .emailField)
+                    .onTapGesture {
+                        focusedField = .emailField
+                    }
                 
                 SecureField("Password", text: $password)
                     .padding()
                     .background(Color.gray.opacity(0.33))
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
+                    .focused($focusedField, equals: .passwordField)
+                    .onTapGesture {
+                        focusedField = .passwordField
+                    }
                 
                 HStack {
                     Button(action: {
@@ -93,6 +107,9 @@ struct LoginView: View {
             } // end of VStack here
             
             .navigationTitle("Welcome to FF")
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
             
             
             
