@@ -62,10 +62,11 @@ struct Workout: View {
     
     // This should represent the key within the dictionary
     var book: [String: [String]] = [
-        "Arms": ["Bicep Curl", "Hammer Curl", "Isolation Curl"],
-        "Back": ["Deadlift", "Seated Rows", "Cable Rows"],
-        "Chest": ["Bench Press", "Dumbell Press", "Incline Bench"],
-        "Legs": ["Squats", "Seated Leg Extensions", "Calf Raises"],
+        "Abs": ["Bicycle Crunches", "Crunches", "Leg Raises", "Mountain Climbers", "Planks", "Russian Twists", "V-Ups"],
+        "Arms": ["Bicep Curls", "Hammer Curls", "Isolation Curls", "Tricep Dips", "Overhead Tricep Extensions", "Chin-Ups", "Tricep Kickbacks"],
+        "Back": ["Deadlift", "Seated Rows", "Cable Rows", "Pull-Ups", "Bent-Over Rows", "Lat Pulldowns", "Face Pulls"],
+        "Chest": ["Bench Press", "Dumbell Press", "Incline Bench", "Push-Ups", "Chest Flyes", "Cable Crossovers", "Incline Bench Press", "Chest Dips"],
+        "Legs": ["Squats", "Seated Leg Extensions", "Calf Raises", "Leg Press"],
     ]
     
     var body: some View {
@@ -195,6 +196,7 @@ struct PlanScreenView: View {
                 } // end of VStack
                 .padding()
             }
+            .padding(.bottom, 60)
             
             VStack {
                 Spacer()
