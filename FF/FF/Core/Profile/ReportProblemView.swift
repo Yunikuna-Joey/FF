@@ -52,7 +52,12 @@ struct ReportProblemView: View {
             
             Button(action: {
                 print("Act as the submit feedback button")
-                showMailView = true
+                if MFMailComposeViewController.canSendMail() {
+                    showMailView = true
+                }
+                else {
+                    print("Cannot send mail")
+                }
             }) {
                 Text("Submit Feedback")
                     .frame(width: 150, height: 40)
@@ -84,6 +89,7 @@ extension ReportProblemView: StatusFormProtocol {
     }
 }
 
+//** This will use the native iOS mail app to send out emails [configure on a per device basis]
 struct MailView: UIViewControllerRepresentable {
     @Binding var isShowing: Bool
     @Binding var result: Result<MFMailComposeResult, Error>?
@@ -121,14 +127,12 @@ struct MailView: UIViewControllerRepresentable {
         let vc = MFMailComposeViewController()
         vc.setSubject(subject)
         vc.setMessageBody(body, isHTML: false)
-        //** Set the recipient email here and test with a valid email tester account 
-        vc.setToRecipients([""])
+        vc.setToRecipients([""]) // Use a valid email address here
         vc.mailComposeDelegate = context.coordinator
         return vc
     }
     
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
-    
 }
 
 
