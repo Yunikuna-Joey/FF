@@ -106,10 +106,13 @@ struct LoginView: View {
                 
             } // end of VStack here
             
-            .navigationTitle("Welcome to FF")
+            .navigationTitle("NoFF!")
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .background(Color(.systemGroupedBackground))
+            .background(BackgroundView())
             
             
             
