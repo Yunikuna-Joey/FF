@@ -28,28 +28,11 @@
   color: #61dafb;
 }
 
-.carousel-item {
-  position: relative;
-  transition: transform 0.5s;
-  transform-style: preserve-3d;
-}
-
-.slick-center .carousel-item {
-  transform: scale(1.2) translateZ(50px);
-  z-index: 2;
-}
-
-.carousel-image {
-  width: 100%;
-  height: auto;
-}
-
-.carousel-description {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
