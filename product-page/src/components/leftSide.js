@@ -6,7 +6,7 @@ Join us to connect with like-minded individuals, find your fitness tribe, and in
 Together, we turn goals into achievements and dreams into realities.
 Share your progress, celebrate your victories, and become part of a supportive network that's dedicated to living well and staying active. Your path to wellness starts here.`;
 
-export const leftSide = () => { 
+export const LeftSide = () => { 
   return ( 
     <div> 
       <h1> {headline} </h1>
