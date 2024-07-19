@@ -14,6 +14,8 @@ import CropViewController
 
 struct CheckinView: View {
     // env variable to access status functionality
+    @Environment(\.presentationMode) var presentationMode
+    
     @EnvironmentObject var statusModel: StatusProcessView
     @EnvironmentObject var viewModel: AuthView
     
@@ -48,7 +50,7 @@ struct CheckinView: View {
     
     // handles navigation
     @State private var isStatusPosted = false
-    @Binding var currentTabIndex: Int
+//    @Binding var currentTabIndex: Int
     
     // image picker
     @State private var imagePickerFlag: Bool = false
@@ -64,6 +66,9 @@ struct CheckinView: View {
     
     // # of columns for the bubble choices
     private let numberOfColumns = 4
+    
+    // Submission flag
+    @State private var inSubmission: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -122,25 +127,25 @@ struct CheckinView: View {
                             Spacer()
                             
                             //*** test out image button here [remove later]
-                            Button(action: {
-                                print("Image button here.")
-                                self.imagePickerFlag.toggle()
-                            }) {
-                                Image(systemName: "photo.on.rectangle.fill")
-                                    .font(.title)
-                            }
-                            .sheet(isPresented: $imagePickerFlag, onDismiss: {
-                                if !selectedImages.isEmpty {
-                                    currentImageIndex = 0
-                                    currentImage = selectedImages[currentImageIndex]
-                                    cropImageFlag = true
-                                    print("Selected images count: \(selectedImages.count)")
-                                    print("Starting to crop image at index: \(currentImageIndex)")
-                                }
-                            }) {
-                                MultiImagePicker(selectedImages: $selectedImages)
-                                    .edgesIgnoringSafeArea(.all)
-                            }
+//                            Button(action: {
+//                                print("Image button here.")
+//                                self.imagePickerFlag.toggle()
+//                            }) {
+//                                Image(systemName: "photo.on.rectangle.fill")
+//                                    .font(.title)
+//                            }
+//                            .sheet(isPresented: $imagePickerFlag, onDismiss: {
+//                                if !selectedImages.isEmpty {
+//                                    currentImageIndex = 0
+//                                    currentImage = selectedImages[currentImageIndex]
+//                                    cropImageFlag = true
+//                                    print("Selected images count: \(selectedImages.count)")
+//                                    print("Starting to crop image at index: \(currentImageIndex)")
+//                                }
+//                            }) {
+//                                MultiImagePicker(selectedImages: $selectedImages)
+//                                    .edgesIgnoringSafeArea(.all)
+//                            }
                             
                         } // end of HStack
                         .sheet(isPresented: $cropImageFlag) {
@@ -206,8 +211,8 @@ struct CheckinView: View {
                         // User enters their status
                         TextField("What are you up to today", text: $statusField, axis: .vertical)
                             .padding(.top)
-                            .padding(.bottom, 15)
-                            .lineLimit(1...5)
+                            .padding(.bottom, 50)
+                            .lineLimit(1...10)
                         
                         // Area for holding images that user wants to attach to a post
                         if !croppedImageList.isEmpty {
@@ -240,27 +245,53 @@ struct CheckinView: View {
                         }
                         
                         // Checkin Field option.... need to determine what UI element to use [recent]
-                        Menu {
-                            Picker(selection: $selectedOption, label: EmptyView()) {
-                                ForEach(nearby, id: \.self) { option in
-                                    Text(option)
-                                        .tag(option)
+//                        Menu {
+//                            Picker(selection: $selectedOption, label: EmptyView()) {
+//                                ForEach(nearby, id: \.self) { option in
+//                                    Text(option)
+//                                        .tag(option)
+//                                }
+//                            }
+//                        } label: {
+//                            HStack {
+//                                Text(selectedOption.isEmpty ? "Select location" : selectedOption)
+//                                    .foregroundStyle(selectedOption.isEmpty ? Color.gray.opacity(0.75) : Color.primary)
+//                                Image(systemName: "chevron.down")
+//                                    .foregroundStyle(Color.blue)
+//                            }
+//                        }
+//                        .padding(.top, 5)
+//                        .onTapGesture {
+//                            // this should prompt the user location when this portion is gestured
+//                            LocationManager.shared.requestLocation()
+//                            searchNearby()
+//                        }
+                        
+                        HStack {
+                            Button(action: {
+                                print("Image button here.")
+                                self.imagePickerFlag.toggle()
+                            }) {
+                                Image(systemName: "photo.on.rectangle.fill")
+//                                    .font(.subheadline)
+                                    .font(.body)
+                            }
+                            .sheet(isPresented: $imagePickerFlag, onDismiss: {
+                                if !selectedImages.isEmpty {
+                                    currentImageIndex = 0
+                                    currentImage = selectedImages[currentImageIndex]
+                                    cropImageFlag = true
+                                    print("Selected images count: \(selectedImages.count)")
+                                    print("Starting to crop image at index: \(currentImageIndex)")
                                 }
+                            }) {
+                                MultiImagePicker(selectedImages: $selectedImages)
+                                    .edgesIgnoringSafeArea(.all)
                             }
-                        } label: {
-                            HStack {
-                                Text(selectedOption.isEmpty ? "Select location" : selectedOption)
-                                    .foregroundStyle(selectedOption.isEmpty ? Color.gray.opacity(0.75) : Color.primary)
-                                Image(systemName: "chevron.down")
-                                    .foregroundStyle(Color.blue)
-                            }
+                            
+                            Spacer()
                         }
-                        .padding(.top, 5)
-                        .onTapGesture {
-                            // this should prompt the user location when this portion is gestured
-                            LocationManager.shared.requestLocation()
-                            searchNearby()
-                        }
+                        .padding(.top, 10)
                         
                     } // end of inner vstack
                     .padding()
@@ -315,88 +346,172 @@ struct CheckinView: View {
                 
                 
                 // Check-in button
-                VStack {
-                    Button(action: {
-                        
-                        // attempt to post the status into the database [submission]
-                        Task {
-                            do {
-                                if let currentUserObject = viewModel.currentSession, let currentUserId = viewModel.currentSession?.id {
-                                    // if there are selected images or user-provided images
-                                    if !selectedImages.isEmpty {
-                                        let imageUrls = try await statusModel.uploadImages(images: selectedImages)
-                                        
-                                        // This will save the pictures from the status object into the User datafield imageHashmap
-                                        try await viewModel.updateUserImageHashMap(
-                                            userId: currentUserId,
-                                            newImageUrls: imageUrls
-                                        )
-                                        
-                                        // send into firebase
-                                        await statusModel.postStatus(
-                                            currentUserObject: currentUserObject,
-                                            userId: currentUserId,
-                                            content: statusField,
-                                            bubbleChoice: bubbleChoice,
-                                            timestamp: Date(),
-                                            location: selectedOption,
-                                            likes: 0,
-                                            imageUrls: imageUrls
-                                        )
-                                        
-                                        
-                                    }
-                                    
-                                    // if there are no selected images provided by the user
-                                    else {
-                                        await statusModel.postStatus(
-                                            currentUserObject: currentUserObject,
-                                            userId: currentUserId,
-                                            content: statusField,
-                                            bubbleChoice: bubbleChoice,
-                                            timestamp: Date(),
-                                            location: selectedOption,
-                                            likes: 0,
-                                            imageUrls: [""]
-                                        )
-                                    }
-                                    
-                                    // move to homeView after
-                                    currentTabIndex = 0
-                                    
-                                    // reset page values
-                                    resetPageValues()
-                                    
-                                } // variable unwrapping
-                                
-                            } // end of do closure
-                            
-                        } // end of task
-                        
-                        
-                        // [revisit on prod]
-                        printDimensions()
-                        
-                        
-                    }) {
-                        Rectangle()
-                            .foregroundStyle(Color.blue)
-                            .frame(width: screenSize.width, height: setButtonHeight())
-                            .overlay(
-                                Text("Check-In")
-                                    .foregroundStyle(Color.white)
-                            )
-                    }
-                }
-                // adjust this for the button position
-                .padding(.top, screenSize.height / 2)
-                .disabled(!validForm)
-                .opacity(validForm ? 1.0 : 0.5)
+//                VStack {
+//                    Button(action: {
+//                        
+//                        // attempt to post the status into the database [submission]
+//                        Task {
+//                            do {
+//                                if let currentUserObject = viewModel.currentSession, let currentUserId = viewModel.currentSession?.id {
+//                                    // if there are selected images or user-provided images
+//                                    if !selectedImages.isEmpty {
+//                                        let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+//                                        
+//                                        // This will save the pictures from the status object into the User datafield imageHashmap
+//                                        try await viewModel.updateUserImageHashMap(
+//                                            userId: currentUserId,
+//                                            newImageUrls: imageUrls
+//                                        )
+//                                        
+//                                        // send into firebase
+//                                        await statusModel.postStatus(
+//                                            currentUserObject: currentUserObject,
+//                                            userId: currentUserId,
+//                                            content: statusField,
+//                                            bubbleChoice: bubbleChoice,
+//                                            timestamp: Date(),
+//                                            location: selectedOption,
+//                                            likes: 0,
+//                                            imageUrls: imageUrls
+//                                        )
+//                                        
+//                                        
+//                                    }
+//                                    
+//                                    // if there are no selected images provided by the user
+//                                    else {
+//                                        await statusModel.postStatus(
+//                                            currentUserObject: currentUserObject,
+//                                            userId: currentUserId,
+//                                            content: statusField,
+//                                            bubbleChoice: bubbleChoice,
+//                                            timestamp: Date(),
+//                                            location: selectedOption,
+//                                            likes: 0,
+//                                            imageUrls: [""]
+//                                        )
+//                                    }
+//                                    
+////                                    // move to homeView after
+////                                    currentTabIndex = 0
+//                                    
+//                                    // reset page values
+//                                    resetPageValues()
+//                                    
+//                                } // variable unwrapping
+//                                
+//                            } // end of do closure
+//                            
+//                        } // end of task
+//                        
+//                        
+//                        // [revisit on prod]
+//                        printDimensions()
+//                        
+//                        
+//                    }) {
+//                        Rectangle()
+//                            .foregroundStyle(Color.blue)
+//                            .frame(width: screenSize.width, height: setButtonHeight())
+//                            .overlay(
+//                                Text("Check-In")
+//                                    .foregroundStyle(Color.white)
+//                            )
+//                    }
+//                }
+//                // adjust this for the button position
+//                .padding(.top, screenSize.height / 2)
+//                .disabled(!validForm)
+//                .opacity(validForm ? 1.0 : 0.5)
                 
             } // end of zstack
-            .padding()
+            .padding(.horizontal, 5)
+            .padding(.vertical)
             .background(
                 BackgroundView()
+            )
+            .navigationBarTitle("New Post", displayMode: .inline)
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    presentationMode.wrappedValue.dismiss()
+                },
+                trailing: HStack {
+                    if inSubmission {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                    }
+                    else {
+                        Button("Submit") {
+                            // Handle submit action here
+                            inSubmission = true
+                            
+                            // attempt to post the status into the database [submission]
+                            Task {
+                                do {
+                                    if let currentUserObject = viewModel.currentSession, let currentUserId = viewModel.currentSession?.id {
+                                        // if there are selected images or user-provided images
+                                        if !selectedImages.isEmpty {
+                                            let imageUrls = try await statusModel.uploadImages(images: selectedImages)
+                                            
+                                            // This will save the pictures from the status object into the User datafield imageHashmap
+                                            try await viewModel.updateUserImageHashMap(
+                                                userId: currentUserId,
+                                                newImageUrls: imageUrls
+                                            )
+                                            
+                                            // send into firebase
+                                            await statusModel.postStatus(
+                                                currentUserObject: currentUserObject,
+                                                userId: currentUserId,
+                                                content: statusField,
+                                                bubbleChoice: bubbleChoice,
+                                                timestamp: Date(),
+                                                location: selectedOption,
+                                                likes: 0,
+                                                imageUrls: imageUrls
+                                            )
+                                            
+                                            
+                                        }
+                                        
+                                        // if there are no selected images provided by the user
+                                        else {
+                                            await statusModel.postStatus(
+                                                currentUserObject: currentUserObject,
+                                                userId: currentUserId,
+                                                content: statusField,
+                                                bubbleChoice: bubbleChoice,
+                                                timestamp: Date(),
+                                                location: selectedOption,
+                                                likes: 0,
+                                                imageUrls: [""]
+                                            )
+                                        }
+                                        
+                                        //                                    // move to homeView after
+                                        //                                    currentTabIndex = 0
+                                        
+                                        // reset page values
+                                        resetPageValues()
+                                        
+                                        // make submission to be false
+                                        inSubmission = false 
+                                        
+                                        // ** should close out of the screen once submission is made
+                                        presentationMode.wrappedValue.dismiss()
+                                        
+                                    } // variable unwrapping
+                                    
+                                } // end of do closure
+                                
+                            } // end of task
+                            
+                        } // end of button
+                        
+                    } // end of else
+                    
+                } // end of HStack
+                .disabled(!validForm)
             )
             
         } // end of navigationStack
@@ -479,7 +594,7 @@ struct CheckinView: View {
 
 extension CheckinView: StatusFormProtocol {
     var validForm: Bool {
-        return !statusField.isEmpty && !selectedOption.isEmpty
+        return !statusField.isEmpty
     }
 }
 
@@ -617,8 +732,8 @@ struct ImageCrop: UIViewControllerRepresentable{
     }
 }
 
-struct CheckinView_Preview: PreviewProvider {
-    static var previews: some View {
-        CheckinView(currentTabIndex: .constant(0))
-    }
-}
+//struct CheckinView_Preview: PreviewProvider {
+//    static var previews: some View {
+//        CheckinView(currentTabIndex: .constant(0))
+//    }
+//}

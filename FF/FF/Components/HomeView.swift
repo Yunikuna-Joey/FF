@@ -24,58 +24,89 @@ struct HomeView: View {
         "Pull": .cyan
     ]
     
+    @State private var createNewPostFlag: Bool = false
+    
     var body: some View {
-        // Scroll behavior for multiple statuses
-        ScrollView(showsIndicators: false) {
-            // vertical for ordering [spacing between each status update is controlled]
-            VStack(spacing: 10) {
-                // for loop for processing a user's status's
-//                ForEach(statusProcess.feedList) { status in
-                ForEach(statusProcess.feedList.sorted(by: { $0.timestamp > $1.timestamp })) { status in
-                    
-                    StatusUpdateView(
-                        status: status,
-                        username: status.userObject.username,
-                        timeAgo: status.timestamp,
-                        colors: colors
-                    )
-                    
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            // create some extra spacing
-            .padding()
-        }
-        .background(
-            BackgroundView()
-        )
-        .onAppear {
-            statusProcess.feedList.removeAll()
+        ZStack {
+            // Scroll behavior for multiple statuses
+            ScrollView(showsIndicators: false) {
+                // vertical for ordering [spacing between each status update is controlled]
+                VStack(spacing: 10) {
+                    // for loop for processing a user's status's
+                    //                ForEach(statusProcess.feedList) { status in
+                    ForEach(statusProcess.feedList.sorted(by: { $0.timestamp > $1.timestamp })) { status in
                         
-            // query statuses for following based on current string user id else { blank }
-            statusProcess.fetchFeed(userId: Auth.auth().currentUser?.uid ?? "") { statuses in
-                for status in statuses {
-                    statusProcess.feedList.append(status)
-//                    print("This is the value of status \(status)")
+                        StatusUpdateView(
+                            status: status,
+                            username: status.userObject.username,
+                            timeAgo: status.timestamp,
+                            colors: colors
+                        )
+                        
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // create some extra spacing
+                .padding()
+            }
+            .background(
+                BackgroundView()
+            )
+            .onAppear {
+                statusProcess.feedList.removeAll()
+                
+                // query statuses for following based on current string user id else { blank }
+                statusProcess.fetchFeed(userId: Auth.auth().currentUser?.uid ?? "") { statuses in
+                    for status in statuses {
+                        statusProcess.feedList.append(status)
+                        //                    print("This is the value of status \(status)")
+                    }
+                }
+                
+                
+                // Then in main view, we sort the list by timestamp
+                print("This is the value of feedlist: \(statusProcess.feedList)")
+            }
+            .refreshable {
+                statusProcess.feedList.removeAll()
+                
+                // query statuses for following based on current string user id else { blank }
+                statusProcess.fetchFeed(userId: Auth.auth().currentUser?.uid ?? "") { statuses in
+                    for status in statuses {
+                        statusProcess.feedList.append(status)
+                        //                    print("This is the value of status \(status)")
+                    }
                 }
             }
             
-           
-            // Then in main view, we sort the list by timestamp
-            print("This is the value of feedlist: \(statusProcess.feedList)")
-        }
-        .refreshable {
-            statusProcess.feedList.removeAll()
-                        
-            // query statuses for following based on current string user id else { blank }
-            statusProcess.fetchFeed(userId: Auth.auth().currentUser?.uid ?? "") { statuses in
-                for status in statuses {
-                    statusProcess.feedList.append(status)
-//                    print("This is the value of status \(status)")
+            // Floating button layer
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        // Action for the button
+                        print("Floating Button Pressed")
+                        createNewPostFlag = true
+                    }) {
+                        Image(systemName: "plus")
+                            .foregroundColor(.white)
+                            .font(.system(size: 24))
+                            .padding()
+                            .background(Color.blue)
+                            .clipShape(Circle())
+                            .shadow(radius: 10)
+                    }
+                    .padding()
                 }
             }
+        } // end of ZStack
+        .fullScreenCover(isPresented: $createNewPostFlag) {
+            CheckinView()
         }
-    }
+        
+        
+    } // end of body
 }
 
 struct BlurView: UIViewRepresentable {
@@ -300,19 +331,19 @@ struct StatusUpdateView: View {
                 // push to the left so its aligned-left
                 Spacer()
                 
-                //** Delete button if currentUser is the owner of the StatusUpdateView
-                if let statusUserObject = statusUserObject {
-                    if statusUserObject == viewModel.currentSession {
-                        
-                        Button(action: {
-                            print("Act as the delete button")
-                            deleteFlag.toggle()
-                        }) {
-                            Image(systemName: "trash")
-                                .foregroundStyle(Color.red)
-                        }
-                    } // end of condition
-                } // variable unwrap
+//                //** Delete button if currentUser is the owner of the StatusUpdateView
+//                if let statusUserObject = statusUserObject {
+//                    if statusUserObject == viewModel.currentSession {
+//                        
+//                        Button(action: {
+//                            print("Act as the delete button")
+//                            deleteFlag.toggle()
+//                        }) {
+//                            Image(systemName: "trash")
+//                                .foregroundStyle(Color.red)
+//                        }
+//                    } // end of condition
+//                } // variable unwrap
             }
             .padding(.top, 10)
 

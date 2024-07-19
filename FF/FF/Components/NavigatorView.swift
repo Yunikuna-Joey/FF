@@ -87,15 +87,15 @@ struct NavigatorView: View {
             // with this set-up, the CheckinView only returns 1 view at a time
             // previously, set up multiple vstack, hstacks sepearately,,,
             // now they are all within 1 cumulative vstack
-            CheckinView(currentTabIndex: $currentTabIndex)
-                .tabItem {
-                    Image(systemName: "checkmark.gobackward")
-                    Text("Check In")
-                }
-                .tag(2)
-                .background(
-                    BackgroundView()
-                )
+//            CheckinView(currentTabIndex: $currentTabIndex)
+//                .tabItem {
+//                    Image(systemName: "checkmark.gobackward")
+//                    Text("Check In")
+//                }
+//                .tag(2)
+//                .background(
+//                    BackgroundView()
+//                )
 
             MessageView()
                 .tabItem {
