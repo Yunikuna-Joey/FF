@@ -96,6 +96,12 @@ struct NavigatorView: View {
 //                .background(
 //                    BackgroundView()
 //                )
+            ToggleLocationView()
+                .tabItem {
+                    Image(systemName: "checkmark.gobackward")
+                    Text("Check In")
+                }
+                .tag(2)
 
             MessageView()
                 .tabItem {

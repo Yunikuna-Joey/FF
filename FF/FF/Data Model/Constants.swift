@@ -7,6 +7,7 @@
 import Foundation
 
 
+
 // Used for holding constans for the time being 
 struct EmptyVariable {
     static let EmptyUser = User(id: "", username: "", databaseUsername: "", firstName: "", lastName: "", email: "", imageHashMap: [:], profilePicture: "", coverPicture: "")
