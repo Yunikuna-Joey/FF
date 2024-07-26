@@ -21,54 +21,97 @@ struct ToggleLocationView: View {
     @State private var nearby: [String] = [""]
     
     var body: some View {
-        VStack {
-            HStack(spacing: 10) {
-                if let currentUserObject = viewModel.currentSession {
-                    if currentUserObject.profilePicture.isEmpty {
-                        // profile image on the left
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.blue)
+        ZStack {
+            
+            VStack {
+                
+                VStack {
+                    
+                    // username and profile picture
+                    HStack(spacing: 10) {
+                        if let currentUserObject = viewModel.currentSession {
+                            if currentUserObject.profilePicture.isEmpty {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundStyle(Color.blue)
+                            }
+                            
+                            else {
+                                AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
+                                    
+                                    switch phase {
+                                    case.empty:
+                                        ProgressView()
+                                            .frame(width: 30, height: 30)
+                                        
+                                    case.success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 40, height: 40)
+                                            .clipShape(Circle())
+                                           
+                                        
+                                    case.failure:
+                                        Image(systemName: "xmark.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
+                                            .clipShape(Circle())
+                                        
+                                    @unknown default:
+                                        EmptyView()
+                                    } // end of switch
+                                    
+                                } // end of async image
+                            }
+                        }
+                        
+                        Text("\(viewModel.currentSession?.username ?? "")")
+                            .font(.headline)
+                        
+                        // ** This will indicate whether or not the location is "in-use"
+                        Image(systemName: "circle.fill")
+                            .foregroundStyle(Color.green)
+                            .foregroundStyle(Color.red)
+                        
+                        Spacer()
+                    }
+                } // end of vstack
+                
+                HStack {
+                    Text("Current:")
+                        .font(.body)
+                    
+                    Spacer()
+                    
+                    Menu {
+                        Picker(selection: $selectedOption, label: EmptyView()) {
+                            ForEach(nearby, id: \.self) { option in
+                                Text(option)
+                                    .tag(option)
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text(selectedOption.isEmpty ? "Select location" : selectedOption)
+                                .foregroundStyle(selectedOption.isEmpty ? Color.gray.opacity(0.75) : Color.primary)
+                                .font(.footnote)
+                            Image(systemName: "chevron.down")
+                                .foregroundStyle(Color.blue)
+                        }
+                    }
+                    .padding(.top, 5)
+                    .onTapGesture {
+                        // this should prompt the user location when this portion is gestured
+                        LocationManager.shared.requestLocation()
+                        searchNearby()
                     }
                     
-                    else {
-                        AsyncImage(url: URL(string: currentUserObject.profilePicture)) { phase in
-                            
-                            switch phase {
-                            case.empty:
-                                ProgressView()
-                                    .frame(width: 30, height: 30)
-                                
-                            case.success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                
-                                
-                            case.failure:
-                                Image(systemName: "xmark.circle")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 30, height: 30)
-                                    .clipShape(Circle())
-                                
-                            @unknown default:
-                                EmptyView()
-                            } // end of switch
-                            
-                        } // end of async image
-                    }
-                }
-                
-//                Text("\(viewModel.currentSession?.username ?? "")")
-//                    .font(.headline)
-                Text("Username")
-                
-                Spacer()
-            } // end of hstack
+                } // end of hstack
+            } // end of VStack
+            .padding()
             .background(
                 ZStack {
                     Color.white.opacity(0.2)
@@ -77,32 +120,9 @@ struct ToggleLocationView: View {
             )
             .cornerRadius(10)
             .shadow(radius: 5)
+            .padding()
             
-            HStack {			
-                Menu {
-                    Picker(selection: $selectedOption, label: EmptyView()) {
-                        ForEach(nearby, id: \.self) { option in
-                            Text(option)
-                                .tag(option)
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Text(selectedOption.isEmpty ? "Select location" : selectedOption)
-                            .foregroundStyle(selectedOption.isEmpty ? Color.gray.opacity(0.75) : Color.primary)
-                        Image(systemName: "chevron.down")
-                            .foregroundStyle(Color.blue)
-                    }
-                }
-                .padding(.top, 5)
-                .onTapGesture {
-                    // this should prompt the user location when this portion is gestured
-                    LocationManager.shared.requestLocation()
-                    searchNearby()
-                }
-            }
-            
-        }
+        } // end of zstack
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             BackgroundView()
