@@ -8,6 +8,19 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
+//* add a coordinate attached to Uesr Object
+//* update the existing data structure holding the location to hold [name of establishment: coordinate]
+//* need to update the color of the activity circle depending on if the location is active or not 
+
+struct Coordinate: Codable, Hashable {
+    let latitude: Double
+    let longitude: Double
+    
+    var description: String {
+        return "Lat: \(latitude), Long: \(longitude)"
+    }
+}
+
 struct ToggleLocationView: View {
     @EnvironmentObject var viewModel: AuthView
     
@@ -17,8 +30,10 @@ struct ToggleLocationView: View {
     // Location options here
     @ObservedObject var locationManager = LocationManager.shared    // locationManager is shared instance
     
-    // Dynamic list of nearby POI
+    // Dynamic list of nearby POI [This is for the picker menu (front-end)]
     @State private var nearby: [String] = [""]
+    @State private var nearbyCoord: [String: Coordinate] = [:]
+    @State private var selectedCoord: Coordinate?
     
     var body: some View {
         ZStack {
@@ -108,8 +123,26 @@ struct ToggleLocationView: View {
                         LocationManager.shared.requestLocation()
                         searchNearby()
                     }
+                    .onChange(of: selectedOption) { newValue, _ in
+                        if let coordinate = nearbyCoord[newValue] {
+                            selectedCoord = coordinate
+                            updateUserLocation(coordinate)
+                        }
+                    }
                     
                 } // end of hstack
+                
+                if let coordinate = viewModel.currentSession?.currCoordinate {
+                    Text(coordinate.description)
+                        .padding()
+                        .foregroundStyle(Color.red)
+                }
+                else {
+                    Text("There is no current coordinate for this user")
+                        .padding()
+                        .foregroundStyle(Color.blue)
+                }
+                
             } // end of VStack
             .padding()
             .background(
@@ -157,15 +190,35 @@ struct ToggleLocationView: View {
             }
             
             // Extract POI names from nearby places
-            nearby = response.mapItems.compactMap { mapItem in
+//            nearby = response.mapItems.compactMap { mapItem in
+//                if let name = mapItem.name, let location = mapItem.placemark.location {
+//                    let distance = location.distance(from: currLocation) / 1609.34
+//                    return "\(name) - \(String(format: "%.1f", distance)) miles away"
+//                }
+//                return nil
+//            }
+//            .sorted() // alphabetically sort the list
+            
+            var tempNearby: [String] = []
+            var tempNearbyLocations: [String: Coordinate] = [:]
+            
+            for mapItem in response.mapItems {
                 if let name = mapItem.name, let location = mapItem.placemark.location {
                     let distance = location.distance(from: currLocation) / 1609.34
-                    return "\(name) - \(String(format: "%.1f", distance)) miles away"
+                    let locationName = "\(name) - \(String(format: "%.1f", distance)) miles away"
+                    tempNearby.append(locationName)
+                    tempNearbyLocations[locationName] = Coordinate(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
                 }
-                return nil
             }
-            .sorted() // alphabetically sort the list
+            
+            nearby = tempNearby.sorted().reversed()
+            nearbyCoord = tempNearbyLocations
         }
+    }
+    
+    //** This will update the coordinate for the User object
+    private func updateUserLocation(_ coordinate: Coordinate) {
+        viewModel.currentSession?.currCoordinate = coordinate
     }
 }
 
