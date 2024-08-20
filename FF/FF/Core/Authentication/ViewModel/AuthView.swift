@@ -159,7 +159,7 @@ class AuthView: ObservableObject {
         
         if let userSessionStatement = self.userSession {
             print("[DEBUG]: User session is \(self.userSession ?? userSessionStatement)")
-            print("[DEBUG]: Current User is \(self.currentSession ?? EmptyVariable.EmptyUser)")
+//            print("[DEBUG]: Current User is \(self.currentSession ?? EmptyVariable.EmptyUser)")
         }
     }
     

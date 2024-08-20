@@ -8,7 +8,7 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
-//* add a coordinate attached to Uesr Object
+//* add a coordinate attached to User Object
 //* update the existing data structure holding the location to hold [name of establishment: coordinate]
 //* need to update the color of the activity circle depending on if the location is active or not 
 
@@ -19,10 +19,15 @@ struct Coordinate: Codable, Hashable {
     var description: String {
         return "Lat: \(latitude), Long: \(longitude)"
     }
+    
+    var numDescription: (Double, Double) {
+        return (latitude, longitude)
+    }
 }
 
 struct ToggleLocationView: View {
     @EnvironmentObject var viewModel: AuthView
+    @EnvironmentObject var followManager: FollowingManager
     
     // Checkin menu option here [recent]
     @State private var selectedOption: String = ""
@@ -34,6 +39,12 @@ struct ToggleLocationView: View {
     @State private var nearby: [String] = [""]
     @State private var nearbyCoord: [String: Coordinate] = [:]
     @State private var selectedCoord: Coordinate?
+    
+    // hashmap to hold all of the following <-> follower relationship coordinate values
+    @State private var communityCoordHashmap: [User: Coordinate?] = [:]
+    @State private var followerList: [User] = []
+    @State private var followingList: [User] = []
+    @State private var masterList: [User] = []
     
     var body: some View {
         ZStack {
@@ -127,6 +138,25 @@ struct ToggleLocationView: View {
                         if let coordinate = nearbyCoord[newValue] {
                             selectedCoord = coordinate
                             updateUserLocation(coordinate)
+                            // coordinate represents the currentUser coordinate [this should be in the onChange closure]
+                            
+                            // 50 meter range
+                            let thresholdDistance: CLLocationDistance = 50.0
+                            
+                            for (key, value) in communityCoordHashmap {
+                                print("Key: \(key), Value: \(value)")
+                                
+                                let currentUserCoord = CLLocation(latitude: coordinate.latitude, longitude: coordinate.latitude)
+                                let otherUserCoord = CLLocation(latitude: key.currCoordinate?.latitude, longitude: key.currCoordinate?.longitude)
+                                
+                                let distance = currentUserCoord.distance(from: otherUserCoord)
+                                
+                                if distance <= thresholdDistance {
+                                    print("Found a match!")
+                                    print(key.username)
+                                }
+                            }
+                            
                         }
                     }
                     
@@ -143,6 +173,7 @@ struct ToggleLocationView: View {
                         .foregroundStyle(Color.blue)
                 }
                 
+        
             } // end of VStack
             .padding()
             .background(
@@ -156,6 +187,38 @@ struct ToggleLocationView: View {
             .padding()
             
         } // end of zstack
+        .onAppear {
+            // This will handle the backend process of updating the location coordinates
+            // of those who the current user follows and if they following follows back
+            
+            //** naive approach: go through the following and follower list to determine who gets updated with the location
+            Task {
+                if let currentUserObject = viewModel.currentSession {
+                    print("[ToggleLocationView]: This is the value of id: \(currentUserObject.id)")
+                    followerList = try await followManager.queryFollowers(userId: currentUserObject.id)
+                    followingList = try await followManager.queryFollowing(userId: currentUserObject.id)
+                    
+                    // determine which users to add into the master list [contains all users that match the mutual relationship condition]
+                    for follower in followerList {
+                        if followingList.contains(follower) {
+                            masterList.append(follower)
+                        }
+                    }
+                    
+                    
+                    // for all the user objects in list
+                    for userObject in masterList {
+                        // update the community coords for each user with their respective current coordinates
+                        communityCoordHashmap[userObject] = userObject.currCoordinate
+                    }
+                }
+                
+                print("[ToggleLocationOnAppear]: This is community pool -- \(communityCoordHashmap)")
+            }
+            
+            
+            
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             BackgroundView()

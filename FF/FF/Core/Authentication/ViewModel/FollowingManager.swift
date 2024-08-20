@@ -113,11 +113,11 @@ class FollowingManager: ObservableObject {
                 }
                 
                 else {
-                    print("[DEBUG]: There is an error within queryFollowers")
+                    print("[queryFollowersDEBUG]: There is an error within queryFollowers")
                 }
             }
         
-            print("This is the value of follower: \(followers)")
+            // print("This is the value of follower: \(followers)")
             return followers
         } 
         
@@ -149,7 +149,7 @@ class FollowingManager: ObservableObject {
                 }
             }
         
-            print("This is the value of follower: \(following)")
+            // print("This is the value of follower: \(following)")
             return following
         }
         
