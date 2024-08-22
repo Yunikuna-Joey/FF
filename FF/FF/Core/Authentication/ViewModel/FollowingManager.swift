@@ -95,6 +95,26 @@ class FollowingManager: ObservableObject {
         }
     }
     
+    // new convert funciton instead of "getUserByid)
+    func convertUserIdToObject(_ userId: String) async throws -> User? {
+        let userRef = db.collection("users").document(userId)
+        
+        do {
+            let document = try await userRef.getDocument()
+            if let user = try document.data(as: User?.self) {
+                return user
+            }
+            else {
+                return nil
+            }
+        }
+        
+        catch {
+            print("[convertUserIdToObject]: Error fetching a user: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     // query the follower Id's of the requested ID 
     func queryFollowers(userId: String) async throws -> [User] {
         // represents the list of type User being returned from the function
@@ -108,7 +128,8 @@ class FollowingManager: ObservableObject {
             for document in snapshot.documents {
                 // we want the id's that follow the parameter userID
                 if let followerId = document["userId"] as? String,
-                   let user = try await getUserById(userId: followerId) {
+//                   let user = try await getUserById(userId: followerId) {
+                   let user = try await convertUserIdToObject(followerId) {
                     followers.append(user)
                 }
                 
@@ -139,13 +160,14 @@ class FollowingManager: ObservableObject {
             
             for document in snapshot.documents {
                 // we want the id's that follow the parameter userID
-                if let followerId = document["friendId"] as? String,
-                   let user = try await getUserById(userId: followerId) {
+                if let followingId = document["friendId"] as? String,
+//                   let user = try await getUserById(userId: followerId) {
+                   let user = try await convertUserIdToObject(followingId) {
                     following.append(user)
                 }
                 
                 else {
-                    print("[DEBUG]: There is an error within queryFollowers")
+                    print("[queryFollowingDEBUG]: There is an error within queryFollowing")
                 }
             }
         
@@ -187,13 +209,14 @@ class FollowingManager: ObservableObject {
                         imageHashMap: imageHashMap,
                         profilePicture: profilePicture,
                         coverPicture: coverPicture
+//                        currCoordinate: currCoordinate
                     )
 //                    print("This is the value of user \(user)")
                     return user
                 }
             }
             
-            print("[DEBUG]: User with ID \(userId) not found.")
+            print("[getUserByIdDEBUG]: User with ID \(userId) not found.")
             return nil
         } 
         catch {

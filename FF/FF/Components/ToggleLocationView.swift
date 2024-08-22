@@ -137,26 +137,40 @@ struct ToggleLocationView: View {
                     .onChange(of: selectedOption) { newValue, _ in
                         if let coordinate = nearbyCoord[newValue] {
                             selectedCoord = coordinate
+                            //** This is for currentSession updating
                             updateUserLocation(coordinate)
-                            // coordinate represents the currentUser coordinate [this should be in the onChange closure]
+                            //** Attempts to modify the location
+                            Task {
+                                try await viewModel.updateUserLocationDB(userId: viewModel.currentSession?.id ?? "", coordinate: coordinate)
+                            }
+                            print("[ToggleLocationView]: \(viewModel.currentSession)")
                             
-                            // 50 meter range
+                            // 50-meter range for comparison [100 is working]
                             let thresholdDistance: CLLocationDistance = 50.0
                             
+                            // Iterate through communityCoordHashmap
                             for (key, value) in communityCoordHashmap {
-                                print("Key: \(key), Value: \(value)")
+                                print("Key: \(key.username), Value: \(value?.description ?? "No Coordinate")")
                                 
-                                let currentUserCoord = CLLocation(latitude: coordinate.latitude, longitude: coordinate.latitude)
-                                let otherUserCoord = CLLocation(latitude: key.currCoordinate?.latitude, longitude: key.currCoordinate?.longitude)
-                                
-                                let distance = currentUserCoord.distance(from: otherUserCoord)
-                                
-                                if distance <= thresholdDistance {
-                                    print("Found a match!")
-                                    print(key.username)
+                                // Ensure the current user has valid coordinates
+                                if let userCoord = viewModel.currentSession?.currCoordinate {
+                                    let currentUserCoord = CLLocation(latitude: userCoord.latitude, longitude: userCoord.longitude)
+                                    
+                                    // Ensure the other user has valid coordinates
+                                    if let otherUserCoordValue = value {
+                                        let otherUserCoord = CLLocation(latitude: otherUserCoordValue.latitude, longitude: otherUserCoordValue.longitude)
+                                        
+                                        // Calculate the distance between the two users
+                                        let distance = currentUserCoord.distance(from: otherUserCoord)
+                                        
+                                        // Check if they are within the threshold distance
+                                        if distance <= thresholdDistance {
+                                            print("Found a match!")
+                                            print("User within range: \(key.username)")
+                                        }
+                                    }
                                 }
                             }
-                            
                         }
                     }
                     
@@ -194,7 +208,6 @@ struct ToggleLocationView: View {
             //** naive approach: go through the following and follower list to determine who gets updated with the location
             Task {
                 if let currentUserObject = viewModel.currentSession {
-                    print("[ToggleLocationView]: This is the value of id: \(currentUserObject.id)")
                     followerList = try await followManager.queryFollowers(userId: currentUserObject.id)
                     followingList = try await followManager.queryFollowing(userId: currentUserObject.id)
                     
@@ -265,6 +278,7 @@ struct ToggleLocationView: View {
             var tempNearby: [String] = []
             var tempNearbyLocations: [String: Coordinate] = [:]
             
+            //** Attempt to implement rounding to fix matching logic in front-end
             for mapItem in response.mapItems {
                 if let name = mapItem.name, let location = mapItem.placemark.location {
                     let distance = location.distance(from: currLocation) / 1609.34

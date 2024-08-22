@@ -106,7 +106,7 @@ class AuthView: ObservableObject {
             self.userSession = result.user
             
             // Data Model registration
-            let user = User(id: result.user.uid, username: username, databaseUsername: username.lowercased(), firstName: firstName, lastName: lastName, email: email, imageHashMap: imageHashMap, profilePicture: "", coverPicture: "")
+            let user = User(id: result.user.uid, username: username, databaseUsername: username.lowercased(), firstName: firstName, lastName: lastName, email: email, imageHashMap: imageHashMap, profilePicture: "", coverPicture: "", currCoordinate: nil)
             let encodedUser = try Firestore.Encoder().encode(user)
             
             // upload data to firestore on this line
@@ -116,6 +116,27 @@ class AuthView: ObservableObject {
         }
         catch {
             print("[DEBUG]: Failed to create user with error \(error.localizedDescription)")
+        }
+    }
+    
+    func updateUserLocationDB(userId: String, coordinate: Coordinate) async throws {
+        do {
+            let userRef = dbUsers.document(userId)
+            
+            let coordinateData: [String: Double] = [
+                "latitude": coordinate.latitude,
+                "longitude": coordinate.longitude
+            ]
+            
+            try await userRef.updateData([
+                "currCoordinate": coordinateData
+            ])
+            
+            print("[updateUserLocationDB]: Success")
+        }
+        catch {
+            print("[updateUserLocationDB]: Error updating location for user: \(error.localizedDescription)")
+            throw error
         }
     }
     
