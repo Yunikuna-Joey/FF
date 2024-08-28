@@ -45,6 +45,7 @@ struct ToggleLocationView: View {
     @State private var followerList: [User] = []
     @State private var followingList: [User] = []
     @State private var masterList: [User] = []
+    @State private var conversionMap: [String: String] = [:]
     
     var body: some View {
         ZStack {
@@ -136,12 +137,14 @@ struct ToggleLocationView: View {
                     }
                     .onChange(of: selectedOption) { newValue, _ in
                         if let coordinate = nearbyCoord[newValue] {
+                            
                             selectedCoord = coordinate
                             //** This is for currentSession updating
                             updateUserLocation(coordinate)
                             //** Attempts to modify the location
                             Task {
                                 try await viewModel.updateUserLocationDB(userId: viewModel.currentSession?.id ?? "", coordinate: coordinate)
+                                try await viewModel.updateUserplaceofInterestDB(userId: viewModel.currentSession?.id ?? "", location: conversionMap[newValue] ?? "")
                             }
                             print("[ToggleLocationView]: \(viewModel.currentSession)")
                             
@@ -164,7 +167,7 @@ struct ToggleLocationView: View {
                                         let distance = currentUserCoord.distance(from: otherUserCoord)
                                         
                                         // Check if they are within the threshold distance
-                                        if distance <= thresholdDistance {
+                                        if distance <= thresholdDistance && key.placeOfInterest == viewModel.currentSession?.placeOfInterest {
                                             print("Found a match!")
                                             print("User within range: \(key.username)")
                                         }
@@ -252,6 +255,7 @@ struct ToggleLocationView: View {
 //        let currLocation = CLLocation(latitude: lat, longitude: long)
         
         let coordinate = CLLocationCoordinate2D(latitude: currLocation.coordinate.latitude, longitude: currLocation.coordinate.longitude)
+        var digitToLocation = 1
         
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = "Gym"
@@ -264,17 +268,7 @@ struct ToggleLocationView: View {
                 print("Error searching for places: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-            
-            // Extract POI names from nearby places
-//            nearby = response.mapItems.compactMap { mapItem in
-//                if let name = mapItem.name, let location = mapItem.placemark.location {
-//                    let distance = location.distance(from: currLocation) / 1609.34
-//                    return "\(name) - \(String(format: "%.1f", distance)) miles away"
-//                }
-//                return nil
-//            }
-//            .sorted() // alphabetically sort the list
-            
+                        
             var tempNearby: [String] = []
             var tempNearbyLocations: [String: Coordinate] = [:]
             
@@ -282,15 +276,28 @@ struct ToggleLocationView: View {
             for mapItem in response.mapItems {
                 if let name = mapItem.name, let location = mapItem.placemark.location {
                     let distance = location.distance(from: currLocation) / 1609.34
-                    let locationName = "\(name) - \(String(format: "%.1f", distance)) miles away"
+//                    var locationName = name
+//                    let locationNameWithDistance = "\(name) - \(String(format: "%.1f", distance)) miles away"
+//                    
+//                    tempNearby.append(locationNameWithDistance)
+                    
+//                    if tempNearbyLocations.keys.contains(locationName) {
+//                        locationName = "\(name)\(digitToLocation)"
+//                        digitToLocation += 1
+//                    }
+                    
+                    var locationName = "\(name) - \(String(format: "%.1f", distance)) miles away"
                     tempNearby.append(locationName)
+
                     tempNearbyLocations[locationName] = Coordinate(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+                    conversionMap[locationName] = name
                 }
             }
             
             nearby = tempNearby.sorted().reversed()
             nearbyCoord = tempNearbyLocations
         }
+        print("[searchNearby]: \(nearbyCoord)")
     }
     
     //** This will update the coordinate for the User object

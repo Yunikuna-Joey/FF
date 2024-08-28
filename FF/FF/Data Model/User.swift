@@ -21,6 +21,7 @@ struct User: Identifiable, Codable, Hashable {            // codable turns JSON 
     var profilePicture: String
     let coverPicture: String
     var currCoordinate: Coordinate?
+    var placeOfInterest: String?
 }
 
 // test | admin account

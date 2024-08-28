@@ -140,6 +140,23 @@ class AuthView: ObservableObject {
         }
     }
     
+    func updateUserplaceofInterestDB(userId: String, location: String) async throws {
+        do {
+            let userRef = dbUsers.document(userId)
+            
+            try await userRef.updateData([
+                "placeOfInterest": location
+            ])
+            
+            print("[updateUserplaceofInterestDB]: Success")
+        }
+        
+        catch {
+            print("[updateUserplaceofInterestDB]: Error updating place of interest for user: \(error.localizedDescription)")
+            throw error 
+        }
+    }
+    
     // sign out function
     func signOut() {
         do {
